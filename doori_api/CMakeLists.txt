@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(doori-api)
+project(doori_api)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(LIB_NAME doori)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17 -fPIC")
 
-link_libraries (${LIB_NAME} -lpthread)
+link_libraries (-lpthread)
 
 include_directories(SYSTEM .)
 
@@ -25,6 +23,7 @@ set(HEADER_FILES
         Endpoint.h
         Epoll.h
         EpollEvents.h
+        Error.h
         Getopt.h
         ICommunication.h
         Log.h
@@ -50,7 +49,6 @@ set(SRC_FILES
         Epoll.cpp
         EpollEvents.cpp
         Error.cpp
-        Error.h
         Getopt.cpp
         ICommunication.cpp
         Log.cpp
@@ -62,16 +60,11 @@ set(SRC_FILES
         Subscriber.cpp
         Topic.cpp)
 
-link_libraries (-lpthread)
+add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES} )
 
-add_library(${LIB_NAME} SHARED ${HEADER_FILES} ${SRC_FILES} )
+set_target_properties(${DOORI_API_LIBRARY_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
-set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
-
-set(MY_INSTALL_LIB_PATH /home/doori/doori/lib)
-set(MY_INSTALL_HEADER_PATH /home/doori/doori/inc)
-
-install(TARGETS ${LIB_NAME}
-        LIBRARY DESTINATION ${MY_INSTALL_LIB_PATH}
-        PUBLIC_HEADER DESTINATION ${MY_INSTALL_HEADER_PATH}
+install(TARGETS "${DOORI_API_LIBRARY_NAME}"
+        LIBRARY DESTINATION "${DOORI_PROJECT}/lib"
+        PUBLIC_HEADER DESTINATION "${DOORI_PROJECT}/inc"
         )

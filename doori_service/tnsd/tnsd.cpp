@@ -64,8 +64,7 @@ auto Tnsd::operator()() noexcept -> int
 }
 
 ///@brief 비정상처리시, 수신된 메시지를 그대로 송신에 보낸다.
-///@note 이 함수에서, processing 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\
-///      에러코드는 리턴값에 따라 처리하도록 한다.
+///@note 이 함수에서, processing 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\ ///      에러코드는 리턴값에 따라 처리하도록 한다.
 auto Tnsd::processMessage(int socket, Stream& stream) -> int
 {
     auto ret=0;
@@ -353,7 +352,7 @@ auto Tnsd::change_Processing(const Topic &topic) -> void{
             //auto sockfd = mMangedMetaAddresses[leaf.Ip()+":"+leaf.Port()];
 
             LOG(DEBUG, "Change protocol send Address :", leaf.Ip(), ":", leaf.Port() );
-            std::unordered_map<std::string,int>::const_iterator got = mMangedMetaAddresses.find(leaf.Ip()+":"+leaf.Port());
+            auto got = mMangedMetaAddresses.find(leaf.Ip()+":"+leaf.Port());
             if(got==mMangedMetaAddresses.end())
             {
                 LOG(DEBUG, "Not find in Managed MetaAddresses");
