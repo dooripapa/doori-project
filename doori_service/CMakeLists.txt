@@ -33,3 +33,4 @@ add_executable(sub
         sub/Sub.h
         )
 
+install(TARGETS tnsd pub sub DESTINATION "${DOORI_PROJECT}/bin")
