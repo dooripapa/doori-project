@@ -39,7 +39,7 @@ set(HEADER_FILES
         Subscriber.h
         Topic.h
         Tree.h
-        Tree.hpp)
+        Tree.hpp json.cpp json.h)
 
 set(SRC_FILES
         Addr.cpp
@@ -61,7 +61,7 @@ set(SRC_FILES
         Runner.cpp
         Stream.cpp
         Subscriber.cpp
-        Topic.cpp)
+        Topic.cpp json.cpp json.h)
 
 add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES} )
 
