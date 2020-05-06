@@ -2,6 +2,8 @@
 //
 // Created by jaeseong on 20. 4. 20..
 //
+#include <istream>
+#include <sstream>
 #include "json.h"
 
 namespace doori{
@@ -15,13 +17,25 @@ namespace doori{
     }
 
     auto Json::toString() -> std::string {
+        std::ostringstream jsonStr(std::ostringstream::ate);
+        jsonStr<<"{";
         for(auto &i:mFactors)
         {
             switch(i.second.TYPE)
             {
                 case Json_value::BOOL:
+                case Json_value::FLOAT:
+                case Json_value::INT32S:
+                case Json_value::STRING:
+                case Json_value::JSON:
+                    jsonStr<<"\""<<i.first.c_str()<<"\""<<":"<<i.second.toString();
+                    break;
+                case Json_value::NIL:
+                default:
+                    abort();
             }
         }
+        jsonStr<<"}";
     }
 
     auto Json::fromString(const char *json) -> bool {
@@ -55,5 +69,28 @@ namespace doori{
     auto Json_value::set(Json value) -> void {
         TYPE = JSON;
         mJson = std::make_unique<Json>(value);
+    }
+
+    auto Json_value::toString() -> std::string {
+        std::ostringstream jsonV(std::ostringstream::ate);
+        switch(TYPE)
+        {
+            case Json_value::BOOL:
+                return(mBool?"true":"false");
+            case Json_value::FLOAT:
+                jsonV<<"\""<<mFloat<<"\"";
+                return jsonV.str();
+            case Json_value::INT32S:
+                jsonV<<"\""<<mInt<<"\"";
+                return jsonV.str();
+            case Json_value::STRING:
+                jsonV<<"\""<<mStr<<"\"";
+                return jsonV.str();
+            case Json_value::JSON:
+                return mJson->toString();
+            case Json_value::NIL:
+            default:
+                abort();
+        }
     }
 }

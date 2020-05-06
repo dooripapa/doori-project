@@ -32,6 +32,7 @@ namespace doori{
         auto set(float value) -> void;
         auto set(bool value) -> void;
         auto set(Json value) -> void;
+        auto toString() -> std::string;
     private:
         int32_t     mInt;
         std::string mStr;
