@@ -15,6 +15,7 @@
 #folders ignore
 ###########################
 cmake-build-debug/
+googletest/
 lib/
 inc/
 shl/
