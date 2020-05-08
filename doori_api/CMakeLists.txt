@@ -4,7 +4,7 @@ project(doori_api)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(DOORI_PROJECT /home/doori/doori_project)
+#set(DOORI_PROJECT /home/jaeseong/CLionProjects/doori_project)
 set(DOORI_API_LIBRARY_NAME doori)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17 -fPIC")
