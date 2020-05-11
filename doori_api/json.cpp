@@ -93,4 +93,6 @@ namespace doori{
                 abort();
         }
     }
+
+    Json_value::Json_value(int32_t value) : mInt(value), TYPE(INT32S)  {}
 }

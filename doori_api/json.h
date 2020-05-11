@@ -27,6 +27,12 @@ namespace doori{
             BOOL,
             JSON
         }TYPE;
+        explicit Json_value(int32_t value) -> void;
+        explicit Json_value(std::string value) -> void;
+        explicit Json_value(float value) -> void;
+        explicit Json_value(bool value) -> void;
+        explicit Json_value(Json value) -> void;
+
         auto set(int32_t value) -> void;
         auto set(std::string value) -> void;
         auto set(float value) -> void;

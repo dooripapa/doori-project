@@ -2,14 +2,13 @@
 // Created by jaeseong on 20. 5. 7..
 //
 #include <gtest/gtest.h>
-
-int sum(int a, int b){
-    return (a+b);
-}
+#include <json.h>
 
 TEST(MyTestCase, PositiveTest)
 {
-    EXPECT_EQ(3, sum(1,2));
+    doori::Json json;
+    json.append("lee", doori::Json_value(1234));
+//    EXPECT_EQ(3, sum(1,2));
 }
 
 
