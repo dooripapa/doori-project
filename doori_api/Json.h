@@ -27,19 +27,28 @@ namespace doori{
             BOOL,
             JSON
         }TYPE;
-        explicit Json_value(int32_t value) -> void;
-        explicit Json_value(std::string value) -> void;
-        explicit Json_value(float value) -> void;
-        explicit Json_value(bool value) -> void;
-        explicit Json_value(Json value) -> void;
+        Json_value();
+        Json_value(const Json_value &rhs);
+        Json_value(Json_value &&rhs);
+        Json_value(int32_t value);
+        Json_value(std::string value);
+        template <int N>
+        Json_value(char const(&value)[N]){mStr=std::string(value),TYPE=STRING;};
+        Json_value(float value);
+        Json_value(bool value);
+        Json_value(const Json& value);
 
         auto set(int32_t value) -> void;
         auto set(std::string value) -> void;
         auto set(float value) -> void;
         auto set(bool value) -> void;
         auto set(Json value) -> void;
-        auto toString() -> std::string;
+        auto toString() const -> std::string;
+        auto operator=(const Json_value &rhs) noexcept -> Json_value&;
+        auto operator=(Json_value &&rhs) noexcept -> Json_value&;
     private:
+        auto copyFrom(const Json_value &rhs) noexcept -> void;
+        auto copyFrom(Json_value &&rhs) noexcept -> void;
         int32_t     mInt;
         std::string mStr;
         float       mFloat;
@@ -49,12 +58,19 @@ namespace doori{
 
     class Json {
     public:
+        Json();
+        Json(Json&& rhs);
+        Json(const Json& rhs);
         auto append(const char* jsonKey, const Json_value &jsonValue) -> void;
         auto operator[](const std::string &jsonkey) -> Json_value&;
-        auto toString() -> std::string;
+        auto toString() const-> std::string;
         auto fromString(const char *json) -> bool;
         auto clear() -> void;
+        auto operator=(const Json &rhs) noexcept -> Json&;
+        auto operator=(Json &&rhs) noexcept -> Json&;
     private:
+        auto copyFrom(const Json &rhs) noexcept -> void;
+        auto copyFrom(Json &&rhs) noexcept -> void;
         std::unordered_map<std::string, Json_value> mFactors;
     };
 }
