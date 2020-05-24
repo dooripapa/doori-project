@@ -9,9 +9,18 @@
 namespace doori{
 
     auto Json::operator[](const std::string &jsonkey) -> Json_value & {
-        return mFactors[jsonkey];
+        for (auto &item : mFactors) {
+            if(item.first == jsonkey)
+                return item.second;
+        }
+        mFactors.push_back({jsonkey,Json_value()});
+        auto it = mFactors.end()-1;
+        return it->second;
     }
 
+    /**
+     * Json clear
+     */
     auto Json::clear() -> void {
         mFactors.clear();
     }
@@ -47,7 +56,7 @@ namespace doori{
     }
 
     auto Json::append(const char *jsonKey, const Json_value &jsonValue) -> void {
-        mFactors[jsonKey] = jsonValue;
+        Json::operator[](jsonKey) = jsonValue;
     }
 
     Json::Json(const Json &rhs) {
@@ -63,10 +72,6 @@ namespace doori{
         mFactors = rhs.mFactors;
     }
 
-    auto Json::copyFrom(Json &&rhs) noexcept -> void {
-        mFactors = std::move(rhs.mFactors);
-    }
-
     auto Json::operator=(const Json &rhs) noexcept -> Json & {
         if( this ==&rhs  )
             return *this;
@@ -79,8 +84,7 @@ namespace doori{
         if( this ==&rhs  )
             return *this;
 
-        copyFrom( rhs );
-        rhs.mFactors.clear();
+        mFactors = std::move(rhs.mFactors);
         return *this;
     }
 
@@ -94,7 +98,7 @@ namespace doori{
     }
 
     auto Json_value::set(std::string value) -> void {
-        TYPE = INT32S;
+        TYPE = STRING;
         mStr = value;
     }
 
@@ -110,7 +114,7 @@ namespace doori{
 
     auto Json_value::set(Json value) -> void {
         TYPE = JSON;
-        mJson = std::make_unique<Json>(value);
+        mJson = std::make_shared<Json>(value);
     }
 
     auto Json_value::toString() const-> std::string {
@@ -118,7 +122,7 @@ namespace doori{
         switch(TYPE)
         {
             case Json_value::BOOL:
-                return(mBool?"true":"false");
+                return(mBool?"\"true\"":"\"false\"");
             case Json_value::FLOAT:
                 jsonV<<"\""<<mFloat<<"\"";
                 return jsonV.str();
@@ -145,23 +149,17 @@ namespace doori{
         mJson  =rhs.mJson;
     }
 
-    auto Json_value::copyFrom(Json_value &&rhs) noexcept -> void {
-        TYPE   =rhs.TYPE;
-        mInt   =rhs.mInt;
-        mStr   =rhs.mStr;
-        mFloat =rhs.mFloat;
-        mBool  =rhs.mBool;
-        mJson  =std::move(rhs.mJson);
-    }
-
     Json_value::Json_value(const Json_value &rhs) {
         copyFrom(rhs);
     }
 
     Json_value::Json_value(Json_value &&rhs) {
-        copyFrom(rhs);
-        if(!rhs.mJson.get())
-            rhs.mJson->clear();
+        TYPE = rhs.TYPE;
+        mInt = rhs.mInt;
+        mStr = rhs.mStr;
+        mFloat= rhs.mFloat;
+        mBool = rhs.mBool;
+        mJson = std::move(rhs.mJson);
     }
 
     Json_value::Json_value(int32_t value) : mInt(value), TYPE(INT32S){
@@ -196,15 +194,42 @@ namespace doori{
         if( this ==&rhs  )
             return *this;
 
-        copyFrom( rhs );
-
-        if(!rhs.mJson.get())
-            rhs.mJson->clear();
+        mInt = rhs.mInt;
+        mStr = rhs.mStr;
+        mFloat= rhs.mFloat;
+        mBool = rhs.mBool;
+        mJson = std::move(rhs.mJson);
 
         return *this;
     }
 
     Json_value::Json_value() {
+        mInt    = std::numeric_limits<decltype(mInt  )>::quiet_NaN();
+        mStr    = std::numeric_limits<decltype(mStr  )>::quiet_NaN();
+        mFloat  = std::numeric_limits<decltype(mFloat)>::quiet_NaN();
+        mBool   = std::numeric_limits<decltype(mBool )>::quiet_NaN();
         TYPE=NIL;
+    }
+
+    auto Json_value::set(const Json_value &rhs) -> void {
+        copyFrom(rhs);
+    }
+
+    auto Json_value::set(Json_value &&rhs) -> void {
+        TYPE = rhs.TYPE;
+        mInt = rhs.mInt;
+        mStr = rhs.mStr;
+        mFloat= rhs.mFloat;
+        mBool = rhs.mBool;
+        mJson = std::move(rhs.mJson);
+    }
+
+    /**
+     * How to convert it?. if it is "true", bool or string?
+     * @param value
+     * @return
+     */
+    auto Json_value::fromString(const std::string value) -> bool {
+        return false;
     }
 }

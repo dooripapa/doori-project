@@ -38,17 +38,22 @@ namespace doori{
         Json_value(bool value);
         Json_value(const Json& value);
 
+        auto set(const Json_value &rhs) -> void;
+        auto set(Json_value &&rhs) -> void;
         auto set(int32_t value) -> void;
         auto set(std::string value) -> void;
+        template <int N>
+        auto set(char const(&value)[N]){mStr=std::string(value),TYPE=STRING;};
         auto set(float value) -> void;
         auto set(bool value) -> void;
         auto set(Json value) -> void;
         auto toString() const -> std::string;
+        auto fromString(const std::string value)->bool;
+        auto fromString(std::string &&value)->bool;
         auto operator=(const Json_value &rhs) noexcept -> Json_value&;
         auto operator=(Json_value &&rhs) noexcept -> Json_value&;
     private:
         auto copyFrom(const Json_value &rhs) noexcept -> void;
-        auto copyFrom(Json_value &&rhs) noexcept -> void;
         int32_t     mInt;
         std::string mStr;
         float       mFloat;
@@ -70,8 +75,7 @@ namespace doori{
         auto operator=(Json &&rhs) noexcept -> Json&;
     private:
         auto copyFrom(const Json &rhs) noexcept -> void;
-        auto copyFrom(Json &&rhs) noexcept -> void;
-        std::unordered_map<std::string, Json_value> mFactors;
+        std::vector< std::pair<std::string, Json_value> > mFactors;
     };
 }
 #endif //DOORI_API_JSON_H
