@@ -4,6 +4,8 @@
 //
 #include <istream>
 #include <sstream>
+#include <term_entry.h>
+#include <algorithm>
 #include "Json.h"
 
 namespace doori{
@@ -25,7 +27,7 @@ namespace doori{
         mFactors.clear();
     }
 
-    auto Json::toString() const-> std::string {
+    auto Json::serialize() const-> std::string {
         std::ostringstream jsonStr(std::ostringstream::ate);
         jsonStr<<"{";
         auto iCnt=0;
@@ -51,10 +53,6 @@ namespace doori{
         return jsonStr.str();
     }
 
-    auto Json::fromString(const char *json) -> bool {
-        return false;
-    }
-
     auto Json::append(const char *jsonKey, const Json_value &jsonValue) -> void {
         Json::operator[](jsonKey) = jsonValue;
     }
@@ -65,7 +63,9 @@ namespace doori{
 
     Json::Json(Json &&rhs) {
         copyFrom(rhs);
-        rhs.mFactors.clear();
+        if (rhs.mFactors.size()) {
+            rhs.mFactors.clear();
+        }
     }
 
     auto Json::copyFrom(const Json &rhs) noexcept -> void {
@@ -130,10 +130,16 @@ namespace doori{
                 jsonV<<"\""<<mInt<<"\"";
                 return jsonV.str();
             case Json_value::STRING:
-                jsonV<<"\""<<mStr<<"\"";
+                jsonV<<"\"";
+                for(auto&i:mStr) {
+                    if (i==','||i=='"'||i==':')
+                        jsonV<<"\\";
+                    jsonV<<i;
+                }
+                jsonV<<"\"";
                 return jsonV.str();
             case Json_value::JSON:
-                return mJson->toString();
+                return mJson->serialize();
             case Json_value::NIL:
             default:
                 abort();
@@ -194,6 +200,7 @@ namespace doori{
         if( this ==&rhs  )
             return *this;
 
+        TYPE = rhs.TYPE;
         mInt = rhs.mInt;
         mStr = rhs.mStr;
         mFloat= rhs.mFloat;
@@ -222,14 +229,5 @@ namespace doori{
         mFloat= rhs.mFloat;
         mBool = rhs.mBool;
         mJson = std::move(rhs.mJson);
-    }
-
-    /**
-     * How to convert it?. if it is "true", bool or string?
-     * @param value
-     * @return
-     */
-    auto Json_value::fromString(const std::string value) -> bool {
-        return false;
     }
 }

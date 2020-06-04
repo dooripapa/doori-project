@@ -217,8 +217,8 @@ auto Data::fromString(string formattedStr) -> int
 	auto DataTotalLen = doori_data_string.size();
 	// separate DataSegment from Data
 	// DataSegment 의 변수는, for문에서 반복적으로 값이 할당됨
-	// fromString() 함수 호출시, 기존에 할당된 개체를 해제되어야 한다.
-	// 그부분을 fromString() 내부 함수 안에서 해체를 함
+	// unserialize() 함수 호출시, 기존에 할당된 개체를 해제되어야 한다.
+	// 그부분을 unserialize() 내부 함수 안에서 해체를 함
 
 	sDataPos=eDataPos=0;
 	for(unsigned int i = 0; i<DataTotalLen; ++i)

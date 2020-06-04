@@ -8,10 +8,11 @@ include_directories(${DOORI_PROJECT}/doori_api)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/lib)
 
-set( TEST_FILES
-        ${PROJECT_SOURCE_DIR}/doori_api/Json.cpp
-        ${PROJECT_SOURCE_DIR}/doori_api/Json.h
-        )
+set(TEST_FILES
+    ${PROJECT_SOURCE_DIR}/doori_api/Json.cpp
+    ${PROJECT_SOURCE_DIR}/doori_api/Json.h
+    test_json.cpp
+    )
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

@@ -223,7 +223,7 @@ auto ICommunication::processingTnsdData(int sock, Stream& stream) noexcept -> in
     LOG(INFO, "Tnsd -->> ::", stream.toByteStream() );
     if ( data.fromString( stream.getString() ) == -1 )
     {
-        LOG(ERROR, "fromString error, check formated" );
+        LOG(ERROR, "unserialize error, check formated" );
         return -1;
     }
 

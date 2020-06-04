@@ -47,9 +47,7 @@ namespace doori{
         auto set(float value) -> void;
         auto set(bool value) -> void;
         auto set(Json value) -> void;
-        auto toString() const -> std::string;
-        auto fromString(const std::string value)->bool;
-        auto fromString(std::string &&value)->bool;
+        [[nodiscard]] auto toString() const -> std::string;
         auto operator=(const Json_value &rhs) noexcept -> Json_value&;
         auto operator=(Json_value &&rhs) noexcept -> Json_value&;
     private:
@@ -68,8 +66,9 @@ namespace doori{
         Json(const Json& rhs);
         auto append(const char* jsonKey, const Json_value &jsonValue) -> void;
         auto operator[](const std::string &jsonkey) -> Json_value&;
-        auto toString() const-> std::string;
-        auto fromString(const char *json) -> bool;
+        [[nodiscard]] auto serialize() const-> std::string;
+        template <int N>
+        auto unserialize(char const(&value)[N]) -> bool;
         auto clear() -> void;
         auto operator=(const Json &rhs) noexcept -> Json&;
         auto operator=(Json &&rhs) noexcept -> Json&;
@@ -78,4 +77,6 @@ namespace doori{
         std::vector< std::pair<std::string, Json_value> > mFactors;
     };
 }
+
+#include "Json.hpp"
 #endif //DOORI_API_JSON_H

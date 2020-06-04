@@ -75,7 +75,7 @@ auto Tnsd::processMessage(int socket, Stream& stream) -> int
     LOG(INFO, "Request Comment[", stream.toByteStream(),"]" );
     if ( data.fromString( stream.getString() ) == -1 )
     {
-        LOG(ERROR, "fromString error, check formated" );
+        LOG(ERROR, "unserialize error, check formated" );
         return -1;
     }
     
