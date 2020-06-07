@@ -14,20 +14,22 @@ auto doori::Json::unserialize(char const(&value)[N]) -> bool {
     auto jsonEpos=0;
 
     for(auto i=0;i<N;i++) {
-        if ( value[i]!='{' ||
-             value[i]!='\t'||
-             value[i]!='\n'||
-             value[i]!=' ' &&
+        if ( value[i]=='\t'||
+             value[i]=='\n'||
+             value[i]==' ' &&
              depth==0) {
-            return false;
+            continue;
         } else if(value[i]=='{') {
             jsonSpos=i+1; depth++;
         } else if(value[i]=='}') {
             jsonEpos=i-1;
-            if(!--depth) /*finished json statement*/
-                std::string json_string{value+jsonSpos, value+jsonEpos};
-        }
+            if(!--depth) {/*finished json statement*/
+                std::string json_string{value + jsonSpos, value + jsonEpos};
+                addJsonValueString(json_string);
+            }
+        } else return false;
     }
+    return true;
 }
 
 #endif //DOORI_PROJECT_JSON_HPP

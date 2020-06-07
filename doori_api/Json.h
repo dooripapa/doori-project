@@ -37,6 +37,7 @@ namespace doori{
         Json_value(float value);
         Json_value(bool value);
         Json_value(const Json& value);
+        Json_value(Json&& value);
 
         auto set(const Json_value &rhs) -> void;
         auto set(Json_value &&rhs) -> void;
@@ -71,10 +72,12 @@ namespace doori{
         [[nodiscard]] auto serialize() const-> std::string;
         template <int N>
         auto unserialize(char const(&value)[N]) -> bool;
+        auto unserialize(const std::string &value) -> bool;
         auto clear() -> void;
         auto operator=(const Json &rhs) noexcept -> Json&;
         auto operator=(Json &&rhs) noexcept -> Json&;
     private:
+        auto addJsonValueString(const std::string &jsonValueString) -> bool;
         auto copyFrom(const Json &rhs) noexcept -> void;
         std::vector< std::pair<std::string, Json_value> > mFactors;
     };

@@ -92,6 +92,128 @@ namespace doori{
 
     }
 
+    /**
+     * @param jsonValueString  "key":"value", ... ignore blank between key and value.
+     * @return
+     */
+    auto Json::addJsonValueString(const std::string &jsonValueString) -> bool {
+        auto jsonDepth=0;
+        auto IsSet= false;
+        auto jsonValueSKey=0;
+        auto jsonValueEKey=0;
+        auto jsonValueSValue=0;
+        auto jsonValueEValue=0;
+        auto i=0;
+        for(auto it=jsonValueString.begin();it!=jsonValueString.end();++it,++i) {
+            if (*it==' ') continue;
+            if (*it=='\\'){
+                ++it,++i;
+            }
+            if(*it=='{'){
+                ++jsonDepth;
+                jsonValueSValue=i;
+            }
+            if(*it=='}'){
+                if(!--jsonDepth) {
+                    jsonValueEValue=i;
+
+                    if( jsonValueSValue<jsonValueEValue &&
+                        jsonValueEKey  <jsonValueSValue &&
+                        jsonValueSKey  <jsonValueEKey );
+                    else return false;
+
+                    // Is there ":" between key and value , +1(" skip)
+                    for(auto it=jsonValueString.begin()+jsonValueEKey+1;it!=jsonValueString.begin()+(jsonValueSValue-1);++it) {
+                        if(*it==' '||*it==':'); else return false;
+                    }
+                    auto key=jsonValueString.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
+                    auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+
+                    Json json;
+                    if(!json.unserialize(value)){ // Json_value as string
+                        mFactors.emplace_back(key, value);
+                    } else {
+                        // Json as string
+                        mFactors.emplace_back(key, json);
+                    }
+                }
+            }
+            if(*it==','&&!jsonDepth){ // not Json as string, just Json_value
+                IsSet=false;
+                jsonValueSKey=0;
+                jsonValueEKey=0;
+                jsonValueSValue=0;
+                jsonValueEValue=0;
+            }
+            if (*it=='"'&&!jsonDepth){ // not Json as string, just Json_value
+                if(!jsonValueSKey&&!IsSet){ // if jsonValueSKey is 0, IsSet = true
+                    IsSet = true;
+                    jsonValueSKey=i;
+                }
+                else if(!jsonValueEKey)
+                    jsonValueEKey=i;
+                else if(!jsonValueSValue)
+                    jsonValueSValue=i;
+                else {
+                    jsonValueEValue=i;
+
+                    if( jsonValueSValue<jsonValueEValue &&
+                        jsonValueEKey  <jsonValueSValue &&
+                        jsonValueSKey  <jsonValueEKey );
+                    else return false;
+
+                    // Is there ":" between key and value , +1(" skip)
+                    for(auto it=jsonValueString.begin()+jsonValueEKey+1;it!=jsonValueString.begin()+(jsonValueSValue-1);++it) {
+                        if(*it==' '||*it==':'); else return false;
+                    }
+                    auto key=jsonValueString.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
+                    auto value=jsonValueString.substr(jsonValueSValue+1, jsonValueEValue-(jsonValueSValue+1));
+
+                    Json json;
+                    if(!json.unserialize(value)){ // Json_value as string
+                        mFactors.emplace_back(key, value);
+                    } else {
+                        // Json as string
+                        mFactors.emplace_back(key, json);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @param value {"key":"value,...}
+     * @return
+     */
+    auto Json::unserialize(const std::string &value) -> bool {
+        auto depth=0;
+        auto jsonSpos=0;
+        auto jsonEpos=0;
+        auto i=0;
+        for(auto it=value.begin();it!=value.end();++it, ++i) {
+            if ( *it=='\t'||
+                 *it=='\n'||
+                 *it==' ' &&
+                 depth==0) {
+                continue;
+            } else if(*it=='{') {
+                if(!depth++) jsonSpos=i+1;
+            } else if(*it=='}') {
+                if(!--depth) jsonEpos=i;
+            } else continue;
+        }
+        if( !jsonSpos || !jsonEpos)
+            return false;
+
+        if(depth) return false;
+
+        std::string json_string{value.begin()+jsonSpos, value.begin()+jsonEpos};
+        addJsonValueString(json_string);
+        return true;
+    }
+
     auto Json_value::set(int32_t value) -> void {
         TYPE = INT32S;
         mInt = value;
@@ -185,6 +307,10 @@ namespace doori{
     }
 
     Json_value::Json_value(const Json &value) : mJson( std::make_shared<Json>(value) ), TYPE(JSON){
+
+    }
+
+    Json_value::Json_value(Json &&value) : mJson( std::make_shared<Json>(std::move(value)) ), TYPE(JSON){
 
     }
 

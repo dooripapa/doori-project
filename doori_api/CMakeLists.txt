@@ -4,7 +4,6 @@ project(doori_api)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#set(DOORI_PROJECT /home/jaeseong/CLionProjects/doori_project)
 set(DOORI_API_LIBRARY_NAME doori)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17 -fPIC")
@@ -63,7 +62,7 @@ set(SRC_FILES
         Subscriber.cpp
         Topic.cpp Json.cpp Json.h)
 
-add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES} )
+add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES})
 
 set_target_properties(${DOORI_API_LIBRARY_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 

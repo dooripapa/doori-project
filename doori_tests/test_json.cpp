@@ -113,3 +113,22 @@ TEST(JsonMixTest, PositiveTest)
     json.clear();
 }
 
+TEST(JsonConvertedTest, PositiveTest)
+{
+    auto literalString=R"({"1"  :  "1" , "2":{"2":"2"}})";
+    auto literalString2=R"({"1":"1","2":{"2":"2"}})";
+    doori::Json json;
+    json.unserialize(literalString);
+
+    EXPECT_EQ(literalString2, json.serialize());
+
+    json.clear();
+    auto l1=R"({"1":"11111","leejaeseong":{"2":"2"}})";
+    json.unserialize(l1);
+    EXPECT_EQ(l1,json.serialize());
+
+    json.clear();
+    auto l2=R"({"1":{"h":"a","hi":"hi","leejaeseong":{"relectural":"poor"}},"leejaeseong":{"2":"2"}})";
+    json.unserialize(l2);
+    EXPECT_EQ(l2,json.serialize());
+}

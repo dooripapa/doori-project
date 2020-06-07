@@ -10,6 +10,7 @@
 /**/*.txt
 /**/*.log
 /**/a.out
+/**/Makefile
 
 ###########################
 #folders ignore
@@ -20,6 +21,7 @@ lib/
 inc/
 shl/
 bin/
+CMakeFiles/
 
 ###########################
 #defined files
