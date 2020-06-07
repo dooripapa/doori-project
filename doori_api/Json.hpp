@@ -21,9 +21,9 @@ auto doori::Json::unserialize(char const(&value)[N]) -> bool {
              depth==0) {
             return false;
         } else if(value[i]=='{') {
-            jsonSpos=i; depth++;
+            jsonSpos=i+1; depth++;
         } else if(value[i]=='}') {
-            jsonEpos=i;
+            jsonEpos=i-1;
             if(!--depth) /*finished json statement*/
                 std::string json_string{value+jsonSpos, value+jsonEpos};
         }

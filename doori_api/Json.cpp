@@ -230,4 +230,16 @@ namespace doori{
         mBool = rhs.mBool;
         mJson = std::move(rhs.mJson);
     }
+
+    auto Json_value::operator=(const Json &value) noexcept -> Json_value & {
+        TYPE = JSON;
+        mJson = std::make_shared<Json>(value);
+        return *this;
+    }
+
+    auto Json_value::operator=(Json &&value) noexcept -> Json_value & {
+        TYPE = JSON;
+        mJson = std::make_shared<Json>(std::move(value));
+        return *this;
+    }
 }

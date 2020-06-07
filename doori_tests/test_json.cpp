@@ -104,5 +104,12 @@ TEST(JsonMixTest, PositiveTest)
     json.append("4", doori::Json_value("leejaeseong"));
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
+
+    literalString=R"({"1":"1","2":{"2":"2"}})";
+    json.append("1", doori::Json_value(1));
+    sub_json.append("2","2");
+    json["2"]=sub_json;
+    EXPECT_EQ(literalString,json.serialize());
+    json.clear();
 }
 

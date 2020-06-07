@@ -50,6 +50,8 @@ namespace doori{
         [[nodiscard]] auto toString() const -> std::string;
         auto operator=(const Json_value &rhs) noexcept -> Json_value&;
         auto operator=(Json_value &&rhs) noexcept -> Json_value&;
+        auto operator=(const Json &value) noexcept -> Json_value&;
+        auto operator=(Json &&value) noexcept -> Json_value&;
     private:
         auto copyFrom(const Json_value &rhs) noexcept -> void;
         int32_t     mInt;
