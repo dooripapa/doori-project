@@ -128,7 +128,27 @@ TEST(JsonConvertedTest, PositiveTest)
     EXPECT_EQ(l1,json.serialize());
 
     json.clear();
-    auto l2=R"({"1":{"h":"a","hi":"hi","leejaeseong":{"relectural":"poor"}},"leejaeseong":{"2":"2"}})";
+    auto l2=R"({
+        "glossary": {
+            "title": "example glossary",
+                    "GlossDiv": {
+                "title": "S",
+                        "GlossList": {
+                    "GlossEntry": {
+                        "ID": "SGML",
+                                "SortAs": "SGML",
+                                "GlossTerm": "Standard Generalized Markup Language",
+                                "Acronym": "SGML",
+                                "Abbrev": "ISO 8879:1986",
+                                "GlossDef": {
+                            "para": "A meta-markup language, used to create markup languages such as DocBook."
+                        },
+                        "GlossSee": "markup"
+                    }
+                }
+            }
+        }
+    })";
     json.unserialize(l2);
     EXPECT_EQ(l2,json.serialize());
 }

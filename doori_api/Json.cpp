@@ -105,13 +105,13 @@ namespace doori{
         auto jsonValueEValue=0;
         auto i=0;
         for(auto it=jsonValueString.begin();it!=jsonValueString.end();++it,++i) {
-            if (*it==' ') continue;
+            if (*it==' '||*it=='\n'||*it=='\t') continue;
             if (*it=='\\'){
                 ++it,++i;
             }
             if(*it=='{'){
                 ++jsonDepth;
-                jsonValueSValue=i;
+                if(jsonDepth==1) jsonValueSValue=i;
             }
             if(*it=='}'){
                 if(!--jsonDepth) {
