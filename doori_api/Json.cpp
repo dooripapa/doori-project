@@ -98,87 +98,133 @@ namespace doori{
      */
     auto Json::addJsonValueString(const std::string &jsonValueString) -> bool {
         auto jsonDepth=0;
-        auto IsSet= false;
-        auto IsFinishedJsonValue=false;
+        auto IsFinishedJsonKey=false;
         auto jsonValueSKey=0;
         auto jsonValueEKey=0;
         auto jsonValueSValue=0;
         auto jsonValueEValue=0;
         auto i=0;
         for(auto it=jsonValueString.begin();it!=jsonValueString.end();++it,++i) {
-            if (*it==' '||*it=='\n'||*it=='\t') continue;
-            if (*it=='\\'){
-                ++it,++i;
+            if( isspace(*it) ) continue; //ignore space.
+            /*
+             * Json_value's Key
+             */
+            if(*it == '"') { // "~~~~" as type
+                jsonValueSKey=i;
+                do{
+                    if(*it == '\\')
+                        ++i,++it;
+                    ++i,++it;
+                    jsonValueEKey=i;
+                }while( *it != '"' );
+                IsFinishedJsonKey = true;
             }
-            if(*it=='{'){
-                ++jsonDepth;
-                if(jsonDepth==1) jsonValueSValue=i;
-            }
-            if(*it=='}'){
-                if(!--jsonDepth) {
-                    jsonValueEValue=i;
 
-                    if( jsonValueSValue<jsonValueEValue &&
-                        jsonValueEKey  <jsonValueSValue &&
-                        jsonValueSKey  <jsonValueEKey );
-                    else return false;
+            /*
+             * if is space, ignore
+             */
+            do{++i,++it;}while( isspace(*it) ); //ignore space.
 
-                    // Is there ":" between key and value , +1(" skip)
-                    for(auto it=jsonValueString.begin()+jsonValueEKey+1;it!=jsonValueString.begin()+(jsonValueSValue-1);++it) {
-                        if(*it==' '||*it==':'); else return false;
-                    }
-                    auto key=jsonValueString.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
-                    auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+            /*
+             * Json_value's Value
+             */
+            if (*it==':' && !jsonDepth){ // after finished Json_value_key
 
-                    Json json;
-                    if(!json.unserialize(value)){ // Json_value as string
-                        mFactors.emplace_back(key, value);
-                    } else {
-                        // Json as string
-                        mFactors.emplace_back(key, json);
+                do{++i,++it;}while( isspace(*it) ); //ignore space.
+
+                if(*it=='{'){
+                    ++jsonDepth;
+                    if(jsonDepth==1) jsonValueSValue=i;
+                }
+                if(*it=='}' && jsonDepth>0){
+                    if(!--jsonDepth) {
+                        jsonValueEValue=i;
+                        IsFinishedJsonValue=true;
+
+                        if( jsonValueSValue<jsonValueEValue &&
+                            jsonValueEKey  <jsonValueSValue &&
+                            jsonValueSKey  <jsonValueEKey );
+                        else return false;
+
+                        auto key=jsonValueString.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
+                        auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+
+                        Json json;
+                        if(!json.unserialize(value)){ // Json_value as string
+                            mFactors.emplace_back(key, value);
+                        } else {
+                            // Json as string
+                            mFactors.emplace_back(key, json);
+                        }
                     }
                 }
-            }
-            if(*it==','&&!jsonDepth&&IsFinishedJsonValue){ // not Json as string, just Json_value
-                IsSet=false;
-                jsonValueSKey=0;
-                jsonValueEKey=0;
-                jsonValueSValue=0;
-                jsonValueEValue=0;
-            }
-            if (*it=='"'&&!jsonDepth){ // finished Json_value
-                if(!jsonValueSKey&&!IsSet){ // if jsonValueSKey is 0, IsSet = true
-                    IsSet = true, jsonValueSKey=i, IsFinishedJsonValue=false;
+
+                if(*it == '"' && IsFinishedJsonKey) { // "~~~~" as type
+                    jsonValueSValue = i;
+                    do{
+                        if(*it == '\\')
+                            ++i,++it;
+                        ++i,++it;
+                        jsonValueEValue=i;
+                    }while( *it != '"' );
+                    IsFinishedJsonValue = true;
                 }
-                else if(!jsonValueEKey)
-                    IsFinishedJsonValue=true,jsonValueEKey=i;
-                else if(!jsonValueSValue)
-                    IsFinishedJsonValue=false,jsonValueSValue=i;
-                else {
-                    IsFinishedJsonValue=true,jsonValueEValue=i;
 
-                    if( jsonValueSValue<jsonValueEValue &&
-                        jsonValueEKey  <jsonValueSValue &&
-                        jsonValueSKey  <jsonValueEKey );
-                    else return false;
+                if( isdigit(*it) ) { // ex) 02.23, 12345, 2.
+                    jsonValueSValue = i;
+                    do{
+                        ++i, ++it;
+                        jsonValueEValue=i;
+                    }while( isdigit(*it) || *it=='.' );
+                    IsFinishedJsonValue = true;
+                }
 
-                    // Is there ":" between key and value , +1(" skip)
-                    for(auto it=jsonValueString.begin()+jsonValueEKey+1;it!=jsonValueString.begin()+(jsonValueSValue-1);++it) {
-                        if(*it==' '||*it==':'); else return false;
-                    }
-                    auto key=jsonValueString.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
-                    auto value=jsonValueString.substr(jsonValueSValue+1, jsonValueEValue-(jsonValueSValue+1));
+                if( *it=='t'    &&
+                    *(it+1)=='r'&&
+                    *(it+2)=='u'&&
+                    *(it+3)=='e'&&
+                    ( isspace( *(it+4) ) || *(it+4)==',' )) {
+                    jsonValueSValue=i;
+                    jsonValueEValue=i+3;
+                    IsFinishedJsonValue=true;
+                }
 
-                    Json json;
-                    if(!json.unserialize(value)){ // Json_value as string
-                        mFactors.emplace_back(key, value);
-                    } else {
-                        // Json as string
-                        mFactors.emplace_back(key, json);
-                    }
+                if( *it=='f'    &&
+                    *(it+1)=='a'&&
+                    *(it+2)=='l'&&
+                    *(it+3)=='s'&&
+                    *(it+4)=='e'&&
+                    ( isspace( *(it+5) ) || *(it+5)==',' )) {
+                    jsonValueSValue=i;
+                    jsonValueEValue=i+4;
+                    IsFinishedJsonValue=true;
+                }
+
+                if( jsonValueSValue<jsonValueEValue &&
+                    jsonValueEKey  <jsonValueSValue &&
+                    jsonValueSKey  <jsonValueEKey );
+                else return false;
+
+                // Is there ":" between key and value , +1(" skip)
+                for(auto it=jsonValueString.begin()+jsonValueEKey+1;it!=jsonValueString.begin()+(jsonValueSValue-1);++it) {
+                    if(*it==' '||*it==':'); else return false;
+                }
+                auto key=jsonValueString.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
+                auto value=jsonValueString.substr(jsonValueSValue+1, jsonValueEValue-(jsonValueSValue+1));
+
+                Json json;
+                if(!json.unserialize(value)){ // Json_value as string
+                    mFactors.emplace_back(key, value);
+                } else {
+                    // Json as string
+                    mFactors.emplace_back(key, json);
                 }
             }
         }
+
+
+
+
         return true;
     }
 
@@ -244,17 +290,16 @@ namespace doori{
         switch(TYPE)
         {
             case Json_value::BOOL:
-                return(mBool?"\"true\"":"\"false\"");
+                return(mBool?"true":"false");
             case Json_value::FLOAT:
-                jsonV<<"\""<<mFloat<<"\"";
+                jsonV<<""<<mFloat<<"";
                 return jsonV.str();
             case Json_value::INT32S:
-                jsonV<<"\""<<mInt<<"\"";
+                jsonV<<""<<mInt<<"";
                 return jsonV.str();
             case Json_value::STRING:
                 jsonV<<"\"";
                 for(auto&i:mStr) {
-//                    if (i==','||i=='"'||i==':')
                     if (i=='"')
                         jsonV<<"\\";
                     jsonV<<i;
