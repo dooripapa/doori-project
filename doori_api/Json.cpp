@@ -99,6 +99,7 @@ namespace doori{
     auto Json::addJsonValueString(const std::string &jsonValueString) -> bool {
         auto jsonDepth=0;
         auto IsSet= false;
+        auto IsFinishedJsonValue=false;
         auto jsonValueSKey=0;
         auto jsonValueEKey=0;
         auto jsonValueSValue=0;
@@ -138,24 +139,23 @@ namespace doori{
                     }
                 }
             }
-            if(*it==','&&!jsonDepth){ // not Json as string, just Json_value
+            if(*it==','&&!jsonDepth&&IsFinishedJsonValue){ // not Json as string, just Json_value
                 IsSet=false;
                 jsonValueSKey=0;
                 jsonValueEKey=0;
                 jsonValueSValue=0;
                 jsonValueEValue=0;
             }
-            if (*it=='"'&&!jsonDepth){ // not Json as string, just Json_value
+            if (*it=='"'&&!jsonDepth){ // finished Json_value
                 if(!jsonValueSKey&&!IsSet){ // if jsonValueSKey is 0, IsSet = true
-                    IsSet = true;
-                    jsonValueSKey=i;
+                    IsSet = true, jsonValueSKey=i, IsFinishedJsonValue=false;
                 }
                 else if(!jsonValueEKey)
-                    jsonValueEKey=i;
+                    IsFinishedJsonValue=true,jsonValueEKey=i;
                 else if(!jsonValueSValue)
-                    jsonValueSValue=i;
+                    IsFinishedJsonValue=false,jsonValueSValue=i;
                 else {
-                    jsonValueEValue=i;
+                    IsFinishedJsonValue=true,jsonValueEValue=i;
 
                     if( jsonValueSValue<jsonValueEValue &&
                         jsonValueEKey  <jsonValueSValue &&
@@ -254,7 +254,8 @@ namespace doori{
             case Json_value::STRING:
                 jsonV<<"\"";
                 for(auto&i:mStr) {
-                    if (i==','||i=='"'||i==':')
+//                    if (i==','||i=='"'||i==':')
+                    if (i=='"')
                         jsonV<<"\\";
                     jsonV<<i;
                 }

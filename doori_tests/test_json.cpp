@@ -76,9 +76,7 @@ TEST(JsonTest, PositiveTest)
     EXPECT_EQ("{\"key\":\"1234\",\"float\":\"0.1234\",\"leejaeseong\":\"string\"}", json.serialize());
 
     another["haha"] = "lee,\":here";
-
-    EXPECT_EQ("{\"haha\":\"lee\\,\\\"\\:here\"}", another.serialize());
-    std::cout << another.serialize() << std::endl;
+    EXPECT_EQ("{\"haha\":\"lee,\\\":here\"}", another.serialize());
 }
 
 TEST(JsonMixTest, PositiveTest)
@@ -115,8 +113,8 @@ TEST(JsonMixTest, PositiveTest)
 
 TEST(JsonConvertedTest, PositiveTest)
 {
-    auto literalString=R"({"1"  :  "1" , "2":{"2":"2"}})";
-    auto literalString2=R"({"1":"1","2":{"2":"2"}})";
+    auto literalString=R"({"1"  :  ",:1" , "2":{"2":"2"}})";
+    auto literalString2=R"({"1":",:1","2":{"2":"2"}})";
     doori::Json json;
     json.unserialize(literalString);
 
@@ -128,27 +126,7 @@ TEST(JsonConvertedTest, PositiveTest)
     EXPECT_EQ(l1,json.serialize());
 
     json.clear();
-    auto l2=R"({
-        "glossary": {
-            "title": "example glossary",
-                    "GlossDiv": {
-                "title": "S",
-                        "GlossList": {
-                    "GlossEntry": {
-                        "ID": "SGML",
-                                "SortAs": "SGML",
-                                "GlossTerm": "Standard Generalized Markup Language",
-                                "Acronym": "SGML",
-                                "Abbrev": "ISO 8879:1986",
-                                "GlossDef": {
-                            "para": "A meta-markup language, used to create markup languages such as DocBook."
-                        },
-                        "GlossSee": "markup"
-                    }
-                }
-            }
-        }
-    })";
+    auto l2=R"({"glossary":{"title":"exampleglossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"StandardGeneralizedMarkupLanguage","Acronym":"SGML","Abbrev":"ISO8879:1986","GlossDef":{"para":"Ameta-markuplanguage,usedtocreatemarkuplanguagessuchasDocBook."},"GlossSee":"markup"}}}}})";
     json.unserialize(l2);
     EXPECT_EQ(l2,json.serialize());
 }

@@ -20,15 +20,18 @@ auto doori::Json::unserialize(char const(&value)[N]) -> bool {
              depth==0) {
             continue;
         } else if(value[i]=='{') {
-            jsonSpos=i+1; depth++;
+            if(!depth++) jsonSpos=i+1;
         } else if(value[i]=='}') {
-            jsonEpos=i-1;
-            if(!--depth) {/*finished json statement*/
-                std::string json_string{value + jsonSpos, value + jsonEpos};
-                addJsonValueString(json_string);
-            }
-        } else return false;
+            if(!--depth) jsonEpos=i;
+        } else continue;
     }
+    if( !jsonSpos || !jsonEpos)
+        return false;
+
+    if(depth) return false;
+
+    std::string json_string{value.begin()+jsonSpos, value.begin()+jsonEpos};
+    addJsonValueString(json_string);
     return true;
 }
 
