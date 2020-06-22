@@ -34,6 +34,26 @@ TEST(Json_valueTestCase, PositiveTest)
     EXPECT_EQ("true", value7.toString());
 }
 
+TEST(Json_valueAppendTest, PositiveTest)
+{
+    doori::Json_value value;
+    value.append({1111});
+    value.append({"leejaeseong"});
+    value.append({0.2f});
+    value.append({true});
+
+    auto result=R"([1111,"leejaeseong",0.2,true])";
+    EXPECT_EQ(result,value.toString() );
+
+    doori::Json json;
+    json["1"] = 1234;
+    json["2"] = "leejaeseong";
+
+    value.append(json);
+    auto result2=R"([1111,"leejaeseong",0.2,true,{"1":1234,"2":"leejaeseong"}])";
+    EXPECT_EQ(result2,value.toString() );
+}
+
 TEST(Json_valueSetTest, PositiveTest)
 {
     doori::Json_value   value;

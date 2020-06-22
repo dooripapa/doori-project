@@ -13,7 +13,6 @@
 #include <vector>
 #include <unordered_map>
 
-
 namespace doori{
     class Json;
 
@@ -25,6 +24,7 @@ namespace doori{
             STRING,
             FLOAT,
             BOOL,
+            ARRAY,
             JSON
         }TYPE;
         Json_value();
@@ -49,16 +49,19 @@ namespace doori{
         auto set(bool value) -> void;
         auto set(Json value) -> void;
         [[nodiscard]] auto toString() const -> std::string;
+        auto append(const Json_value & value) -> void;
         auto operator=(const Json_value &rhs) noexcept -> Json_value&;
         auto operator=(Json_value &&rhs) noexcept -> Json_value&;
         auto operator=(const Json &value) noexcept -> Json_value&;
         auto operator=(Json &&value) noexcept -> Json_value&;
     private:
+        auto addArrayString(const std::string& str) -> bool;
         auto copyFrom(const Json_value &rhs) noexcept -> void;
         int32_t     mInt;
         std::string mStr;
         float       mFloat;
         bool        mBool;
+        std::vector<Json_value> mArray;
         std::shared_ptr<Json> mJson;
     };
 

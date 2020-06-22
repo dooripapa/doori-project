@@ -156,7 +156,7 @@ namespace doori{
 
             /*
              * Json_value's Value
-             * if {~}
+             * if {~} -> Json
              */
             if(jsonValueStr[i]=='{'){
                 ++jsonDepth;
@@ -175,6 +175,35 @@ namespace doori{
                     }
                 }
                 if(jsonDepth > 0 || !IsFinishedValue) // error
+                    return false;
+
+                auto key=jsonValueStr.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
+                auto value=jsonValueStr.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+
+                Json json;
+                if(!json.unserialize(value))
+                    return false;
+                mFactors.emplace_back(key, json);
+                continue;
+            }
+
+            /*
+             * Json_value's Value
+             * if [~] -> Json_value array
+             */
+            if(jsonValueStr[i]=='['){
+                jsonValueSValue=i;
+
+                while(1) {
+                    if(++i == max)
+                        return false;
+                    if(jsonValueStr[i]==']'){
+                        jsonValueEValue=i;
+                        IsFinishedValue=true;
+                        break;
+                    }
+                }
+                if(!IsFinishedValue) // error
                     return false;
 
                 auto key=jsonValueStr.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
@@ -296,12 +325,11 @@ namespace doori{
                 case Json_value::STRING:
                     mFactors.emplace_back(key, value);
                     break;
-                default:
-                    return false;
                 case Json_value::NIL:
-                    break;
                 case Json_value::JSON:
                     break;
+                default:
+                    return false;
             }
         }
         return true;
@@ -386,6 +414,15 @@ namespace doori{
                     jsonV<<i;
                 }
                 jsonV<<"\"";
+                return jsonV.str();
+            case Json_value::ARRAY:
+                jsonV<<"[";
+                for(auto it=mArray.begin();it!=mArray.end();++it) {
+                    jsonV<<it->toString();
+                    if( it+1 == mArray.end() );
+                    else jsonV<<",";
+                }
+                jsonV<<"]";
                 return jsonV.str();
             case Json_value::JSON:
                 return mJson->serialize();
@@ -494,5 +531,183 @@ namespace doori{
         TYPE = JSON;
         mJson = std::make_shared<Json>(std::move(value));
         return *this;
+    }
+
+    auto Json_value::append(const Json_value & value) -> void {
+        TYPE = ARRAY;
+        mArray.push_back(value);
+    }
+
+    /**
+     * @param arryValueStr  "key", "value" , { } ... 결합된 json array 문자열
+     * @return
+     */
+    auto Json_value::addArrayString(const std::string &arryValueStr) -> bool{
+        decltype(Json_value::TYPE) type;
+        auto jsonDepth=0;
+        auto IsFinishedValue= false;
+        auto jsonValueSValue=0;
+        auto jsonValueEValue=0;
+
+        auto max=arryValueStr.size();
+        for(int i=0;i<max;++i) {
+            if( isspace(arryValueStr[i]) ) continue; //ignore space.
+
+            /*
+             * if matching ',' and finishing value, is next Json_value
+             */
+            if( arryValueStr[i]==',' && IsFinishedValue ) {
+                IsFinishedValue= false;
+                jsonValueSValue=0;
+                jsonValueEValue=0;
+                continue;
+            }
+            /*
+             * Json_value's Value
+             * if {~} -> Json
+             */
+            if(arryValueStr[i]=='{'){
+                ++jsonDepth;
+                if(jsonDepth==1) jsonValueSValue=i;
+
+                while(1) {
+                    if(++i == max)
+                        return false;
+                    if(arryValueStr[i]=='{') ++jsonDepth;
+                    else if(arryValueStr[i]=='}'){
+                        if(!--jsonDepth) {
+                            jsonValueEValue=i;
+                            IsFinishedValue=true;
+                            break;
+                        }
+                    }
+                }
+                if(jsonDepth > 0 || !IsFinishedValue) // error
+                    return false;
+
+                auto value=arryValueStr.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+
+                Json json;
+                if(!json.unserialize(value))
+                    return false;
+                mArray.emplace_back(json);
+                continue;
+            }
+
+            /*
+             * Json_value's Value
+             * "~"
+             */
+            if(arryValueStr[i] == '"') { // "~~~~" as type
+                jsonValueSValue = i;
+                do{
+                    if(++i==max)
+                        return false;
+                    if(arryValueStr[i] == '\\')
+                        if(++i==max)
+                            return false;
+                    jsonValueEValue=i;
+                }while( arryValueStr[i] != '"' );
+                IsFinishedValue = true;
+                type=Json_value::STRING;
+            }
+
+            /*
+             * Json_value's Value
+             * number
+             * there is not separator. Spos-=1, Epos+=1
+             */
+            if( isdigit(arryValueStr[i]) ) { // ex) 02.23, 12345, 2.
+                type=Json_value::INT32S;
+                jsonValueSValue = i-1;
+                do{
+                    if(arryValueStr[i]=='.')
+                        type=Json_value::FLOAT;
+                    ++i;
+                    jsonValueEValue=i+1;
+                    if(i==max || isspace(arryValueStr[i])) {
+                        break;
+                    }
+                }while( isdigit( arryValueStr[i] ) || arryValueStr[i]=='.');
+                IsFinishedValue = true;
+            }
+
+            /*
+             * Json_value's Value
+             * true
+             * there is not separator. Spos-=1, Epos+=1
+             */
+            if( arryValueStr[i]=='t' ) {
+                if(i+3==max)
+                    return false;
+                if( arryValueStr[i+1] == 'r' &&
+                    arryValueStr[i+2] == 'u' &&
+                    arryValueStr[i+3] == 'e' ) {
+                    jsonValueSValue=i-1;
+                    jsonValueEValue=i+3+1;
+                } else
+                    return false;
+                i+=3;
+                if( !isspace(i+1)||(i+1)!=max )
+                    return false;
+                IsFinishedValue=true;
+                type=Json_value::BOOL;
+            }
+
+            /*
+             * Json_value's Value
+             * true
+             * there is not separator. Spos-=1, Epos+=1
+             */
+            if( arryValueStr[i]=='f' ) {
+                if(i+4 == max)
+                    return false;
+                else if(arryValueStr[i+1] == 'a' &&
+                        arryValueStr[i+2] == 'l' &&
+                        arryValueStr[i+3] == 's' &&
+                        arryValueStr[i+4] == 'e' ) {
+                    jsonValueSValue=i-1;
+                    jsonValueEValue=i+4+1;
+                } else
+                    return false;
+                i+=4;
+                if( !isspace(i+1)||(i+1)!=max )
+                    return false;
+                IsFinishedValue=true;
+                type=Json_value::BOOL;
+            }
+
+            if( jsonValueSValue<jsonValueEValue  );
+            else
+                return false;
+
+            auto value=arryValueStr.substr(jsonValueSValue+1, jsonValueEValue-(jsonValueSValue+1));
+
+            switch (type) {
+                case Json_value::INT32S:
+                    mArray.emplace_back(std::stoi(value.c_str(),nullptr,10));
+                    break;
+                case Json_value::FLOAT:
+                    mArray.emplace_back(std::strtof(value.c_str(), nullptr) );
+                    break;
+                case Json_value::BOOL:
+                    if(value=="true")
+                        mArray.emplace_back(true );
+                    else if(value=="false")
+                        mArray.emplace_back(false);
+                    else
+                        return false;
+                case Json_value::STRING:
+                    mArray.emplace_back(value);
+                    break;
+                case Json_value::NIL:
+                case Json_value::JSON:
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+
     }
 }
