@@ -93,10 +93,10 @@ namespace doori{
     }
 
     /**
-     * @param jsonValueStr  "key":"value", ... ignore blank between key and value.
+     * @param jsonValueString  "key":"value", ... ignore blank between key and value.
      * @return
      */
-    auto Json::addJsonValueString(const std::string &jsonValueStr) -> bool {
+    auto Json::parserJsonString(const std::string &jsonValueString) -> bool {
         decltype(Json_value::TYPE) type;
         auto jsonDepth=0;
         auto IsFinishedKey=false;
@@ -106,14 +106,14 @@ namespace doori{
         auto jsonValueSValue=0;
         auto jsonValueEValue=0;
 
-        auto max=jsonValueStr.size();
+        auto max=jsonValueString.size();
         for(int i=0;i<max;++i) {
-            if( isspace(jsonValueStr[i]) ) continue; //ignore space.
+            if( isspace(jsonValueString[i]) ) continue; //ignore space.
 
             /*
              * if matching ',' and finishing value, is next Json_value
              */
-            if( jsonValueStr[i]==',' && IsFinishedValue ) {
+            if(jsonValueString[i] == ',' && IsFinishedValue ) {
                 IsFinishedKey=false;
                 IsFinishedValue= false;
                 jsonValueSKey=0;
@@ -125,14 +125,14 @@ namespace doori{
             /*
              * Json_value's Key
              */
-            if(jsonValueStr[i] == '"') { // "~~~~" as type
+            if(jsonValueString[i] == '"') { // "~~~~" as type
                 jsonValueSKey=i;
                 do{
                     ++i;
-                    if(jsonValueStr[i] == '\\')
+                    if(jsonValueString[i] == '\\')
                         ++i;
                     jsonValueEKey=i;
-                }while( jsonValueStr[i] != '"' );
+                }while(jsonValueString[i] != '"' );
                 IsFinishedKey = true;
             } else
                 return false;
@@ -142,9 +142,9 @@ namespace doori{
             /*
              * if is space, ignore
              */
-            while( isspace(jsonValueStr[i]) ) ++i; //ignore space.
+            while( isspace(jsonValueString[i]) ) ++i; //ignore space.
 
-            if (jsonValueStr[i]==':' && IsFinishedKey)
+            if (jsonValueString[i] == ':' && IsFinishedKey)
                 ;
             else
                 return false;
@@ -152,21 +152,21 @@ namespace doori{
             if(++i == max)
                 return false;
 
-            while( isspace(jsonValueStr[i]) ) ++i; //ignore space.
+            while( isspace(jsonValueString[i]) ) ++i; //ignore space.
 
             /*
              * Json_value's Value
              * if {~} -> Json
              */
-            if(jsonValueStr[i]=='{'){
+            if(jsonValueString[i] == '{'){
                 ++jsonDepth;
                 if(jsonDepth==1) jsonValueSValue=i;
 
                 while(1) {
                     if(++i == max)
                         return false;
-                    if(jsonValueStr[i]=='{') ++jsonDepth;
-                    else if(jsonValueStr[i]=='}'){
+                    if(jsonValueString[i] == '{') ++jsonDepth;
+                    else if(jsonValueString[i] == '}'){
                         if(!--jsonDepth) {
                             jsonValueEValue=i;
                             IsFinishedValue=true;
@@ -177,8 +177,8 @@ namespace doori{
                 if(jsonDepth > 0 || !IsFinishedValue) // error
                     return false;
 
-                auto key=jsonValueStr.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
-                auto value=jsonValueStr.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+                auto key=jsonValueString.substr(jsonValueSKey + 1, jsonValueEKey - (jsonValueSKey + 1));
+                auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue + 1) - jsonValueSValue);
 
                 Json json;
                 if(!json.unserialize(value))
@@ -191,13 +191,13 @@ namespace doori{
              * Json_value's Value
              * if [~] -> Json_value array
              */
-            if(jsonValueStr[i]=='['){
+            if(jsonValueString[i] == '['){
                 jsonValueSValue=i;
 
                 while(1) {
                     if(++i == max)
                         return false;
-                    if(jsonValueStr[i]==']'){
+                    if(jsonValueString[i] == ']'){
                         jsonValueEValue=i;
                         IsFinishedValue=true;
                         break;
@@ -206,13 +206,13 @@ namespace doori{
                 if(!IsFinishedValue) // error
                     return false;
 
-                auto key=jsonValueStr.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
-                auto value=jsonValueStr.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+                auto key=jsonValueString.substr(jsonValueSKey + 1, jsonValueEKey - (jsonValueSKey + 1));
+                auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue + 1) - jsonValueSValue);
 
-                Json json;
-                if(!json.unserialize(value))
+                Json_value jsonValue;
+                if(!jsonValue.parserJsonArray(value))
                     return false;
-                mFactors.emplace_back(key, json);
+                mFactors.emplace_back(key, jsonValue);
                 continue;
             }
 
@@ -220,16 +220,16 @@ namespace doori{
              * Json_value's Value
              * "~"
              */
-            if(jsonValueStr[i] == '"') { // "~~~~" as type
+            if(jsonValueString[i] == '"') { // "~~~~" as type
                 jsonValueSValue = i;
                 do{
                     if(++i==max)
                         return false;
-                    if(jsonValueStr[i] == '\\')
+                    if(jsonValueString[i] == '\\')
                         if(++i==max)
                             return false;
                     jsonValueEValue=i;
-                }while( jsonValueStr[i] != '"' );
+                }while(jsonValueString[i] != '"' );
                 IsFinishedValue = true;
                 type=Json_value::STRING;
             }
@@ -239,18 +239,18 @@ namespace doori{
              * number
              * there is not separator. Spos-=1, Epos+=1
              */
-            if( isdigit(jsonValueStr[i]) ) { // ex) 02.23, 12345, 2.
+            if( isdigit(jsonValueString[i]) ) { // ex) 02.23, 12345, 2.
                 type=Json_value::INT32S;
                 jsonValueSValue = i-1;
                 do{
-                    if(jsonValueStr[i]=='.')
+                    if(jsonValueString[i] == '.')
                         type=Json_value::FLOAT;
                     ++i;
                     jsonValueEValue=i+1;
-                    if(i==max || isspace(jsonValueStr[i])) {
+                    if(i==max || isspace(jsonValueString[i])) {
                         break;
                     }
-                }while( isdigit( jsonValueStr[i] ) || jsonValueStr[i]=='.');
+                }while(isdigit(jsonValueString[i] ) || jsonValueString[i] == '.');
                 IsFinishedValue = true;
             }
 
@@ -259,12 +259,12 @@ namespace doori{
              * true
              * there is not separator. Spos-=1, Epos+=1
              */
-            if( jsonValueStr[i]=='t' ) {
+            if(jsonValueString[i] == 't' ) {
                 if(i+3==max)
                     return false;
-                if( jsonValueStr[i+1] == 'r' &&
-                    jsonValueStr[i+2] == 'u' &&
-                    jsonValueStr[i+3] == 'e' ) {
+                if(jsonValueString[i + 1] == 'r' &&
+                   jsonValueString[i + 2] == 'u' &&
+                   jsonValueString[i + 3] == 'e' ) {
                     jsonValueSValue=i-1;
                     jsonValueEValue=i+3+1;
                 } else
@@ -281,13 +281,13 @@ namespace doori{
              * true
              * there is not separator. Spos-=1, Epos+=1
              */
-            if( jsonValueStr[i]=='f' ) {
+            if(jsonValueString[i] == 'f' ) {
                 if(i+4 == max)
                     return false;
-                else if(jsonValueStr[i+1] == 'a' &&
-                        jsonValueStr[i+2] == 'l' &&
-                        jsonValueStr[i+3] == 's' &&
-                        jsonValueStr[i+4] == 'e' ) {
+                else if(jsonValueString[i + 1] == 'a' &&
+                        jsonValueString[i + 2] == 'l' &&
+                        jsonValueString[i + 3] == 's' &&
+                        jsonValueString[i + 4] == 'e' ) {
                     jsonValueSValue=i-1;
                     jsonValueEValue=i+4+1;
                 } else
@@ -304,8 +304,8 @@ namespace doori{
                 jsonValueSKey  <jsonValueEKey );
             else return false;
 
-            auto key=jsonValueStr.substr(jsonValueSKey+1, jsonValueEKey-(jsonValueSKey+1));
-            auto value=jsonValueStr.substr(jsonValueSValue+1, jsonValueEValue-(jsonValueSValue+1));
+            auto key=jsonValueString.substr(jsonValueSKey + 1, jsonValueEKey - (jsonValueSKey + 1));
+            auto value=jsonValueString.substr(jsonValueSValue + 1, jsonValueEValue - (jsonValueSValue + 1));
 
             switch (type) {
                 case Json_value::INT32S:
@@ -365,7 +365,7 @@ namespace doori{
         if(depth) return false;
 
         std::string json_string{value.begin()+jsonSpos, value.begin()+jsonEpos};
-        addJsonValueString(json_string);
+        parserJsonString(json_string);
         return true;
     }
 
@@ -539,24 +539,24 @@ namespace doori{
     }
 
     /**
-     * @param arryValueStr  "key", "value" , { } ... 결합된 json array 문자열
+     * @param str  "value" , { } ... 결합된 json array 문자열
      * @return
      */
-    auto Json_value::addArrayString(const std::string &arryValueStr) -> bool{
+    auto Json_value::parserJsonArray(const std::string &str) -> bool{
         decltype(Json_value::TYPE) type;
         auto jsonDepth=0;
         auto IsFinishedValue= false;
         auto jsonValueSValue=0;
         auto jsonValueEValue=0;
 
-        auto max=arryValueStr.size();
+        auto max=str.size();
         for(int i=0;i<max;++i) {
-            if( isspace(arryValueStr[i]) ) continue; //ignore space.
+            if( isspace(str[i]) ) continue; //ignore space.
 
             /*
              * if matching ',' and finishing value, is next Json_value
              */
-            if( arryValueStr[i]==',' && IsFinishedValue ) {
+            if(str[i] == ',' && IsFinishedValue ) {
                 IsFinishedValue= false;
                 jsonValueSValue=0;
                 jsonValueEValue=0;
@@ -566,15 +566,15 @@ namespace doori{
              * Json_value's Value
              * if {~} -> Json
              */
-            if(arryValueStr[i]=='{'){
+            if(str[i] == '{'){
                 ++jsonDepth;
                 if(jsonDepth==1) jsonValueSValue=i;
 
                 while(1) {
                     if(++i == max)
                         return false;
-                    if(arryValueStr[i]=='{') ++jsonDepth;
-                    else if(arryValueStr[i]=='}'){
+                    if(str[i] == '{') ++jsonDepth;
+                    else if(str[i] == '}'){
                         if(!--jsonDepth) {
                             jsonValueEValue=i;
                             IsFinishedValue=true;
@@ -585,7 +585,7 @@ namespace doori{
                 if(jsonDepth > 0 || !IsFinishedValue) // error
                     return false;
 
-                auto value=arryValueStr.substr(jsonValueSValue, (jsonValueEValue+1)-jsonValueSValue);
+                auto value=str.substr(jsonValueSValue, (jsonValueEValue + 1) - jsonValueSValue);
 
                 Json json;
                 if(!json.unserialize(value))
@@ -598,16 +598,16 @@ namespace doori{
              * Json_value's Value
              * "~"
              */
-            if(arryValueStr[i] == '"') { // "~~~~" as type
+            if(str[i] == '"') { // "~~~~" as type
                 jsonValueSValue = i;
                 do{
                     if(++i==max)
                         return false;
-                    if(arryValueStr[i] == '\\')
+                    if(str[i] == '\\')
                         if(++i==max)
                             return false;
                     jsonValueEValue=i;
-                }while( arryValueStr[i] != '"' );
+                }while(str[i] != '"' );
                 IsFinishedValue = true;
                 type=Json_value::STRING;
             }
@@ -617,18 +617,18 @@ namespace doori{
              * number
              * there is not separator. Spos-=1, Epos+=1
              */
-            if( isdigit(arryValueStr[i]) ) { // ex) 02.23, 12345, 2.
+            if( isdigit(str[i]) ) { // ex) 02.23, 12345, 2.
                 type=Json_value::INT32S;
                 jsonValueSValue = i-1;
                 do{
-                    if(arryValueStr[i]=='.')
+                    if(str[i] == '.')
                         type=Json_value::FLOAT;
                     ++i;
                     jsonValueEValue=i+1;
-                    if(i==max || isspace(arryValueStr[i])) {
+                    if(i==max || isspace(str[i])) {
                         break;
                     }
-                }while( isdigit( arryValueStr[i] ) || arryValueStr[i]=='.');
+                }while(isdigit(str[i] ) || str[i] == '.');
                 IsFinishedValue = true;
             }
 
@@ -637,12 +637,12 @@ namespace doori{
              * true
              * there is not separator. Spos-=1, Epos+=1
              */
-            if( arryValueStr[i]=='t' ) {
+            if(str[i] == 't' ) {
                 if(i+3==max)
                     return false;
-                if( arryValueStr[i+1] == 'r' &&
-                    arryValueStr[i+2] == 'u' &&
-                    arryValueStr[i+3] == 'e' ) {
+                if(str[i + 1] == 'r' &&
+                   str[i + 2] == 'u' &&
+                   str[i + 3] == 'e' ) {
                     jsonValueSValue=i-1;
                     jsonValueEValue=i+3+1;
                 } else
@@ -659,13 +659,13 @@ namespace doori{
              * true
              * there is not separator. Spos-=1, Epos+=1
              */
-            if( arryValueStr[i]=='f' ) {
+            if(str[i] == 'f' ) {
                 if(i+4 == max)
                     return false;
-                else if(arryValueStr[i+1] == 'a' &&
-                        arryValueStr[i+2] == 'l' &&
-                        arryValueStr[i+3] == 's' &&
-                        arryValueStr[i+4] == 'e' ) {
+                else if(str[i + 1] == 'a' &&
+                        str[i + 2] == 'l' &&
+                        str[i + 3] == 's' &&
+                        str[i + 4] == 'e' ) {
                     jsonValueSValue=i-1;
                     jsonValueEValue=i+4+1;
                 } else
@@ -681,7 +681,7 @@ namespace doori{
             else
                 return false;
 
-            auto value=arryValueStr.substr(jsonValueSValue+1, jsonValueEValue-(jsonValueSValue+1));
+            auto value=str.substr(jsonValueSValue + 1, jsonValueEValue - (jsonValueSValue + 1));
 
             switch (type) {
                 case Json_value::INT32S:
@@ -707,7 +707,7 @@ namespace doori{
                     return false;
             }
         }
+        TYPE=Json_value::ARRAY;
         return true;
-
     }
 }

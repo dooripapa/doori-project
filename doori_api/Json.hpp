@@ -31,7 +31,7 @@ auto doori::Json::unserialize(char const(&value)[N]) -> bool {
     if(depth) return false;
 
     std::string json_string{value.begin()+jsonSpos, value.begin()+jsonEpos};
-    addJsonValueString(json_string);
+    parserJsonString(json_string);
     return true;
 }
 

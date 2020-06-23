@@ -54,8 +54,8 @@ namespace doori{
         auto operator=(Json_value &&rhs) noexcept -> Json_value&;
         auto operator=(const Json &value) noexcept -> Json_value&;
         auto operator=(Json &&value) noexcept -> Json_value&;
+        auto parserJsonArray(const std::string& str) -> bool;
     private:
-        auto addArrayString(const std::string& str) -> bool;
         auto copyFrom(const Json_value &rhs) noexcept -> void;
         int32_t     mInt;
         std::string mStr;
@@ -79,8 +79,8 @@ namespace doori{
         auto clear() -> void;
         auto operator=(const Json &rhs) noexcept -> Json&;
         auto operator=(Json &&rhs) noexcept -> Json&;
+        auto parserJsonString(const std::string &jsonValueString) -> bool;
     private:
-        auto addJsonValueString(const std::string &jsonValueString) -> bool;
         auto copyFrom(const Json &rhs) noexcept -> void;
         std::vector< std::pair<std::string, Json_value> > mFactors;
     };
