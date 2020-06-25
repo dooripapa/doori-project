@@ -133,25 +133,32 @@ TEST(JsonMixTest, PositiveTest)
 
 TEST(JsonConvertedTest, PositiveTest)
 {
-    auto literalString=R"({"1"  :  ",:1" , "2":{"2":"2"}})";
-    auto literalString2=R"({"1":",:1","2":{"2":"2"}})";
+//    auto literalString=R"({"1"  :  ",:1" , "2":{"2":"2"}})";
+//    auto literalString2=R"({"1":",:1","2":{"2":"2"}})";
+//    doori::Json json;
+//    json.unserialize(literalString);
+//
+//    EXPECT_EQ(literalString2, json.serialize());
+//
+//    json.clear();
+//    auto l1=R"({"leejaeseong":{"2":"2"},"1":11111})";
+//    json.unserialize(l1);
+//    EXPECT_EQ(l1,json.serialize());
+//
+//    json.clear();
+//    auto l2=R"({"glossary":{"title":"exampleglossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"StandardGeneralizedMarkupLanguage","Acronym":"SGML","Abbrev":"ISO8879:1986","GlossDef":{"para":"Ameta-markuplanguage,usedtocreatemarkuplanguagessuchasDocBook."},"GlossSee":"markup"}}}}})";
+//    json.unserialize(l2);
+//    EXPECT_EQ(l2,json.serialize());
+//
+//    std::cout<<"================"<<std::endl;
+//    std::cout<<l2<<std::endl;
+//    std::cout<<json.serialize()<<std::endl;
+//    std::cout<<"================"<<std::endl;
+
     doori::Json json;
-    json.unserialize(literalString);
-
-    EXPECT_EQ(literalString2, json.serialize());
-
     json.clear();
-    auto l1=R"({"leejaeseong":{"2":"2"},"1":11111})";
-    json.unserialize(l1);
-    EXPECT_EQ(l1,json.serialize());
-
-    json.clear();
-    auto l2=R"({"glossary":{"title":"exampleglossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"StandardGeneralizedMarkupLanguage","Acronym":"SGML","Abbrev":"ISO8879:1986","GlossDef":{"para":"Ameta-markuplanguage,usedtocreatemarkuplanguagessuchasDocBook."},"GlossSee":"markup"}}}}})";
-    json.unserialize(l2);
-    EXPECT_EQ(l2,json.serialize());
-
-    std::cout<<"================"<<std::endl;
-    std::cout<<l2<<std::endl;
-    std::cout<<json.serialize()<<std::endl;
-    std::cout<<"================"<<std::endl;
+    auto l3=R"({"title":"exampleglossary","GlossDiv":{"title":"S","GlossList":"GlossEntry"},"para":"A meta-markup language, used to create markup languages such as DocBook.", "GlossSeeAlso": ["GML", "XML"] } )";
+    auto l4=R"({"title":"exampleglossary","GlossDiv":{"title":"S","GlossList":"GlossEntry"},"para":"A meta-markup language, used to create markup languages such as DocBook.", "GlossSeeAlso": ["GML", "XML"] })";
+    json.unserialize(l3);
+    EXPECT_EQ(l4,json.serialize());
 }

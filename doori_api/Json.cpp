@@ -6,6 +6,7 @@
 #include <sstream>
 #include <term_entry.h>
 #include <algorithm>
+#include <iostream>
 #include "Json.h"
 
 namespace doori{
@@ -40,6 +41,9 @@ namespace doori{
                 case Json_value::INT32S:
                 case Json_value::STRING:
                 case Json_value::JSON:
+                    jsonStr<<"\""<<it.first.c_str()<<"\""<<":"<<it.second.toString();
+                    break;
+                case Json_value::ARRAY:
                     jsonStr<<"\""<<it.first.c_str()<<"\""<<":"<<it.second.toString();
                     break;
                 case Json_value::NIL:
@@ -208,7 +212,6 @@ namespace doori{
 
                 auto key=jsonValueString.substr(jsonValueSKey + 1, jsonValueEKey - (jsonValueSKey + 1));
                 auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue + 1) - jsonValueSValue);
-
                 Json_value jsonValue;
                 if(!jsonValue.parserJsonArray(value))
                     return false;
