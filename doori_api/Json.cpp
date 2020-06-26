@@ -211,7 +211,7 @@ namespace doori{
                     return false;
 
                 auto key=jsonValueString.substr(jsonValueSKey + 1, jsonValueEKey - (jsonValueSKey + 1));
-                auto value=jsonValueString.substr(jsonValueSValue, (jsonValueEValue + 1) - jsonValueSValue);
+                auto value=jsonValueString.substr(jsonValueSValue + 1, jsonValueEValue - (jsonValueSValue + 1));
                 Json_value jsonValue;
                 if(!jsonValue.parserJsonArray(value))
                     return false;
@@ -441,6 +441,7 @@ namespace doori{
         mStr   =rhs.mStr;
         mFloat =rhs.mFloat;
         mBool  =rhs.mBool;
+        mArray =rhs.mArray;
         mJson  =rhs.mJson;
     }
 
@@ -454,6 +455,7 @@ namespace doori{
         mStr = rhs.mStr;
         mFloat= rhs.mFloat;
         mBool = rhs.mBool;
+        mArray = std::move(rhs.mArray);
         mJson = std::move(rhs.mJson);
     }
 
@@ -498,6 +500,7 @@ namespace doori{
         mStr = rhs.mStr;
         mFloat= rhs.mFloat;
         mBool = rhs.mBool;
+        mArray = std::move(rhs.mArray);
         mJson = std::move(rhs.mJson);
 
         return *this;
@@ -521,6 +524,7 @@ namespace doori{
         mStr = rhs.mStr;
         mFloat= rhs.mFloat;
         mBool = rhs.mBool;
+        mArray = std::move(rhs.mArray);
         mJson = std::move(rhs.mJson);
     }
 

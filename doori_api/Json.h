@@ -6,7 +6,6 @@
 #define DOORI_API_JSON_H
 
 
-
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -86,5 +85,6 @@ namespace doori{
     };
 }
 
-#include "Json.hpp"
 #endif //DOORI_API_JSON_H
+
+#include "Json.hpp"
