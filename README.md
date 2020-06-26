@@ -1,48 +1,39 @@
-■ doori-project
- - doori-api : service 구현을 위한 api 집합체
- - doori-service : doori-solution의 특정 서비스를 위임받아 처리하는 daemon프로세스
- - doori-solution : 사용자에게 편의성 제공하는 솔루션
+# doori-project
+> 사랑하는 아들의 태명을 본 따 시작된 프로젝트
 
+## 아키텍처
+1. doori-api : 하위레벨의 libraries 집합체
+2. doori-service : doori-api 도구로 만들어진 daemon 프로세스(서비스)
+3. doori-solution : 사용자에게 편의성을 제공하는 솔루션.
 
-■ doori-api
- - 통신캡슐화 위한 객체들
-   > Addr
-   > Endpoint
-   > Connection
-   > Epoll
-   > EpollEvents
+### doori-pai
+1. 통신 libraries, 캡슐화 객체들
+> Addr, Endpoint, Connection, Epoll, EpollEvents
    
- - 데이터캡슐화 위한 객체들
-   > Data
-   > DataSegment
-   > Stream
-   > Dictionary
+2. 데이터캡슐화 위한 객체들
+> Data, DataSegment, Stream, Dictionary, Json
    
- - 데이터구조캡슐화 위한 객체들
-   > Tree
-   > Branch
+3. 데이터구조캡슐화 위한 객체들
+> Tree, Branch
    
- - 미들웨어 서비스 캡슐화 위한 객체들
-   > Protocol
-   > Topic
-   > ICommunication
-   > Publisher
-   > Subscriber
+4. 미들웨어 서비스 캡슐화 위한 객체들
+> Protocol, Topic, ICommunication, ,Publisher, Subscriber
  
- - 프로세스 캡슐화 객체들
-   > Getopt
-   > Runner
-   > Application
+5. 프로세스 캡슐화 객체들
+> Getopt, Runner, Application
  
- - 기타 객체 
-   > Regex
+6. 기타 객체 
+> Regex
+
+### doori-service
+1. Middleware : tnsd
+> Topic Naming Service Daemon.
+
+2. MemoryDB : tnsdb
+> Token Number Service DB. -----> todo
 
 
-■ doori-service
- - tnsd ( Topic naming service daemon ) : doori 미들웨어
+### doori-solution
+1. doori-watcher
+> Linux monitoring application -----> todo
 
- - tnsdb ( Token number service db ) : doori 메모리DB
-   > @todo
-
-■ doori-solution
- - @todo
