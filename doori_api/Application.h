@@ -14,8 +14,10 @@
 
 namespace doori{
 
-///@brief doori api를 통해서, 어플리케이션을 만들때는 이 클래스를 상속받아서  \
-///       엄격하게 이루어져야 한다.
+/**
+ * doori api를 통해서, 어플리케이션을 만들때는 이 클래스를 상속받아서
+ * 엄격하게 이루어져야 한다.
+ */
 class Application {
 public:
     Application();

@@ -6,7 +6,7 @@
 #include <Json.h>
 #include <iostream>
 
-TEST(Json_valueTestCase, PositiveTest)
+TEST(Json_value, ConstructTest)
 {
     doori::Json_value value{1111};
     EXPECT_EQ("1111", value.toString());
@@ -34,27 +34,27 @@ TEST(Json_valueTestCase, PositiveTest)
     EXPECT_EQ("true", value7.toString());
 }
 
-TEST(Json_valueAppendTest, PositiveTest)
+TEST(Json_value, ArrayTest)
 {
     doori::Json_value value;
     value.append({1111});
-    value.append({"leejaeseong"});
+    value.append({"name"});
     value.append({0.2f});
     value.append({true});
 
-    auto result=R"([1111,"leejaeseong",0.2,true])";
+    auto result=R"([1111,"name",0.2,true])";
     EXPECT_EQ(result,value.toString() );
 
     doori::Json json;
     json["1"] = 1234;
-    json["2"] = "leejaeseong";
+    json["2"] = "name";
 
     value.append(json);
-    auto result2=R"([1111,"leejaeseong",0.2,true,{"1":1234,"2":"leejaeseong"}])";
+    auto result2=R"([1111,"name",0.2,true,{"1":1234,"2":"name"}])";
     EXPECT_EQ(result2,value.toString() );
 }
 
-TEST(Json_valueSetTest, PositiveTest)
+TEST(Json_value, SetTest)
 {
     doori::Json_value   value;
     value.set(1111);
@@ -63,8 +63,8 @@ TEST(Json_valueSetTest, PositiveTest)
     value.set("const char*");
     EXPECT_EQ("\"const char*\"", value.toString());
 
-    value.set("const\"leejaeseong");
-    EXPECT_EQ("\"const\\\"leejaeseong\"", value.toString());
+    value.set("const\"name");
+    EXPECT_EQ("\"const\\\"name\"", value.toString());
 
     std::string str{"std::string"};
     value.set(str);
@@ -83,7 +83,7 @@ TEST(Json_valueSetTest, PositiveTest)
     EXPECT_EQ("true", value.toString());
 }
 
-TEST(JsonTest, PositiveTest)
+TEST(Json, OperatorTest)
 {
     doori::Json json, another;
     json["key"] = 1234;
@@ -92,14 +92,14 @@ TEST(JsonTest, PositiveTest)
     json["float"] = 0.1234f;
     EXPECT_EQ("{\"key\":1234,\"float\":0.1234}", json.serialize());
 
-    json["leejaeseong"] = "string";
-    EXPECT_EQ("{\"key\":1234,\"float\":0.1234,\"leejaeseong\":\"string\"}", json.serialize());
+    json["name"] = "string";
+    EXPECT_EQ("{\"key\":1234,\"float\":0.1234,\"name\":\"string\"}", json.serialize());
 
     another["haha"] = "lee,\":here";
     EXPECT_EQ("{\"haha\":\"lee,\\\":here\"}", another.serialize());
 }
 
-TEST(JsonMixTest, PositiveTest)
+TEST(Json, ComplexTest)
 {
     doori::Json json, sub_json;
 
@@ -118,8 +118,8 @@ TEST(JsonMixTest, PositiveTest)
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
 
-    literalString=R"({"4":"leejaeseong"})";
-    json.append("4", doori::Json_value("leejaeseong"));
+    literalString=R"({"4":"name"})";
+    json.append("4", doori::Json_value("name"));
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
 
@@ -131,7 +131,7 @@ TEST(JsonMixTest, PositiveTest)
     json.clear();
 }
 
-TEST(JsonConvertedTest, PositiveTest)
+TEST(Json, ParserTest)
 {
     auto literalString=R"({"1"  :  ",:1" , "2":{"2":"2"}})";
     auto literalString2=R"({"1":",:1","2":{"2":"2"}})";
@@ -141,7 +141,7 @@ TEST(JsonConvertedTest, PositiveTest)
     EXPECT_EQ(literalString2, json.serialize());
 
     json.clear();
-    auto l1=R"({"leejaeseong":{"2":"2"},"1":11111})";
+    auto l1=R"({"name":{"2":"2"},"1":11111})";
     json.unserialize(l1);
     EXPECT_EQ(l1,json.serialize());
 
