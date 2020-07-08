@@ -16,11 +16,23 @@ template <typename T>
 class Branch
 {
 public:
+    /**
+     * 기본생성자
+     */
     Branch();
+    /**
+     * 복사생성자
+     */
     Branch(const Branch&) noexcept ;
+    /**
+     * 이동생성자
+     */
     Branch(Branch&&) noexcept ;
-    Branch(const std::string&) noexcept ;
-
+     /**
+      * Branch 초기화합니다.
+      * @param branchName : const std::string& 나뭇가지의 unique 이름을 지정함
+      */
+    Branch(const std::string& branchName) noexcept ;
     constexpr auto findLinkBranches(const std::string& topic_segment, typename vector<Branch<T>>::iterator&) noexcept -> bool;
     constexpr auto findLinkBranches(const std::string& topic_segment) noexcept -> bool;
     constexpr auto setTopic(const std::string& topic_segment) noexcept -> void;

@@ -10,30 +10,25 @@ using namespace std;
 
 namespace doori{
 
-///@brief socket domain 리턴합니다
 auto Addr::Domain() const -> int
 {
 	return mAddr.sin_family;
 }
 
-///@brief socket domain 리턴합니다
 auto Addr::getInetAddr() const -> const struct sockaddr_in&
 {
 	return mAddr;
 }
 
-///@brief ip를 문자열로 리턴
 auto Addr::Ip() const -> const string&
 {
 	return mInetAddress.Ip;
 }
 
-///@brief port를 문자열로 리턴
 auto Addr::Port() const -> const string&
 {
 	return mInetAddress.Port;
 }
-
 
 auto Addr::setAddress(const Address& address) -> void {
     mInetAddress = address;
@@ -80,7 +75,6 @@ Addr::Addr(Addr &&rhs) {
     copyFrom(rhs);
 }
 
-///@brief pretty print
 auto Addr::pprint() const -> const std::string {
     return mInetAddress.Ip+":"+mInetAddress.Port;
 }
