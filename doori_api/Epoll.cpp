@@ -38,16 +38,11 @@ auto Epoll::init( Connection conn ) -> int
     return 0;
 }
 
-///@brief 인자로 받은 소켓이. listener 소켓 확인
-///@return true : listener 소켓 \
-///        false : listner 소켓이 아님
 auto Epoll::isListener( int socket_fd ) const -> bool
 {
     return(mListen_socket==socket_fd);
 }
 
-///@brief connect 요청으로 소켓을 Wachter로 등록함
-///@return generated Socket FD from Accept function.
 auto Epoll::addWatcherAsConn() -> int
 {
     struct epoll_event ev{};
@@ -72,8 +67,6 @@ auto Epoll::addWatcherAsConn() -> int
     return conn_sock;
 }
 
-///@brief 인자로 받은 소켓을 Watcher로 등록함
-///@note Wachter로 등록된 소켓은 default callback 함수로 처리됨
 auto Epoll::addWatcher( int socket_fd ) -> int
 {
     struct epoll_event ev{};
@@ -88,7 +81,6 @@ auto Epoll::addWatcher( int socket_fd ) -> int
     return 0;
 }
 
-///@brief 괸리되어지는 소켓으로 등록한다. 이 소켓에 대한 의존적인 함수를 지정됨
 auto Epoll::addUniqueWatcher(int socket_fd, WATCHER::TYPE type, const function<int(int, Stream&)> &delegation) -> int
 {
     struct epoll_event ev{};
@@ -103,8 +95,6 @@ auto Epoll::addUniqueWatcher(int socket_fd, WATCHER::TYPE type, const function<i
     return 0;
 }
 
-///@brief 이 함수에서 호출되면, 블록킹 모드로 전환되고, 자동으로 처리됨
-///@note 예제소스 참고할것.
 auto Epoll::runningEventDelegateMethod() ->int
 {
     LOG(INFO, "==================================");
@@ -150,8 +140,6 @@ auto Epoll::waitForEvents(EpollEvents& eventContainer, const int& timeout ) -> i
     return Cnt;
 }
 
-///@brief 첫번재 인자값 소켓으로 부터 데이터 수신되면, 해당데이트를 두번째 아규먼트에 등록된 콜백함수에 처리를 위임한다.
-///@return -2 Connection Lost
 auto Epoll::executeTask( int socket_fd, const std::function<int(int socket_fd, Stream& stream)>& callback_function ) -> int
 {
     int iRet = 0;
@@ -201,8 +189,6 @@ auto Epoll::getListener() noexcept -> Connection & {
     return mEpollRootConnection;
 }
 
-///@brief epoll로 관리 되고 있는 모든 FD에게 데이터를 보낸다.
-///@see 단, WATCHER type이, RECEIVER에 송신하지 않는다.
 auto Epoll::sendWatchers(Stream stream) noexcept -> bool {
     auto bRet=true;
     for(const auto& i:mConnectedSocketList)
@@ -222,7 +208,6 @@ Epoll::~Epoll() {
         close(i.first);
 }
 
-///@brief default callback 함수로 인자로 한, 초기화.
 Epoll::Epoll(const std::function<int(int, Stream &)> &delegation) {
     mEventDelegateMethod = delegation;
 }
