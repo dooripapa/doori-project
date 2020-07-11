@@ -14,12 +14,40 @@ class Endpoint
 public:
     enum class TYPE:unsigned int{TCP, UDP, SHM, MSQ};
     enum STATUS:bool{TRUE=true, FALSE=false};
+    /**
+     * 기본생성자
+     */
     Endpoint();
-    Endpoint(doori::Addr);
-    Endpoint(doori::Addr, TYPE);
+    /**
+     * 초기화 함수
+     * @param addr : Addr 객체
+     */
+    Endpoint(Addr addr);
+    /**
+     * 초기화 함수
+     * @param addr : Addr 객체
+     * @param transport_type : Endpoint::TYPE
+     */
+    Endpoint(Addr addr, TYPE transport_type);
+    /**
+     * Endpoint객체의 통신유형.(IPC type)
+     * @return TYPE : Endpoint::TYPE
+     */
 	auto Transport() noexcept -> TYPE;
-    auto setAddress(doori::Addr addr) noexcept ->  void;
+	/**
+	 * Enpoint address 초기화
+	 * @param addr : Addr 객체
+	 */
+    auto setAddress(Addr addr) noexcept ->  void;
+    /**
+     * Endpoint address 객체 리턴함
+     * @return Addr리턴
+     */
     auto Address() const noexcept -> const doori::Addr&;
+    /**
+     * Endpoint 초기화되었는지 상태값 리턴
+     * @return Endpoint::STATUS
+     */
 	auto Set() noexcept -> STATUS;
 private:
     STATUS mSet;
