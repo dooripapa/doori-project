@@ -67,7 +67,7 @@ auto Tree<T>::findRootBranches(const string& topic_name_segment) -> bool
              mRootBranches.begin()
             ,mRootBranches.end()
             ,[=](const Branch<T>& branch){
-                return (branch.getTopic()==topic_name_segment);
+                return (branch.getName() == topic_name_segment);
             }
     );
     return !(it==mRootBranches.end()); //찾으면 true, or false
@@ -106,7 +106,7 @@ auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT m
         }
     }
     //해당 Branch에서 Linked Branches로부터 해당 중복된 branch가 있는지 확인함
-    ret = (*iter).findLinkBranches(branch.getTopic(), linkIter);
+    ret = (*iter).findLinkBranches(branch.getName(), linkIter);
     if( ret ) {
         if (mode==INSERT::CHECK)
             return false;

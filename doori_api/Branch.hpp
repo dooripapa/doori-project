@@ -27,21 +27,15 @@ Branch<T>::Branch(Branch && branch) noexcept {
 
 template<typename T>
 Branch<T>::Branch(const std::string& topic_name) noexcept {
-    mTopicName=topic_name;
+    mName=topic_name;
 }
 
-///@brief
-///@attention 이함수를 호출로 수정되었을 경우, updateAmendTime() 함수를 호출하여 시간동기화를 맞춰야 한다.
 template <typename T>
 constexpr auto Branch<T>::getLeaves() noexcept -> const std::vector<T>&
 {
     return mLeaves;
 }
 
-///@brief T가 leaves존재하는지 여부
-///@return false : 없음
-///@return true : 존재함
-///@todo T가 operator== 제공하지 않는다면, 컴파일 시점에 에러 출력 로직필요함
 template <typename T>
 constexpr auto Branch<T>::isThereLeaf(const T& t) noexcept -> bool
 {
@@ -54,18 +48,17 @@ constexpr auto Branch<T>::isThereLeaf(const T& t) noexcept -> bool
 }
 
 template <typename T>
-constexpr auto Branch<T>::setTopic(const string& topic) noexcept -> void
+constexpr auto Branch<T>::setName(const string& topic) noexcept -> void
 {
-    mTopicName = topic;
+    mName = topic;
 }
 
 template <typename T>
-auto Branch<T>::getTopic() const noexcept -> const string&
+auto Branch<T>::getName() const noexcept -> const string&
 {
-    return mTopicName;
+    return mName;
 }
 
-///@todo std::vector<doori_branch<T>>&  타입을 리턴하면 안됨. 캡슐화 붕괴.
 template <typename T>
 auto Branch<T>::getLinkBranches() noexcept -> std::vector<Branch<T>>&
 {
@@ -108,18 +101,16 @@ constexpr auto Branch<T>::operator=(Branch<T>&& rhs) noexcept -> Branch<T>&
 template <typename T>
 constexpr auto Branch<T>::operator==(const Branch<T> &rhs) const noexcept -> bool
 {
-    return (mTopicName == rhs.mTopicName);
+    return (mName == rhs.mName);
 }
 
-///@brief branch에서 branch로 연결된으로부터 같은 topic_name을 서치한다.
-///@param topic_name 같은 branch를 위한 인자값
 template <typename T>
 constexpr auto Branch<T>::findLinkBranches(const std::string& topic_name, typename vector<Branch<T>>::iterator& iter) noexcept -> bool
 {
     auto lambda=
             [=](const Branch<T>& branch)
             {
-                return (branch.getTopic()==topic_name);
+                return (branch.getName() == topic_name);
             };
 
     iter = find_if(mLinkBranches.begin(), mLinkBranches.end(), lambda);
@@ -133,19 +124,18 @@ constexpr auto Branch<T>::findLinkBranches(const std::string& topic_name) noexce
     auto lambda=
             [=](const Branch<T>& branch)
             {
-                return (branch.getTopic()==topic_name);
+                return (branch.getName() == topic_name);
             };
 
     auto iter = find_if(mLinkBranches.begin(), mLinkBranches.end(), lambda);
     return !(iter == mLinkBranches.end());
 }
 
-///@brief 자신의 Branch(나뭇가지)에 다른 나뭇가지를 연결한다.
 template <typename T>
 constexpr auto Branch<T>::link(const Branch<T>& branch) noexcept -> bool
 {
     //link할 나뭇가지의 속성(TopicAccess) 동일한 나뭇가지 존재여부 확인
-    if ( !findLinkBranches(branch.getTopic()) )
+    if ( !findLinkBranches(branch.getName()) )
     {
         mLinkBranches.push_back(branch);
         return true;
@@ -156,7 +146,7 @@ constexpr auto Branch<T>::link(const Branch<T>& branch) noexcept -> bool
 template <typename T>
 constexpr auto Branch<T>::link(Branch<T>&& branch) noexcept -> bool
 {
-    if ( !findLinkBranches(branch.getTopic()) )
+    if ( !findLinkBranches(branch.getName()) )
     {
         mLinkBranches.push_back(move(branch));
         return true;
@@ -167,14 +157,14 @@ constexpr auto Branch<T>::link(Branch<T>&& branch) noexcept -> bool
 template <typename T>
 auto Branch<T>::copyFrom(const Branch<T>& rhs) noexcept -> void
 {
-    mTopicName = rhs.mTopicName;
+    mName = rhs.mName;
     mLeaves = rhs.mLeaves;
 }
 
 template <typename T>
 auto Branch<T>::copyFrom(Branch<T>&& rhs) noexcept -> void
 {
-    mTopicName = std::move(rhs.mTopicName);
+    mName = std::move(rhs.mName);
     mLeaves = std::move(rhs.mLeaves);
 }
 

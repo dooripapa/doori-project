@@ -23,8 +23,8 @@ public:
 
     constexpr auto findLinkBranches(const std::string& topic_segment, typename vector<Branch<T>>::iterator&) noexcept -> bool;
     constexpr auto findLinkBranches(const std::string& topic_segment) noexcept -> bool;
-    constexpr auto setTopic(const std::string& topic_segment) noexcept -> void;
-    auto getTopic() const noexcept -> const std::string&;
+    constexpr auto setName(const std::string& topic_segment) noexcept -> void;
+    auto getName() const noexcept -> const std::string&;
     auto getLinkBranches() noexcept -> std::vector<Branch<T>>&;
     constexpr auto link(const Branch&) noexcept -> bool;
     constexpr auto link(Branch&&) noexcept -> bool;

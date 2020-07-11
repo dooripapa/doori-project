@@ -54,13 +54,13 @@ constexpr auto Branch<T>::isThereLeaf(const T& t) noexcept -> bool
 }
 
 template <typename T>
-constexpr auto Branch<T>::setTopic(const string& topic) noexcept -> void
+constexpr auto Branch<T>::setName(const string& topic) noexcept -> void
 {
     mTopicName = topic;
 }
 
 template <typename T>
-auto Branch<T>::getTopic() const noexcept -> const string&
+auto Branch<T>::getName() const noexcept -> const string&
 {
     return mTopicName;
 }
