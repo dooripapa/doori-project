@@ -9,9 +9,7 @@
 using namespace std;
 
 namespace doori{
-/**
-*@brief socket resource 정리
-*/
+
 auto Connection::release()-> void
 {
 	if (mBindSock != -1)
@@ -86,9 +84,6 @@ int Connection::waitDataUtill(int iSocketfd, string& emptyBuff, ssize_t requeste
 	return 0;
 }
 
-///@return -1 실패
-///@return  > 0, 성공시 0보다 큰 값(소켓FD)
-///@attention binding 및 connect 실패시, 열려진 소켓을 이 함수에서 close처리한다.
 auto Connection::connectTo() -> int
 {
     char	errorStr[1024]={0};
@@ -153,7 +148,6 @@ Connection::sendTo(int socketFd, const Stream& stream)
 	return ret;
 }
 
-///@brief listen된 상태의 소켓을 호출함
 auto Connection::onListening() -> int
 {
 	auto ret=0;
@@ -175,7 +169,6 @@ auto Connection::onListening() -> int
 	return mBindSock;
 }
 
-///@brief 소켓에 binding 처리를 함
 int Connection::processBind(int& socketFd, const doori::Addr& addr)
 {
 	char errorStr[1024]={0};
@@ -200,7 +193,6 @@ int Connection::processBind(int& socketFd, const doori::Addr& addr)
 	return 0;
 }
 
-///@note 이함수가 호출하기전에 선행적으로 bind함수가 호출되어 있어야 한다.
 auto Connection::onAccepting() -> int
 {
     if(!mSource.Set())
@@ -221,8 +213,6 @@ auto Connection::onAccepting() -> int
 	return iRet;
 }
 
-///@brief 소켓 connect 요청을 기다린다. 요청이 성공적으로 완료가 되면, fd를 리턴
-///@note 이함수가 호출하기전에 선행적으로 bind함수가 호출되어 있어야 한다.
 auto
 Connection::waitFor( ) -> int
 {
