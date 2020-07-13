@@ -282,7 +282,7 @@ auto Tnsd::walkTree() noexcept -> void
 ///@brief debugging
 auto Tnsd::walkBranches(Branch< Addr>& branch) noexcept -> void
 {
-    LOG(DEBUG, "TopicAccess ---- : ", branch.getTopic());
+    LOG(DEBUG, "TopicAccess ---- : ", branch.getName());
     for(auto& m:branch.getLinkBranches())
     {
         walkBranches(m);

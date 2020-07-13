@@ -4,7 +4,6 @@ project(doori_service)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(DOORI_PROJECT /home/doori/doori_project)
 set(DOORI_API_LIBRARY_NAME doori)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17 -fPIC")
@@ -13,7 +12,7 @@ link_libraries (-lpthread ${DOORI_API_LIBRARY_NAME})
 
 link_directories(SYSTEM ${DOORI_PROJECT}/lib .)
 
-include_directories(SYSTEM ${DOORI_PROJECT}/inc ${DOORI_PROJECT}/lib .)
+include_directories(SYSTEM ${DOORI_PROJECT}/doori_api ${DOORI_PROJECT}/lib .)
 
 add_executable(tnsd
         tnsd/main.cpp

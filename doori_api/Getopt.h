@@ -14,9 +14,23 @@ namespace doori{
 class Getopt
 {
 public:
+    /**
+     * 기본생성자 호출 금지함
+     */
     Getopt() = delete;
+    /**
+     * 복사생성자
+     */
     Getopt(const Getopt&) = default;
+    /**
+     * 이동생성자
+     */
     Getopt(Getopt&&) = delete;
+    /**
+     * 초기화
+     * @param argc
+     * @param argv
+     */
     Getopt(int argc, char **argv);
     auto getOptValue(std::string opt, std::string &value) noexcept -> bool;
     auto getOptValue(std::string opt) noexcept -> std::string;

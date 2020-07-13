@@ -37,7 +37,8 @@ auto Addr::setAddress(const Address& address) -> void {
 
     mAddr.sin_family = AF_INET;
     mAddr.sin_port = htons(u16Temp);
-    mAddr.sin_addr.s_addr = inet_addr( mInetAddress.Ip.c_str() );
+    mAddr.sin_addr.s_addr = mInetAddress.Ip.c_str()?
+                            inet_addr( mInetAddress.Ip.c_str() ):INADDR_ANY;
     return;
 }
 

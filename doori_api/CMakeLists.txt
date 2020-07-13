@@ -14,8 +14,7 @@ include_directories(SYSTEM .)
 
 set(HEADER_FILES
         Addr.h
-        Application.h
-        Branch.h
+        Application.h Branch.h
         Branch.hpp
         Connection.h
         Data.h
@@ -38,7 +37,8 @@ set(HEADER_FILES
         Subscriber.h
         Topic.h
         Tree.h
-        Tree.hpp Json.cpp Json.h)
+        Tree.hpp
+        Json.h)
 
 set(SRC_FILES
         Addr.cpp
@@ -60,13 +60,16 @@ set(SRC_FILES
         Runner.cpp
         Stream.cpp
         Subscriber.cpp
-        Topic.cpp Json.cpp Json.h)
+        Topic.cpp
+        Json.cpp)
 
-add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES})
+#add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
+add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
 
 set_target_properties(${DOORI_API_LIBRARY_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
-install(TARGETS "${DOORI_API_LIBRARY_NAME}"
+install(TARGETS ${DOORI_API_LIBRARY_NAME}
         LIBRARY DESTINATION "${DOORI_PROJECT}/lib"
+        ARCHIVE DESTINATION "${DOORI_PROJECT}/lib"
         PUBLIC_HEADER DESTINATION "${DOORI_PROJECT}/inc"
         )

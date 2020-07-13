@@ -52,7 +52,7 @@ auto Tree<T>::findRootBranches(const string& topic_name_segment, typename vector
              mRootBranches.begin()
             ,mRootBranches.end()
             ,[=](const Branch<T>& branch){
-                return (branch.getTopic()==topic_name_segment);
+                return (branch.getName()==topic_name_segment);
             }
     );
     auto ret=!(it==mRootBranches.end()); //찾으면 true, or false
