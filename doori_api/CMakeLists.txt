@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(DOORI_API_LIBRARY_NAME doori)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17 -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17")
 
 link_libraries (-lpthread)
 

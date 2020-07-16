@@ -18,7 +18,6 @@ int main(int argc, char** argv) {
         std::cout<<"--ip not setting"<<std::endl;
         return -1;
     }
-    std::cout<<"--ip : "<< ip << std::endl;
 
     std::string port = opt.getOptValue("--port");
     if(port.length() == 0)
@@ -26,7 +25,6 @@ int main(int argc, char** argv) {
         std::cout<<"--port not setting"<<std::endl;
         return -1;
     }
-    std::cout<<"--port : "<< port << std::endl;
 
     doori::Address address;
     address.Ip=ip;
@@ -51,11 +49,9 @@ int main(int argc, char** argv) {
         auto iRet = conn.recvFrom(fd, buffer);
         if( iRet == -2 )
             return 0;
-        std::cout << "data : " << buffer.getString() << std::endl;
         iRet = conn.sendTo(fd, buffer);
         if( iRet == -2 )
             return 0;
     }
-
     return 0;
 }

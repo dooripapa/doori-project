@@ -56,12 +56,26 @@ int main(int argc, char** argv) {
 
     conn.reply(doori::Stream(sendData), recvBuffer);
 
+    conn.release();
+
     gettimeofday(&tp, NULL);
     ms = tp.tv_sec*1000 + tp.tv_usec/1000;
 
     doori::Data resultData;
     resultData.fromString(recvBuffer.getString());
     auto it = resultData.find_if_Fid(2);
+    if( it == resultData.end() )
+    {
+        std::cout <<"not find"<<std::endl;
+        return 0;
+    }
+
+    /**
+     * calculate.
+     */
+    auto result = ms - std::stoll(it->getValueToString().c_str(),0, 0);
+    std::cout << "ip : " << ip << "   difference:" << result << std::endl;
+
 
     return 0;
 }
