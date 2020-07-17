@@ -130,7 +130,7 @@ auto Epoll::moveEventContainer(EpollEvents&& event_container ) noexcept ->void
 auto Epoll::waitForEvents(EpollEvents& eventContainer, const int& timeout ) -> int
 {
     char	errorStr[1024]={0};
-    int Cnt = epoll_wait(mEpoll_fd, eventContainer.getInstance(), eventContainer.getSize(), timeout);
+    int Cnt = epoll_wait(mEpoll_fd, eventContainer.get(), eventContainer.getSize(), timeout);
     if ( Cnt == -1 )
     {
         LOG(ERROR, "Wait error[",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));

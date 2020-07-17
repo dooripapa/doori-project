@@ -29,7 +29,7 @@ Dictionary::Dictionary(Dictionary &&rhs) {
 
 
 ///@brief Dictionary 포멧 형태의 파일을 읽는다.
-auto Dictionary::open(const std::string &filepath) -> bool {
+auto Dictionary::load(const std::string &filepath) -> bool {
 
     fstream dictionaryFile;
     dictionaryFile.open(filepath, std::fstream::ios_base::in);
@@ -121,7 +121,7 @@ auto Dictionary::operator=(Dictionary &&rhs) -> Dictionary & {
 }
 
 ///@brief pretty print
-auto Dictionary::pprint() noexcept -> void {
+auto Dictionary::logging() noexcept -> void {
     LOG(INFO, "TNSD_INFO::VER:", mWords[TOKEN_INFO::VERSION] );
     LOG(INFO, "TNSD_INFO::TNSD_IP:", mWords[TOKEN_INFO::TNSD_IP] );
     LOG(INFO, "TNSD_INFO::TNSD_PORT:", mWords[TOKEN_INFO::TNSD_PORT] );

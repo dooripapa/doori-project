@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 
     doori::Getopt        getopt(argc, argv);
 
-    if(!dictionary.open(getopt.getOptValue("--file")))
+    if(!dictionary.load(getopt.getOptValue("--file")))
     {
         cout<< "Tnsd error" << endl;
         exit(-1);

@@ -7,12 +7,12 @@ int main(int argc, char** argv) {
 
     doori::Getopt getopt(argc, argv);
 
-    if (!dic.open(getopt.getOptValue("--file"))) {
+    if (!dic.load(getopt.getOptValue("--file"))) {
         cout<< "Pub error" << endl;
         exit(-1);
     }
 
-    dic.pprint();
+    dic.logging();
 
     doori::Pub pub(dic);
 

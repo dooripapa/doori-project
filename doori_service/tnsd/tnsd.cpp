@@ -11,7 +11,7 @@ Tnsd::~Tnsd()
 
 auto Tnsd::operator()() noexcept -> int
 {
-    mDic.pprint();
+    mDic.logging();
     Data          data;
     Addr          localAddr{mDic.Value(Dictionary::TOKEN_INFO::TNSD_IP), mDic.Value(Dictionary::TOKEN_INFO::TNSD_PORT)};
     Endpoint      recvAt(localAddr);

@@ -37,22 +37,20 @@ EpollEvents::setSize(int event_max_size ) -> int
 }
 
 auto
-EpollEvents::setInvokedEventCnt(int eventedCnt ) -> int
+EpollEvents::setInvokedEventCnt(int eventedCnt ) -> void
 {
     mBeginIt = mEventInfos.get();
     mEndIt   = mEventInfos.get()+eventedCnt;
-    return 0;
 }
 
 auto
-EpollEvents::getInstance() -> struct epoll_event*
+EpollEvents::get() -> struct epoll_event*
 {
     return mEventInfos.get();
 }
 
 auto
-EpollEvents::getSize() -> const int&
-{
+EpollEvents::getSize() -> int {
     return mEventSize;
 }
 

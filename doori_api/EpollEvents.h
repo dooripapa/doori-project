@@ -29,19 +29,64 @@ private:
 class EpollEvents
 {
 public:
+    /**
+     * 기본생성자
+     */
     EpollEvents(){}
+    /**
+     * 기본소멸자
+     */
     ~EpollEvents(){}
 
+    /**
+     * 이동대입연산자
+     * @param rhs 
+     * @return 자기자신의 참조값
+     */
     auto operator=(EpollEvents&& rhs)-> EpollEvents&;
+    /**
+     * 이벤트 담을 수 있는 사이즈
+     * @param event_max_size 
+     * @return 
+     */
     auto setSize( int event_max_size ) -> int;
-    auto setInvokedEventCnt( int eventedCnt ) -> int;
-    auto getInstance() -> struct epoll_event*;
-    auto getSize() -> const int&;
+    /**
+     * 이벤트가 발생 됐을 때, 이벤트의 수
+     * @param eventedCnt 
+     * @return 
+     */
+    auto setInvokedEventCnt( int eventedCnt ) -> void;
+    /**
+     * 자산의 포인터를 리턴함
+     * @return
+     */
+    auto get() -> struct epoll_event*;
+    /**
+     * 이벤트를 담을 수 있는 셋팅된 값 리턴
+     * @return int
+     * @note setSize() 호출할때 셋팅값이 리턴됨
+     */
+    auto getSize() -> int;
+    /**
+     * 이벤트가 발생됐을때,이벤트 순차적으로 접근 가능한 iterator 시작값
+     * @return
+     */
     auto begin() -> event_iterator& ;
+    /**
+     * 이벤트가 발생됐을때,이벤트 순차적으로 접근 가능한 iterator 마지막값
+     * @return
+     */
     auto end() -> event_iterator& ;
+    /**
+     * 이벤트가 발생됐을때,이벤트 순차적으로 접근 가능한 iterator 시작값
+     * @return const event_iterator& 변경 불가능한 참조값
+     */
     auto cbegin() -> const event_iterator& ;
+    /**
+     * 이벤트가 발생됐을때,이벤트 순차적으로 접근 가능한 iterator 마지막값
+     * @return const event_iterator& 변경 불가능한 참조값
+     */
     auto cend() -> const event_iterator& ;
-protected:
 private:
     std::unique_ptr<struct epoll_event[]> mEventInfos;
 	int mEventSize;

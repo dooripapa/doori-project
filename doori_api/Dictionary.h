@@ -14,6 +14,9 @@ namespace doori{
 
 class Dictionary {
 public:
+    /**
+     * Dictionary's default TOKEN
+     */
     enum TOKEN_INFO{
         VERSION,
         TNSD_IP,
@@ -29,15 +32,52 @@ public:
         END
     };
 public:
+    /**
+     * 기본생성자
+     */
     Dictionary();
+    /**
+     * 기본소멸자
+     */
     ~Dictionary();
+    /**
+     * 복사생성자
+     * @param rhs
+     */
     Dictionary(const Dictionary& rhs);
+    /**
+     * 이동생성자
+     * @param rhs
+     */
     Dictionary(Dictionary&& rhs);
+    /**
+     * 대입복사연산자
+     * @param rhs
+     * @return 자신의 참조값
+     */
     auto operator=(const Dictionary& rhs) -> Dictionary&;
+    /**
+     * 대입이동연산자
+     * @param rhs
+     * @return
+     */
     auto operator=(Dictionary&& rhs) -> Dictionary&;
-    auto open(const std::string& filepath) -> bool;
+    /**
+     * Dictionay 포멧형식의 파일로 초기화
+     * @param filepath : Dictionary file 절대값 위치
+     * @return bool
+     */
+    auto load(const std::string& filepath) -> bool;
+    /**
+     * Dictionary's default TOKEN 해당하는 값을 리턴
+     * @param id : TOKEN
+     * @return string TOKEN 해당하는 값을 문자열로 리턴
+     */
     auto Value(const TOKEN_INFO id) noexcept -> const std::string&;
-    auto pprint() noexcept -> void;
+    /**
+     * record TOCKEN's info in log file
+     */
+    auto logging() noexcept -> void;
 private:
     auto parserDic(std::fstream& dicFile) -> bool;
     auto copyFrom(Dictionary&& rhs) noexcept -> void;
