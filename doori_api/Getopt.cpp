@@ -24,24 +24,12 @@ Getopt::Getopt(int argc, char**argv)
     LOG(INFO, "Command Line[", mAllCommandLIne, "]");
 }
 
-///@brief
-///@param \
-  std::string opt   : ex) --log, --file, -f (first char '-') \
-  std::string &value: if there is value, put in &value \
-                      or not, it is initialized ""
-///@return
 auto Getopt::getOptValue(std::string opt, std::string &value) noexcept -> bool
 {
     value=getValue(opt);
     return !value.empty()?true:false;
 }
 
-///@brief
-///@param \
-  std::string opt   : ex) --log, --file, -f (first char '-')
-///@return \
-  if there is optional, return string for a value. \
-  or not, return empty string.
 auto Getopt::getOptValue(std::string opt) noexcept -> std::string {
     return getValue(opt);
 }

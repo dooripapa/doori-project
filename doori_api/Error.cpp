@@ -12,7 +12,7 @@ Error Error::oneInstance;
 
 Error::Error() : mErrno(0), mStatus(true), mCause("") {}
 
-auto Error::occur(int errnum, bool status, std::string cause) noexcept -> void
+auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
 {
     mErrno = errnum;
     mStatus = status;
