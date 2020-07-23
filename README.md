@@ -20,20 +20,20 @@
 > Protocol, Topic, ICommunication, ,Publisher, Subscriber
  
 5. 프로세스 캡슐화 객체들
-> Getopt, Runner, Application
+> Getopt, Runner, Application, Error
  
 6. 기타 객체 
 > Regex
 
 ### doori-service
-1. Middleware : tnsd
+1. Middleware : tnsd (프로토타입완료)
 > Topic Naming Service Daemon.
 
 2. MemoryDB : tnsdb
-> Token Number Service DB. -----> todo
+> Token Number Service DB. -----> ing
 
 
 ### doori-solution
 1. doori-watcher
-> Linux monitoring application -----> todo
+> Linux monitoring application -----> ing
 
