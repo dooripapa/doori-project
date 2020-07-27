@@ -8,11 +8,6 @@
 
 namespace doori{
 
-///@brief Tnsd에 연결를 요청한다. 초기화한다.
-///@param forTnsd Tnsd 연결하기 위한 Connection
-///@param myType Tnsd 연결할때, 자신의 Pub/Sub 타입값
-///@warning 에러체크는 필수.
-///@note 이 함수가 호출되면, Tnsd 접속하기전까지. Hang이 걸린다.
 auto ICommunication::init(doori::Connection forTnsd , Topic topic, Protocol::TREE myType) noexcept -> bool{
     auto retryCnt = 0;
     mICommTopic = topic;
@@ -40,10 +35,6 @@ auto ICommunication::init(doori::Connection forTnsd , Topic topic, Protocol::TRE
     return true;
 }
 
-///@brief 관심이 있는 topic을 TNSD에 Notify 한다.
-///@param topic 해당 Topic에 관심 있다는 것을 Tnsd 통보할 Topic명
-///@todo duplicated topic processing
-///@note Notify한 순간, 어떤 곳(Sub)으로부터 연결을 수신할 수 있으므로, 이 함수가 호출하기전에 연결요청 수신한 가능한 상태여야 한다.
 auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
     Protocol sendProtcol, recvProtocol;
     sendProtcol.asSender();
@@ -72,8 +63,6 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
     return true;
 }
 
-///@brief Multi session으로부터 데이터를 수신처리를 할수 있다. 그리고 처리를 위임하는 할수 있는 함수 등록한다.
-///@see forSub doori::Connection객체를 이용하여, 멀티세션을 구성하고, 멀티세션으로 부터 데이터 수신 됐을때, 처리할 함수 등록
 auto ICommunication::processingMultisessions(doori::Connection forSub) noexcept -> bool {
 
     EpollEvents eventContainer;
@@ -89,7 +78,6 @@ auto ICommunication::processingMultisessions(doori::Connection forSub) noexcept 
     return true;
 }
 
-///@brief TNSD에 protocol객체를 보내면 해당 프로토콜에 대한 응답을 받는다.
 auto ICommunication::sendProtocolToTnsd(Protocol &sendProtocol, Protocol &responseProtocol) noexcept -> bool{
     Stream sendStream, recvStream;
     Data   answerData;
@@ -135,8 +123,6 @@ auto ICommunication::sendAliveProtocolToTnsd(Topic topic) noexcept -> bool {
     return true;
 }
 
-///@brief Topic정보를 통해 관심 접속하고자 하는 정보를 얻거나, 대상을 확인한다.
-///@see PUB이면, Sub의 정보를 , SUB이면 pub의 정보를 가져온다.
 auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
     Protocol sendProtcol, recvProtocol;
     sendProtcol.asSender();
@@ -213,8 +199,7 @@ ICommunication::~ICommunication() {
     mMultiSessions.getListener().release();
 }
 
-///@brief 여기서 TNSD로 부터 들어온 데이터를 처리한다.
-///@brief list, change, alive 프로토콜 처리
+///@brief
 auto ICommunication::processingTnsdData(int sock, Stream& stream) noexcept -> int{
     auto ret = 0;
     Data data;
@@ -260,7 +245,6 @@ auto ICommunication::processingTnsdData(int sock, Stream& stream) noexcept -> in
     return ret;
 }
 
-///@brief background 방식으로 TNSD에게 계속적으로 alive protocol 송신하는 함수
 auto ICommunication::processingAliveService() noexcept -> bool {
 
     ///continuely send ALIVE protocol.
@@ -297,7 +281,6 @@ auto ICommunication::operator=(ICommunication &&rhs) noexcept -> ICommunication 
     return *this;
 }
 
-///@brief epoll로 연결되어 있는 섹션에 역으로 데이터를 전체 송신
 auto ICommunication::sendStreamToMultisessions(const Stream &stream) noexcept -> bool {
     return mMultiSessions.sendWatchers(stream);
 }
