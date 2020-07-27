@@ -18,7 +18,10 @@ enum class doori_stream_enc_type : unsigned int{
 	UTF_8 = 1 << 1  //"00010"
 };
 
-
+/**
+ * @todo wchar_t 적용하여, utf8 호환이 되도록해야 한다.
+ * @todo Json객체를 이 객체로 태워서, 송신규격 스트림으로 만드는 기능 추가해야 함
+ */
 class Stream
 {
 public:

@@ -18,7 +18,6 @@
 
 namespace doori{
 
-///@class TNSD와 통신하는 interface class 객체
 class ICommunication
 {
 public:
@@ -88,13 +87,13 @@ protected:
       */
     auto sendProtocolToTnsd(Protocol &sendProtocol, Protocol &responseProtocol) noexcept -> bool;
     /**
-     * Tnsd 프로토콜을 보낸다.
+     * Tnsd 프로토콜메시지를 보낸다.
      * @param sendProtocol Protocol&
      * @return bool true 성공, false 실패
      */
     auto sendProtocolToTnsd(Protocol& sendProtocol) noexcept -> bool;
     /**
-     * Tnsd에게 살아 있음을 계속적으로 알린다.
+     * Tnsd에게 alive protocol메시지를 보낸다
      * @param topic Topic객체
      * @return bool true 성공, false 실패
      */
@@ -105,7 +104,7 @@ protected:
      */
     auto processingAliveService() noexcept -> bool;
     /**
-     * Multi session으로부터 데이터를 수신처리를 할수 있다.
+     * Multi session으로부터 데이터를 수신처리 한다.
      * @param forSub Connection 객체
      * @return bool true 성공, false 실패
      */
