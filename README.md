@@ -7,7 +7,7 @@
 3. doori-solution : doori-service 기반으로, 사용자에게 편의성을 제공하는 솔루션.
 > 일차적인 목표는, 리녹스 모니터링 솔루션을 목표로 함.
 
-### doori-pai
+### doori-api
 1. 통신 libraries, 캡슐화 객체들
 > Addr, Endpoint, Connection, Epoll, EpollEvents
    
