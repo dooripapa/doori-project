@@ -47,13 +47,13 @@ public:
      */
     Error(const Error& rhs) = delete;
     /**
-     * 대입이동연산자 호출 금지
+     * 이동대입연산자 호출 금지
      * @param rhs : Error&&
      * @return Error&
      */
     auto operator=(Error&& rhs) -> Error& = delete;
     /**
-     * 대입복사생성자 호출 금지
+     * 복사대입생성자 호출 금지
      * @param rhs : const Error&
      * @return Error&
      */

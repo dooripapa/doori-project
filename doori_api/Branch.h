@@ -105,13 +105,13 @@ public:
      */
     constexpr auto attachLeaf(T&&) noexcept -> void;
     /**
-     * 대입복사연산자
+     * 복사대입연산자
      * @param rhs : const Branch&
      * @return 자신의 참조값
      */
     constexpr auto operator=(const Branch& rhs) noexcept -> Branch&;
     /**
-     * 대입이동연산자
+     * 이동대입연산자
      * @param rhs : Branch&&
      * @return 자신의 참조값
      */

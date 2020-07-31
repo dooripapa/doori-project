@@ -51,13 +51,13 @@ public:
      */
     Dictionary(Dictionary&& rhs);
     /**
-     * 대입복사연산자
+     * 복사대입연산자
      * @param rhs
      * @return 자신의 참조값
      */
     auto operator=(const Dictionary& rhs) -> Dictionary&;
     /**
-     * 대입이동연산자
+     * 이동대입연산자
      * @param rhs
      * @return
      */

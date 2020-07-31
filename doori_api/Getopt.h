@@ -51,7 +51,7 @@ public:
      */
     auto Process() const noexcept -> std::string;
     /**
-     * 대입복사연산자
+     * 복사대입연산자
      * @param rhs : const Getopt&
      * @return 자기자신의 참조값
      */

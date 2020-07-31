@@ -38,13 +38,12 @@ Tree<T>::Tree(Tree<T>&& rhs)
     copyFrom(std::move(rhs));
 }
 
-///@brief doori_topic 와 같은 branch를 찾기
-///@details
-///@date
-///@param searchVector search대상 vector
-///@param topic_name_segment topic name 부분
-///@return tuple<bool, typename std::vector< doori_branch<T>>::iterator > 찾으면 첫인자는 true, 못찾으면 false, iterator는 대상 branch
-///@see
+/**
+ * Topic같은 branch를 찾기
+ * @tparam T
+ * @param topic_name_segment topic name 부분
+ * @return tuple<bool, typename std::vector< doori_branch<T>>::iterator > 찾으면 첫인자는 true, 못찾으면 false, iterator는 대상 branch
+ */
 template <typename T>
 auto Tree<T>::findRootBranches(const string& topic_name_segment, typename vector<Branch<T>>::iterator& itPos) -> bool
 {
@@ -73,14 +72,6 @@ auto Tree<T>::findRootBranches(const string& topic_name_segment) -> bool
     return !(it==mRootBranches.end()); //찾으면 true, or false
 }
 
-///@brief 인자로 받은 doori_topic을 이용하여, branch를 탐색, 인자로 받은 branch를 Link함
-///@details
-///@date
-///@param topic doori_topic 객체
-///@param branch Link를 대상 branch
-///@return true Link작업 완료
-///@return false Duplicated Link된 branch로 인해 작업중단
-///@see
 template <typename T>
 auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT mode) noexcept -> bool
 {
@@ -121,13 +112,6 @@ auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT m
     return true;
 }
 
-///@brief doori_topic 한개의 branch를 삭제, 이와 연결된 모든 branches도 삭제됨
-///@details
-///@date
-///@param topic doori_topic 객체
-///@return true 지웠다면 true
-///@return false 지운게 없다면 false
-///@see
 template <typename T>
 auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
 {
@@ -158,9 +142,6 @@ auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
     return false;
 }
 
-///@brief doori_topic에 해당하는  branch를 리턴함, 해당 branch가 존재하지 않으면 \
-///       생성된 branch 를 리턴함
-///@param topic doori_topic, whole topic string.(not segment topic name)
 template <typename T>
 auto Tree<T>::getBranch(const Topic& topic) -> Branch<T>&
 {
@@ -191,9 +172,6 @@ auto Tree<T>::getBranch(const Topic& topic) -> Branch<T>&
     return (*iter);
 }
 
-///@brief doori_topic의  해당되는 branch에 leaf을 attach
-///@param topic doori_topic
-///@param leaf  doori_tree에 attach할 객체
 template <typename T>
 auto Tree<T>::attachLeaf(const Topic& topic, T leaf) -> bool
 {
