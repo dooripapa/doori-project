@@ -26,8 +26,6 @@ Topic::Topic(initializer_list<string> topicList) {
     mTopics.insert(mTopics.end(), topicList.begin(),topicList.end());
 }
 
-///@brief depth는 구애받지 않는 string 정함
-///@todo invalid_argument를 invoke 해야하는지 검토해야함
 auto Topic::set(initializer_list<string> topicList) -> bool
 {
     mTopics.clear();
@@ -50,13 +48,6 @@ auto Topic::set(initializer_list<string> topicList) -> bool
     return true;
 }
 
-///@brief ex) ~.~.~ 쉼표로 구분되어지는 문자열을 파싱하여 doori_topic를 구성함
-///@details
-///@date
-///@param topic_pause_sets "~.~ ..." 형식으로 이루어진 문자열
-///@return
-///@bug
-///@see
 auto Topic::set(const string& topic_pause_sets ) -> bool
 {
     mTopics.clear();
@@ -94,16 +85,11 @@ auto Topic::operator==(const Topic& rhs) const noexcept -> bool
 }
 
 
-///@brief
-///@return 콤마형식의 문자열 리스트를 출력함
 auto Topic::getTopicName() const noexcept -> std::string
 {
     return mTopicSum;
 }
 
-///@brief index는 0부터 시작함
-///@return index값 overflow 일경우, "" null 리턴
-///@see index값 overflow할 경우 exception처리에 대해서 고민할것.
 auto Topic::getTopicName(const unsigned int index) const noexcept -> std::string {
     if(mTopics.size()<=index)
     {
