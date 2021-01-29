@@ -4,6 +4,10 @@ project(doori_api)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if(NOT "${DOORI_PROJECT}")
+    set(DOORI_PROJECT "${CMAKE_CURRENT_SOURCE_DIR}/../")
+endif()
+
 set(DOORI_API_LIBRARY_NAME doori)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17")

@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(DOORI_PROJECT ${CMAKE_CURRENT_SOURCE_DIR})
 
-include_directories("${DOORI_PROJECT}/doori_api" .)
+include_directories("${DOORI_PROJECT}/doori_api")
 
 add_subdirectory("${DOORI_PROJECT}/doori_api")
 add_subdirectory("${DOORI_PROJECT}/doori_sample")
