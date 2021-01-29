@@ -2,10 +2,10 @@
 // Created by jaeseong on 20. 7. 13..
 //
 
-#include <doori_api/Getopt.h>
+#include "Getopt.h"
 #include "Addr.h"
 #include "Endpoint.h"
-#include <doori_api/Connection.h>
+#include "Connection.h"
 #include <ctime>
 #include <sys/time.h>
 
