@@ -37,4 +37,4 @@
 
 ### doori-solution
 1. doori-watcher
-> Linux monitoring application -----> 설계중.
+> Linux monitoring application -----> 	https://github.com/GULapp/doori-watcher 
