@@ -10,9 +10,11 @@ endif()
 
 set(DOORI_API_LIBRARY_NAME doori)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} -std=c++17")
 
-link_libraries (-lpthread)
+#set(CMAKE_C_FLAGS -lphtread)
+
+#link_libraries (-lpthread)
 
 include_directories(SYSTEM .)
 

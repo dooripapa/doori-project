@@ -22,10 +22,15 @@ inc/
 shl/
 bin/
 CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
 
 ###########################
 #defined files
 ###########################
 doori_sample/ping
 doori_sample/pong
-
+doori_service/pub
+doori_service/sub
+doori_service/tnsd
+doori_tests/unittest
