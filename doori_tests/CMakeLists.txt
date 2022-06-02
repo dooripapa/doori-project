@@ -11,8 +11,10 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/lib)
 set(TEST_FILES
     ${PROJECT_SOURCE_DIR}/doori_api/Json.cpp
     ${PROJECT_SOURCE_DIR}/doori_api/Json.h
+    ${PROJECT_SOURCE_DIR}/doori_api/Bigdecimal.cpp
+    ${PROJECT_SOURCE_DIR}/doori_api/Bigdecimal.h
     test_json.cpp
-    )
+    test_bigdecimal.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

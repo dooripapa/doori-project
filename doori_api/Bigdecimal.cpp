@@ -6,11 +6,11 @@
 
 namespace doori {
 
-Bigdecimal::Bigdecimal() {
-
+Bigdecimal::Bigdecimal(const std::string& value) {
+    coreValue = value;
 }
 
-Bigdecimal::Bigdecimal(std::string value) {
+Bigdecimal::Bigdecimal(std::string&& value) {
     coreValue = value;
 }
 
@@ -109,6 +109,7 @@ auto Bigdecimal::operator+(const Bigdecimal &rhs) -> Bigdecimal& {
         iValue=jValue=0;
     }
     coreValue = std::string(ret.begin(),ret.end());
+    return *this;
 }
 
 auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal & {
@@ -136,6 +137,14 @@ auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal & {
         sRet = sSumRet;
         sSumRet = "0";
     });
+    return *this;
+}
+
+auto Bigdecimal::operator-(const Bigdecimal &rhs) -> Bigdecimal & {
+    if( this == &rhs)
+        return *this;
+    coreValue = minus(this->coreValue, rhs.coreValue);
+    return *this;
 }
 
 auto Bigdecimal::plus(std::string value1, std::string value2) -> std::string {
@@ -187,6 +196,124 @@ auto Bigdecimal::copyFrom(const Bigdecimal &rhs) noexcept -> void {
     coreValue = rhs.coreValue;
 }
 
+auto Bigdecimal::minus(std::string value1, std::string value2) -> std::string {
+    std::forward_list<char> ret;
+
+    bool minusFlag = false;
+    if ( value2 > value1 ) {
+        std::swap(value1, value2);
+        minusFlag = true;
+    }
+
+    int i=value1.size()-1;
+    int j=value2.size()-1;
+
+    std::string itos;
+    int sum, iValue, jValue;
+    for(;; --i, --j) {
+        if(i<0 && j<0) {
+            if(minusFlag)
+                ret.push_front('-');
+            break;
+        }
+
+        if(i<0) iValue = 0;
+        else iValue = value1[i]-'0';
+
+        if(j<0) jValue = 0;
+        else jValue = value2[j]-'0';
+
+        sum = iValue - jValue;
+        if( sum < 0) {
+            if( i-1 < 0 )
+                ;
+            else
+            {
+                value1[i-1]--;
+                sum = 10 + iValue - jValue;
+            }
+        }
+        sum = abs(sum);
+        itos = std::to_string(sum);
+        ret.push_front(itos[0]);
+    }
+    return std::string(ret.begin(),ret.end());
+}
+
+auto Bigdecimal::operator==(const Bigdecimal &rhs) const -> bool {
+    if ( this == &rhs )
+        return true;
+
+    return (this->coreValue == rhs.coreValue);
+}
+
+auto Bigdecimal::operator==(Bigdecimal &&rhs) const -> bool {
+    if ( this == &rhs )
+        return true;
+
+    return (this->coreValue == rhs.coreValue);
+}
+
+auto Bigdecimal::operator=(const Bigdecimal &rhs) -> Bigdecimal & {
+    if ( this == &rhs )
+        return *this;
+
+    copyFrom(rhs);
+    return *this;
+}
+
+auto Bigdecimal::operator=(Bigdecimal &&rhs) -> Bigdecimal & {
+    if ( this == &rhs )
+        return *this;
+
+    copyFrom(rhs);
+    return *this;
+}
+
+auto Bigdecimal::operator==(const std::string &rhs) const -> bool {
+    return (this->coreValue == rhs);
+}
+
+auto Bigdecimal::operator==(std::string &&rhs) const -> bool {
+    return (this->coreValue == rhs);
+}
+
+auto Bigdecimal::operator=(const std::string &rhs) -> Bigdecimal & {
+    this->coreValue = rhs;
+    return *this;
+}
+
+auto Bigdecimal::operator=(std::string &&rhs) -> Bigdecimal & {
+    this->coreValue = rhs;
+    return *this;
+}
+
+auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal & {
+    if( this == &rhs )
+        return *this;
+
+    std::string ret = minus(this->coreValue, rhs.coreValue);
+    this->coreValue = ret;
+
+    return *this;
+}
+
+auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal & {
+    std::string ret = minus(this->coreValue, rhs);
+    this->coreValue = ret;
+
+    return *this;
+}
+
+auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal & {
+    std::string ret = minus(this->coreValue, rhs);
+    this->coreValue = ret;
+
+    return *this;
+}
+
+auto Bigdecimal::operator==(Bigdecimal rhs) const -> bool {
+    return (this->coreValue==coreValue);
+}
+
 }//doori end
-
-
