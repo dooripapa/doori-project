@@ -18,12 +18,21 @@ TEST(Bigdecimal, ConstructTest)
     EXPECT_EQ("-9", value3.toString());
 }
 
+TEST(Bigdecimal, MinusPositive)
+{
+    doori::Bigdecimal value1{"348"};
+    doori::Bigdecimal value2{"123"};
+    EXPECT_EQ(doori::Bigdecimal("225"), value1-value2 );
+}
+
+TEST(Bigdecimal, MinusNegative)
+{
+    doori::Bigdecimal value1{"23"};
+    doori::Bigdecimal value2{"348"};
+    EXPECT_EQ(doori::Bigdecimal("-325"), value1-value2 );
+}
+
 TEST(Bigdecimal, Minus)
 {
-    doori::Bigdecimal value1{"123"};
-    doori::Bigdecimal value2{"348"};
-    EXPECT_EQ(doori::Bigdecimal("-225"), value1-value2 );
-
-    EXPECT_EQ(doori::Bigdecimal("34"),  "34");
-    EXPECT_EQ(std::string("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
+    EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
 }

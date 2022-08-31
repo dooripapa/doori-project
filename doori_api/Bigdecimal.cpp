@@ -19,18 +19,16 @@ Bigdecimal::Bigdecimal(const Bigdecimal &rhs) {
         return;
 
     copyFrom(rhs);
-    return;
 }
 
-Bigdecimal::Bigdecimal(Bigdecimal &&rhs) {
+Bigdecimal::Bigdecimal(Bigdecimal &&rhs) noexcept {
     if(this==&rhs)
         return;
 
     copyFrom(std::move(rhs));
-    return;
 }
 
-auto Bigdecimal::muliplicated(std::string value, char c, uint zeroCharCnt) -> std::string {
+auto Bigdecimal::multiply(std::string value, char c, uint zeroCharCnt) -> std::string {
     int i=value.size()-1;
     int iValue = 0;
     int jValue = c-'0';
@@ -125,7 +123,7 @@ auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal & {
     for_each(rhs.coreValue.begin(), rhs.coreValue.end(), [&](int i){
         auto el = std::to_string(i);
         for(int m=el.length()-1 ;m>=0;m--, zeroCharCnt++) {
-            stringList.push_back(muliplicated(sRet, el[m] , zeroCharCnt));
+            stringList.push_back(multiply(sRet, el[m], zeroCharCnt));
         }
         zeroCharCnt=0;
 
@@ -140,17 +138,11 @@ auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal & {
     return *this;
 }
 
-auto Bigdecimal::operator-(const Bigdecimal &rhs) -> Bigdecimal & {
-    if( this == &rhs)
-        return *this;
-    coreValue = minus(this->coreValue, rhs.coreValue);
-    return *this;
-}
 
 auto Bigdecimal::plus(std::string value1, std::string value2) -> std::string {
     std::forward_list<char> ret;
-    int i=value1.size()-1;
-    int j=value2.size()-1;
+    int i=static_cast<int>(value1.size()-1);
+    int j=static_cast<int>(value2.size()-1);
 
     std::string itos;
     int sum, iValue, jValue, upValue;
@@ -182,7 +174,7 @@ auto Bigdecimal::plus(std::string value1, std::string value2) -> std::string {
         }
         iValue=jValue=0;
     }
-    return std::string(ret.begin(),ret.end());
+    return std::string{ret.begin(),ret.end()};
 }
 
 auto Bigdecimal::toString() -> std::string {
@@ -196,17 +188,23 @@ auto Bigdecimal::copyFrom(const Bigdecimal &rhs) noexcept -> void {
     coreValue = rhs.coreValue;
 }
 
-auto Bigdecimal::minus(std::string value1, std::string value2) -> std::string {
+/// 숫자 형식의 문자열의 값을 마이너스를 한다.
+/// \param value1
+/// \param value2
+/// \param minusFlag  value1 > value2 이면, false, 반대면, true
+/// \return
+
+auto Bigdecimal::minus(std::string value1, std::string value2, bool minusFlag) -> std::string {
     std::forward_list<char> ret;
 
-    bool minusFlag = false;
-    if ( value2 > value1 ) {
+    std::cout<< "flag:"<< std::boolalpha << minusFlag << std::endl;
+
+    if ( minusFlag ) {
         std::swap(value1, value2);
-        minusFlag = true;
     }
 
-    int i=value1.size()-1;
-    int j=value2.size()-1;
+    int i=static_cast<int>(value1.size()-1);
+    int j=static_cast<int>(value2.size()-1);
 
     std::string itos;
     int sum, iValue, jValue;
@@ -237,13 +235,13 @@ auto Bigdecimal::minus(std::string value1, std::string value2) -> std::string {
         itos = std::to_string(sum);
         ret.push_front(itos[0]);
     }
-    return std::string(ret.begin(),ret.end());
+    return std::string{ret.begin(),ret.end()};
 }
 
 auto Bigdecimal::operator==(const Bigdecimal &rhs) const -> bool {
     if ( this == &rhs )
         return true;
-
+    std::cout<< "operator==(const Bigdecimal &rhs)"<<this->coreValue<<":"<<rhs.coreValue <<std::endl;
     return (this->coreValue == rhs.coreValue);
 }
 
@@ -251,6 +249,7 @@ auto Bigdecimal::operator==(Bigdecimal &&rhs) const -> bool {
     if ( this == &rhs )
         return true;
 
+    std::cout<< "operator==(Bigdecimal &&rhs)" <<std::endl;
     return (this->coreValue == rhs.coreValue);
 }
 
@@ -288,32 +287,85 @@ auto Bigdecimal::operator=(std::string &&rhs) -> Bigdecimal & {
     return *this;
 }
 
-auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal & {
-    if( this == &rhs )
-        return *this;
-
-    std::string ret = minus(this->coreValue, rhs.coreValue);
-    this->coreValue = ret;
-
-    return *this;
+auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
+    std::cout<< this->coreValue << std::endl;
+    std::cout<< rhs.coreValue << std::endl;
+    std::string ret = minus(this->coreValue, rhs.coreValue, !(*this>rhs));
+    return Bigdecimal{ret};
 }
 
-auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal & {
-    std::string ret = minus(this->coreValue, rhs);
-    this->coreValue = ret;
-
-    return *this;
+auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal {
+    std::string ret = minus(this->coreValue, rhs, !(*this>Bigdecimal{rhs}) );
+    return Bigdecimal{ret};
 }
 
-auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal & {
-    std::string ret = minus(this->coreValue, rhs);
-    this->coreValue = ret;
-
-    return *this;
+auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal {
+    std::string ret = minus(this->coreValue, rhs, !(*this>Bigdecimal{rhs}));
+    return Bigdecimal{ret};
 }
 
-auto Bigdecimal::operator==(Bigdecimal rhs) const -> bool {
-    return (this->coreValue==coreValue);
-}
+    auto Bigdecimal::operator-(const Bigdecimal &rhs) -> Bigdecimal {
+        if( this == &rhs)
+            return *this;
+        std::string ret = minus(this->coreValue, rhs.coreValue, !(*this>rhs));
+        return Bigdecimal{ret};
+    }
 
+    auto Bigdecimal::operator>(const Bigdecimal &rhs) const -> bool {
+        if( this == &rhs)
+            return false;
+
+        std::string reverseString1 =  this->coreValue;
+        std::string reverseString2 =  rhs.coreValue;
+        reverse(reverseString1.begin(), reverseString1.end());
+        reverse(reverseString2.begin(), reverseString2.end());
+
+        bool bStatus = true;
+
+        auto Len1 = reverseString1.length();
+        auto Len2 = reverseString2.length();
+
+        if( Len1 > Len2 )
+            return true;
+        else if (Len1 < Len2 )
+            return false;
+        else {
+            for (int i = 0; i < Len1; ++i) {
+                if( reverseString1[i] > reverseString2[i] )
+                    bStatus = true;
+                else
+                    bStatus = false;
+            }
+        }
+        return false;
+    }
+
+    auto Bigdecimal::operator>=(const Bigdecimal &rhs) const -> bool {
+        if( this == &rhs)
+            return true;
+
+        std::string reverseString1 =  this->coreValue;
+        std::string reverseString2 =  rhs.coreValue;
+        reverse(reverseString1.begin(), reverseString1.end());
+        reverse(reverseString2.begin(), reverseString2.end());
+
+        bool bStatus = true;
+
+        auto Len1 = reverseString1.length();
+        auto Len2 = reverseString2.length();
+
+        if( Len1 > Len2 )
+            return true;
+        else if (Len1 < Len2 )
+            return false;
+        else {
+            for (int i = 0; i < Len1; ++i) {
+                if( reverseString1[i] > reverseString2[i] )
+                    bStatus = true;
+                else
+                    bStatus = false;
+            }
+        }
+        return false;
+    }
 }//doori end

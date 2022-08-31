@@ -6,7 +6,7 @@
 #include <sstream>
 #include <term_entry.h>
 #include <algorithm>
-#include <iostream>
+#include <limits>
 #include "Json.h"
 
 namespace doori{
