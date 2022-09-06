@@ -315,8 +315,13 @@ auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal {
         if( this == &rhs)
             return false;
 
-        std::string reverseString1 =  this->coreValue;
-        std::string reverseString2 =  rhs.coreValue;
+
+        for(auto it=this->coreValue.rbegin();it!=this->coreValue.rend();++it) {
+
+        }
+
+        std::string reverseString1 = this->coreValue;
+        std::string reverseString2 = rhs.coreValue;
         reverse(reverseString1.begin(), reverseString1.end());
         reverse(reverseString2.begin(), reverseString2.end());
 
@@ -368,4 +373,30 @@ auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal {
         }
         return false;
     }
+
+    auto Bigdecimal::setPositionStringAnalysis(std::string value, ushort &uAboveZero, ushort &uZero,
+                                               ushort &uBelowZero) noexcept -> void {
+        uAboveZero = 0;
+        uZero = 0;
+        uBelowZero = 0;
+        auto i = 0;
+        for(auto it=value.rbegin();it!=value.rend();++it,++i){
+            if(*it == '.')
+                uZero = i;
+            else {
+                uBelowZero++;
+                uAboveZero++;
+            }
+        }
+
+        if (uZero == 0)
+            uBelowZero = 0;
+        else {
+            uAboveZero -= uZero;
+        }
+
+        return nullptr;
+    }
+
+
 }//doori end

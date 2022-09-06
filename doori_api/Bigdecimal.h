@@ -70,6 +70,8 @@ namespace doori {
 //        auto divide(std::string value1, std::string value2) -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
+        auto setPositionStringAnalysis(std::string value, ushort &uAboveZero, ushort &uZero,
+                                               ushort &uBelowZero) noexcept -> void;
         std::string coreValue;
     };
 }
