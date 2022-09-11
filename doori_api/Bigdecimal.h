@@ -16,29 +16,59 @@ namespace doori {
      */
     class Bigdecimal {
         public:
+        /*
+         * 기본 생성자 호출 금지
+         */
         Bigdecimal() = delete;
 
+        /**
+         * 생성자
+         * @param value
+         */
         explicit Bigdecimal(const std::string& value);
         explicit Bigdecimal(std::string&& value);
 
+        /**
+         * 복사생성자, 이동생성자
+         * @param rhs
+         */
         Bigdecimal(const Bigdecimal& rhs);
         Bigdecimal(Bigdecimal&& rhs) noexcept ;
 
+        /**
+         * = 연산자 오버라이딩
+         * @param rhs
+         * @return
+         */
         auto operator=(const Bigdecimal& rhs)-> Bigdecimal&;
         auto operator=(Bigdecimal&& rhs)-> Bigdecimal&;
         auto operator=(const std::string& rhs)-> Bigdecimal&;
         auto operator=(std::string&& rhs)-> Bigdecimal&;
 
+        /**
+         * * 연산자 오버라이딩
+         * @param rhs
+         * @return
+         */
         auto operator*(const Bigdecimal& rhs)-> Bigdecimal&;
 
+        /**
+         * + 연산 오버라이딩
+         * @param rhs
+         * @return
+         */
         auto operator+(const Bigdecimal& rhs)-> Bigdecimal&;
 
+        /**
+         * >, >= 비교연산자 오버라이딩
+         * @param rhs
+         * @return
+         */
         auto operator>(const Bigdecimal& rhs) const -> bool;
         auto operator>=(const Bigdecimal& rhs) const -> bool;
 
-
         /**
-         * 마이너스
+         * - 오버라이딩
          * @param rhs
          * @return
          */
@@ -47,6 +77,11 @@ namespace doori {
         auto operator-(std::string&& rhs)-> Bigdecimal;
         auto operator-(const std::string& rhs)-> Bigdecimal;
 
+        /**
+         * == 오버라이딩
+         * @param rhs
+         * @return
+         */
         auto operator==(const Bigdecimal& rhs) const -> bool;
         auto operator==(Bigdecimal&& rhs) const -> bool;
         auto operator==(const std::string& rhs) const -> bool;
@@ -57,12 +92,14 @@ namespace doori {
             return (coreValue == std::string(value));
         }
 
+
+        auto test() -> void;
+
         /**
          * 값을 문자열로 리턴 합니다.
          * @return
          */
         auto toString() -> std::string;
-
         private:
         auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
         static auto plus(std::string value1, std::string value2) -> std::string;
@@ -70,8 +107,11 @@ namespace doori {
 //        auto divide(std::string value1, std::string value2) -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
-        auto setPositionStringAnalysis(std::string value, ushort &uAboveZero, ushort &uZero,
-                                               ushort &uBelowZero) noexcept -> void;
+        auto setFloatStringInfo( std::string value
+                               , ushort &uAboveZeroLen
+                               , ushort &uZeroPos
+                               , ushort &uBelowZeroLen ) noexcept -> void;
+        auto compareRevisedFloatString( std::string lhs, std::string rhs) noexcept -> bool;
         std::string coreValue;
     };
 }
