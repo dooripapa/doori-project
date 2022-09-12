@@ -5,6 +5,7 @@
 #ifndef DOORI_PROJECT_BIGDECIMAL_H
 #define DOORI_PROJECT_BIGDECIMAL_H
 
+#include "Log.h"
 #include <iostream>
 #include <forward_list>
 #include <list>
@@ -12,7 +13,7 @@
 
 namespace doori {
     /**
-     * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함
+     * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함 
      */
     class Bigdecimal {
         public:
@@ -111,7 +112,7 @@ namespace doori {
                                , ushort &uAboveZeroLen
                                , ushort &uZeroPos
                                , ushort &uBelowZeroLen ) noexcept -> void;
-        auto compareRevisedFloatString( std::string lhs, std::string rhs) noexcept -> bool;
+        auto compareRevisedFloatString( const std::string& lhs, const std::string& rhs) noexcept -> bool;
         std::string coreValue;
     };
 }

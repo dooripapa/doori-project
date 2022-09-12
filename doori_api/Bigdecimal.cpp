@@ -1,7 +1,6 @@
 //
 // Created by jaeseong on 21. 11. 1..
 //
-
 #include "Bigdecimal.h"
 
 namespace doori {
@@ -288,6 +287,7 @@ namespace doori {
     }
 
     auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
+		LOG(DEBUG, "111 operator-(Bigdecimal &&rhs)");
         std::cout<< this->coreValue << std::endl;
         std::cout<< rhs.coreValue << std::endl;
         std::string ret = minus(this->coreValue, rhs.coreValue, !(*this>rhs));
@@ -295,16 +295,19 @@ namespace doori {
     }
 
     auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal {
+		LOG(DEBUG, "222 operator-(std::string &&rhs)", "this->coreValue:", this->coreValue);
         std::string ret = minus(this->coreValue, rhs, !(*this>Bigdecimal{rhs}) );
         return Bigdecimal{ret};
     }
 
     auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal {
+		LOG(DEBUG, "333 operator-(const std::string &rhs)");
         std::string ret = minus(this->coreValue, rhs, !(*this>Bigdecimal{rhs}));
         return Bigdecimal{ret};
     }
 
     auto Bigdecimal::operator-(const Bigdecimal &rhs) -> Bigdecimal {
+		LOG(DEBUG, "444 operator-(const Bigdecimal &rhs)");
         if( this == &rhs)
             return *this;
         std::string ret = minus(this->coreValue, rhs.coreValue, !(*this>rhs));
@@ -413,7 +416,7 @@ namespace doori {
      * @param rhs
      * @return bool
      */
-    auto Bigdecimal::compareRevisedFloatString(std::string lhs, std::string rhs) noexcept -> bool {
+    auto Bigdecimal::compareRevisedFloatString(const std::string& lhs, const std::string& rhs) noexcept -> bool {
         auto lhsLen = lhs.length();
         auto rhsLen = rhs.length();
 
@@ -426,12 +429,12 @@ namespace doori {
             ;
         }else if (differenceLen > 0) {
             std::string zeroString  = std::string(differenceLen, '0');
-            revisedRhs = rhs.append( zeroString );
+            revisedRhs = rhs + zeroString ;
             return (lhs == revisedRhs);
         }
         else {
             std::string zeroString  = std::string(differenceLen, '0');
-            revisedRhs = rhs.append( zeroString );
+            revisedRhs = rhs + zeroString ;
             return (revisedLhs == rhs);
         }
         return (lhs == rhs);

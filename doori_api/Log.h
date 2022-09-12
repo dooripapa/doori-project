@@ -5,12 +5,13 @@
 // Created by doori on 19. 7. 25.
 //
 #pragma once
-#include<cstdio>
-#include<cstring>
-#include<iostream>
-#include<mutex>
-#include<iomanip>
-#include<fstream>
+#include <unistd.h>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <mutex>
+#include <iomanip>
+#include <fstream>
 
 using namespace std;
 
@@ -46,9 +47,11 @@ public:
 		 		,T arg, Tlist ... args) -> void;
 
 private:
+	static bool mIsInit;
 	ofstream	mLogfile;
 	LEVEL	    mlevel;
 	mutex		_logMutex;		
+	static const char * kNotDefineLogPath;
 	static Log instance;
 
 	Log();

@@ -9,6 +9,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/lib)
 
 set(TEST_FILES
+	${PROJECT_SOURCE_DIR}/doori_api/Log.h
+	${PROJECT_SOURCE_DIR}/doori_api/Log.hpp
+	${PROJECT_SOURCE_DIR}/doori_api/Log.cpp
     ${PROJECT_SOURCE_DIR}/doori_api/Json.cpp
     ${PROJECT_SOURCE_DIR}/doori_api/Json.h
     ${PROJECT_SOURCE_DIR}/doori_api/Bigdecimal.cpp

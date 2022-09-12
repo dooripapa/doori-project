@@ -15,9 +15,12 @@ namespace doori{
    이 변수가 초기화가 되었다는 보장을 할 수 없으므로, 사전에 선언해서
    , 런타임에 접근 가능하도록 한다.*/
 Log Log::instance; 
+bool Log::mIsInit = false;
+const char * Log::kNotDefineLogPath = "/tmp/doori.log";
 
 auto Log::setLogEnv(const string& path, LEVEL level) -> void
 {
+	mIsInit = true;
 	mlevel = level;
 
 	try{
@@ -32,6 +35,21 @@ auto Log::setLogEnv(const string& path, LEVEL level) -> void
 
 auto Log::logging() -> Log&
 {
+	if(!mIsInit) {
+		cout<< "===== Not Defined Log file Path =====" << endl;
+		int ret = access(kNotDefineLogPath, F_OK);
+		if(ret)
+		{
+			cout<< "===============================" << endl;
+			cout<< "=    Log() Error              =" << endl;
+			cout<< "=    cant write /tmp/log      =" << endl;
+			cout<< "===============================" << endl;
+			std::abort();
+		}
+		Log::instance.setLogEnv(kNotDefineLogPath, Log::LEVEL::D);
+		mIsInit = true;
+	}
+
 	return Log::instance;
 }
 

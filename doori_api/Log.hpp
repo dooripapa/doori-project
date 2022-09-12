@@ -53,7 +53,7 @@ auto Log::writeLog(LEVEL level
 	struct std::tm * ptm = std::localtime(&tt);
 	mLogfile << setfill(' ') << setw(20) << put_time(ptm,"%F %X"); //not supported by gcc
 #endif
-	mLogfile.imbue(std::locale("ko_KR.utf8"));
+	mLogfile.imbue(std::locale("C.UTF-8"));
 
 	auto strFilename = string(filename);
 	auto strFuncname = string(funcname);
@@ -99,7 +99,7 @@ auto Log::writeLog(LEVEL level
 	struct std::tm * ptm = std::localtime(&tt);
 	mLogfile << setfill(' ') << setw(20) << put_time(ptm,"%F %X"); //not supported by gcc
 #endif
-	mLogfile.imbue(std::locale("ko_KR.utf8"));
+	mLogfile.imbue(std::locale("C.UTF-8"));
 
     auto strFilename = string(filename);
     auto strFuncname = string(funcname);
