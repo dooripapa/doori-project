@@ -66,46 +66,21 @@ namespace doori {
         return std::string(ret.begin(), ret.end());
     }
 
+    /**
+     * 부동소수점, 정수형타입 문자열을 두수를 더합니다.
+     * @param rhs
+     * @return Bigdecimal
+     */
     auto Bigdecimal::operator+(const Bigdecimal &rhs) -> Bigdecimal& {
-        std::forward_list<char> ret;
-        int i=coreValue.size()-1;
-        int j=rhs.coreValue.size()-1;
+        ushort uLhsAboveZeroLen = 0;
+        ushort uLhsZeroPos = 0;
+        ushort uLhsBelowZeroLen = 0;
+        getFloatStyleInfo(this->coreValue, uLhsAboveZeroLen, uLhsZeroPos, uLhsBelowZeroLen );
 
-        std::string itos;
-        int iValue, jValue, upValue;
-        upValue=0;
-        for(;; --i, --j) {
-            if(i<0 && j<0) {
-                if(upValue>0)
-                    ret.push_front('1');
-                break;
-            }
-
-            if(i<0)
-                iValue = 0;
-            else
-                iValue = coreValue[i]-'0';
-
-            if(j<0)
-                jValue = 0;
-            else
-                jValue = rhs.coreValue[j]-'0';
-
-            if(upValue>0)
-                iValue+=1;
-
-            itos = std::to_string(iValue + jValue);
-            if( itos.length() > 1) {
-                upValue=1;
-                ret.push_front(itos[1]);
-            }
-            else {
-                upValue=0;
-                ret.push_front(itos[0]);
-            }
-            iValue=jValue=0;
-        }
-        coreValue = std::string(ret.begin(),ret.end());
+        ushort uRhsAboveZeroLen = 0;
+        ushort uRhsZeroPos = 0;
+        ushort uRhsBelowZeroLen = 0;
+        getFloatStyleInfo(this->coreValue, uRhsAboveZeroLen, uRhsZeroPos, uRhsBelowZeroLen );
         return *this;
     }
 
@@ -384,7 +359,7 @@ namespace doori {
      * @param uZero : 소소점 위치값
      * @param uBelowZero : 소수점 아래의 bbbbb 길이값
      */
-    auto Bigdecimal::setFloatStringInfo( std::string value
+    auto Bigdecimal::getFloatStyleInfo(std::string value
                                        , ushort &uAboveZeroLen
                                        , ushort &uZeroPos
                                        , ushort &uBelowZeroLen) noexcept -> void {
@@ -411,12 +386,12 @@ namespace doori {
 
     /**
      * 다른 길의 문자열을 입력 받아서, 길이가 다르면 짧은 문자열 뒤에 '0'값으로 길이를 보정 후,
-     * 두 문자열의 값을 비교한다.
+     * 숫자 형식으로 된 두 문자열의 값을 비교한다.
      * @param lhs
      * @param rhs
      * @return bool
      */
-    auto Bigdecimal::compareRevisedFloatString(const std::string& lhs, const std::string& rhs) noexcept -> bool {
+    auto Bigdecimal::compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool {
         auto lhsLen = lhs.length();
         auto rhsLen = rhs.length();
 
@@ -438,6 +413,55 @@ namespace doori {
             return (revisedLhs == rhs);
         }
         return (lhs == rhs);
+    }
+
+    /**
+     * 소수점 이하의 문자열을 합을 구한다.
+     * @param rhs
+     * @param lhs
+     * @example plusFloatStyleBelowZero( 7123(=0.7123), 3(=0.3)) -> < 1,0123 >
+     * @example plusFloatStyleBelowZero( 7525(=0.7525), 0005(=0.0005)) -> < 0,753 >
+     * @return std::tuple<uint8_t, string> : tuple<반올림여부, 더한값>
+     */
+    auto Bigdecimal::plusFloatStyleBelowZero(const std::string& rhs, const std::string& lhs) noexcept -> std::tuple<uint8_t , string> {
+        auto lhsLen = lhs.length();
+        auto rhsLen = rhs.length();
+
+        int differenceLen = lhsLen - rhsLen;
+        int maxLen = lhsLen > rhsLen ? lhsLen : rhsLen;
+
+        std::string revisedLhs;
+        std::string revisedRhs;
+
+        if (differenceLen ==0) {
+            ;
+        }else if (differenceLen > 0) {
+            std::string zeroString  = std::string(differenceLen, '0');
+            revisedRhs = rhs + zeroString ;
+        }
+        else {
+            std::string zeroString  = std::string(differenceLen, '0');
+            revisedRhs = rhs + zeroString ;
+        }
+
+        string plusString = plus(revisedRhs, revisedLhs);
+
+        //반올림
+        uint8_t Round = 0;
+        if( plusString.length() > maxLen ) //더한 문자열이 길이가 길어졌다면,
+            uint8_t Round = 1;
+
+        string reversedPlusString;
+        bool IsStop = false;
+        for(int i= plusString.length()-1; i>-1 ; --i) {
+            if( plusString[i]  == '0' && !IsStop )
+                reversedPlusString.push_back(plusString[i]);
+            else
+                IsStop = true;
+        }
+        std::reverse(reversedPlusString.begin(), reversedPlusString.end() );
+
+        return make_tuple(Round, reversedPlusString);
     }
 
 

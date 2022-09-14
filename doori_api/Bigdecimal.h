@@ -93,14 +93,15 @@ namespace doori {
             return (coreValue == std::string(value));
         }
 
-
-        auto test() -> void;
-
         /**
          * 값을 문자열로 리턴 합니다.
-         * @return
+         * @return std::string
          */
         auto toString() -> std::string;
+
+        /*
+         * private
+         */
         private:
         auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
         static auto plus(std::string value1, std::string value2) -> std::string;
@@ -108,12 +109,14 @@ namespace doori {
 //        auto divide(std::string value1, std::string value2) -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
-        auto setFloatStringInfo( std::string value
+        auto getFloatStyleInfo(std::string value
                                , ushort &uAboveZeroLen
                                , ushort &uZeroPos
                                , ushort &uBelowZeroLen ) noexcept -> void;
-        auto compareRevisedFloatString( const std::string& lhs, const std::string& rhs) noexcept -> bool;
+        auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
         std::string coreValue;
+
+        auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
     };
 }
 

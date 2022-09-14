@@ -36,3 +36,4 @@ TEST(Bigdecimal, Minus)
 {
     EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
 }
+
