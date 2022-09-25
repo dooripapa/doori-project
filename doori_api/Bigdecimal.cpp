@@ -6,11 +6,22 @@
 namespace doori {
 
     Bigdecimal::Bigdecimal(const std::string& value) {
-        coreValue = value;
+        if(value[0] == '-')
+            m_bMinusFlag = true;
+        else
+            m_bMinusFlag = false;
+
+        m_bMinusFlag?m_sValue.copy(value, value.size()-1, 1);
+        m_sValue = value;
     }
 
     Bigdecimal::Bigdecimal(std::string&& value) {
-        coreValue = value;
+        if(value[0] == '-')
+            m_bMinusFlag = true;
+        else
+            m_bMinusFlag = false;
+
+        m_sValue = value;
     }
 
     Bigdecimal::Bigdecimal(const Bigdecimal &rhs) {
@@ -75,12 +86,12 @@ namespace doori {
         ushort uLhsAboveZeroLen = 0;
         ushort uLhsZeroPos = 0;
         ushort uLhsBelowZeroLen = 0;
-        getFloatStyleInfo(this->coreValue, uLhsAboveZeroLen, uLhsZeroPos, uLhsBelowZeroLen );
+        getFloatStyleInfo(this->m_sValue, uLhsAboveZeroLen, uLhsZeroPos, uLhsBelowZeroLen );
 
         ushort uRhsAboveZeroLen = 0;
         ushort uRhsZeroPos = 0;
         ushort uRhsBelowZeroLen = 0;
-        getFloatStyleInfo(this->coreValue, uRhsAboveZeroLen, uRhsZeroPos, uRhsBelowZeroLen );
+        getFloatStyleInfo(this->m_sValue, uRhsAboveZeroLen, uRhsZeroPos, uRhsBelowZeroLen );
         return *this;
     }
 
@@ -94,7 +105,7 @@ namespace doori {
         int zeroCharCnt=0;
         std::list<std::string> stringList;
 
-        for_each(rhs.coreValue.begin(), rhs.coreValue.end(), [&](int i){
+        for_each(rhs.m_sValue.begin(), rhs.m_sValue.end(), [&](int i){
             auto el = std::to_string(i);
             for(int m=el.length()-1 ;m>=0;m--, zeroCharCnt++) {
                 stringList.push_back(multiply(sRet, el[m], zeroCharCnt));
@@ -152,14 +163,14 @@ namespace doori {
     }
 
     auto Bigdecimal::toString() -> std::string {
-        return coreValue;
+        return m_sValue;
     }
 
     auto Bigdecimal::copyFrom(Bigdecimal &&rhs) noexcept -> void {
-        coreValue = rhs.coreValue;
+        m_sValue = rhs.m_sValue;
     }
     auto Bigdecimal::copyFrom(const Bigdecimal &rhs) noexcept -> void {
-        coreValue = rhs.coreValue;
+        m_sValue = rhs.m_sValue;
     }
 
     /// 숫자 형식의 문자열의 값을 마이너스를 한다.
@@ -170,8 +181,6 @@ namespace doori {
 
     auto Bigdecimal::minus(std::string value1, std::string value2, bool minusFlag) -> std::string {
         std::forward_list<char> ret;
-
-        std::cout<< "flag:"<< std::boolalpha << minusFlag << std::endl;
 
         if ( minusFlag ) {
             std::swap(value1, value2);
@@ -207,7 +216,10 @@ namespace doori {
             }
             sum = abs(sum);
             itos = std::to_string(sum);
-            ret.push_front(itos[0]);
+            if( itos[0] == '0' )
+                ;
+            else
+                ret.push_front(itos[0]);
         }
         return std::string{ret.begin(),ret.end()};
     }
@@ -215,16 +227,14 @@ namespace doori {
     auto Bigdecimal::operator==(const Bigdecimal &rhs) const -> bool {
         if ( this == &rhs )
             return true;
-        std::cout<< "operator==(const Bigdecimal &rhs)"<<this->coreValue<<":"<<rhs.coreValue <<std::endl;
-        return (this->coreValue == rhs.coreValue);
+        return (this->m_sValue == rhs.m_sValue);
     }
 
     auto Bigdecimal::operator==(Bigdecimal &&rhs) const -> bool {
         if ( this == &rhs )
             return true;
 
-        std::cout<< "operator==(Bigdecimal &&rhs)" <<std::endl;
-        return (this->coreValue == rhs.coreValue);
+        return (this->m_sValue == rhs.m_sValue);
     }
 
     auto Bigdecimal::operator=(const Bigdecimal &rhs) -> Bigdecimal & {
@@ -244,48 +254,46 @@ namespace doori {
     }
 
     auto Bigdecimal::operator==(const std::string &rhs) const -> bool {
-        return (this->coreValue == rhs);
+        return (this->m_sValue == rhs);
     }
 
     auto Bigdecimal::operator==(std::string &&rhs) const -> bool {
-        return (this->coreValue == rhs);
+        return (this->m_sValue == rhs);
     }
 
     auto Bigdecimal::operator=(const std::string &rhs) -> Bigdecimal & {
-        this->coreValue = rhs;
+        this->m_sValue = rhs;
         return *this;
     }
 
     auto Bigdecimal::operator=(std::string &&rhs) -> Bigdecimal & {
-        this->coreValue = rhs;
+        this->m_sValue = rhs;
         return *this;
     }
 
     auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
-		LOG(DEBUG, "111 operator-(Bigdecimal &&rhs)");
-        std::cout<< this->coreValue << std::endl;
-        std::cout<< rhs.coreValue << std::endl;
-        std::string ret = minus(this->coreValue, rhs.coreValue, !(*this>rhs));
+        std::string ret = minus(this->m_sValue, rhs.m_sValue, !(*this > rhs));
+        LOG(DEBUG, "operator-(Bigdecimal &&rhs)[", ret, "]");
         return Bigdecimal{ret};
     }
 
     auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal {
-		LOG(DEBUG, "222 operator-(std::string &&rhs)", "this->coreValue:", this->coreValue);
-        std::string ret = minus(this->coreValue, rhs, !(*this>Bigdecimal{rhs}) );
+        std::string ret = minus(this->m_sValue, rhs, !(*this > Bigdecimal{rhs}) );
+        LOG(DEBUG, "[", ret, "]");
         return Bigdecimal{ret};
     }
 
     auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal {
-		LOG(DEBUG, "333 operator-(const std::string &rhs)");
-        std::string ret = minus(this->coreValue, rhs, !(*this>Bigdecimal{rhs}));
+        std::string ret = minus(this->m_sValue, rhs, !(*this > Bigdecimal{rhs}));
+        LOG(DEBUG, "[", ret, "]");
         return Bigdecimal{ret};
     }
 
     auto Bigdecimal::operator-(const Bigdecimal &rhs) -> Bigdecimal {
-		LOG(DEBUG, "444 operator-(const Bigdecimal &rhs)");
         if( this == &rhs)
             return *this;
-        std::string ret = minus(this->coreValue, rhs.coreValue, !(*this>rhs));
+        std::string ret = minus(this->m_sValue, rhs.m_sValue, !(*this > rhs) );
+        LOG(DEBUG, "[", ret, "]");
         return Bigdecimal{ret};
     }
 
@@ -293,13 +301,8 @@ namespace doori {
         if( this == &rhs)
             return false;
 
-
-        for(auto it=this->coreValue.rbegin();it!=this->coreValue.rend();++it) {
-
-        }
-
-        std::string reverseString1 = this->coreValue;
-        std::string reverseString2 = rhs.coreValue;
+        std::string reverseString1 = this->m_sValue;
+        std::string reverseString2 = rhs.m_sValue;
         reverse(reverseString1.begin(), reverseString1.end());
         reverse(reverseString2.begin(), reverseString2.end());
 
@@ -327,8 +330,8 @@ namespace doori {
         if( this == &rhs)
             return true;
 
-        std::string reverseString1 =  this->coreValue;
-        std::string reverseString2 =  rhs.coreValue;
+        std::string reverseString1 =  this->m_sValue;
+        std::string reverseString2 =  rhs.m_sValue;
         reverse(reverseString1.begin(), reverseString1.end());
         reverse(reverseString2.begin(), reverseString2.end());
 

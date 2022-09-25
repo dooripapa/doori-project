@@ -90,7 +90,7 @@ namespace doori {
         template <int N>
         auto operator==(char const(&value)[N]) const -> bool
         {
-            return (coreValue == std::string(value));
+            return (m_sValue == std::string(value));
         }
 
         /**
@@ -114,9 +114,10 @@ namespace doori {
                                , ushort &uZeroPos
                                , ushort &uBelowZeroLen ) noexcept -> void;
         auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
-        std::string coreValue;
-
         auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
+        std::string m_sValue;
+        bool m_bMinusFlag;
+        bool m_bFloatTypeFlag;
     };
 }
 

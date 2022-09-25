@@ -13,7 +13,6 @@ template<typename T>
 auto Log::log(T value) -> void
 {
     _writeLog( value );
-    return;
 }
 
 template<typename T, typename... Tlist>
@@ -21,13 +20,12 @@ auto Log::log(T arg, Tlist ... args) -> void
 {
     log( arg );
     log( args... );
-    return;
 }
 
 template<typename T>
 auto Log::writeLog(LEVEL level
-                    ,const char *filename
-                    ,const char *funcname
+                    ,const char *fileName
+                    ,const char *funcName
                     ,const int codeLine
                     , T arg) -> void
 {
@@ -53,27 +51,37 @@ auto Log::writeLog(LEVEL level
 	struct std::tm * ptm = std::localtime(&tt);
 	mLogfile << setfill(' ') << setw(20) << put_time(ptm,"%F %X"); //not supported by gcc
 #endif
-	mLogfile.imbue(std::locale("C.UTF-8"));
+    auto strFilename = string(fileName);
+    auto strFuncname = string(funcName);
+    if(!mLogfile)
+    {
+        cout.imbue(std::locale("C.UTF-8"));
 
-	auto strFilename = string(filename);
-	auto strFuncname = string(funcname);
+        cout << acTime << setfill(' ') ;
+        cout << '|' << setfill(' ') << setw(25) << std::left  << (strFilename.size()>25?strFilename.substr(strFilename.size()-25,25):strFilename);
+        cout << '|' << setfill(' ') << setw(25) << std::left  << (strFuncname.size()>25?strFuncname.substr(strFuncname.size()-25,25):strFuncname);
+        cout << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
+        cout << '|';
+    }
+    else
+    {
+        mLogfile.imbue(std::locale("C.UTF-8"));
 
-	mLogfile << acTime << setfill(' ') ;
-    mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFilename.size()>25?strFilename.substr(strFilename.size()-25,25):strFilename);
-    mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFuncname.size()>25?strFuncname.substr(strFuncname.size()-25,25):strFuncname);
-    mLogfile << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
-    mLogfile << '|';
-
+        mLogfile << acTime << setfill(' ') ;
+        mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFilename.size()>25?strFilename.substr(strFilename.size()-25,25):strFilename);
+        mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFuncname.size()>25?strFuncname.substr(strFuncname.size()-25,25):strFuncname);
+        mLogfile << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
+        mLogfile << '|';
+    }
     log( arg );
 	_writeLineLog();
-    return;
 }
 
 
 template<typename T, typename... Tlist>
 auto Log::writeLog(LEVEL level
-                    ,const char *filename
-                    ,const char *funcname
+                    ,const char *fileName
+                    ,const char *funcName
                     ,const int codeLine
                     ,T arg, Tlist ... args) -> void
 {
@@ -99,22 +107,31 @@ auto Log::writeLog(LEVEL level
 	struct std::tm * ptm = std::localtime(&tt);
 	mLogfile << setfill(' ') << setw(20) << put_time(ptm,"%F %X"); //not supported by gcc
 #endif
-	mLogfile.imbue(std::locale("C.UTF-8"));
+    auto strFilename = string(fileName);
+    auto strFuncname = string(funcName);
+    if(!mLogfile)
+    {
+        cout.imbue(std::locale("C.UTF-8"));
 
-    auto strFilename = string(filename);
-    auto strFuncname = string(funcname);
+        cout << acTime << setfill(' ') ;
+        cout << '|' << setfill(' ') << setw(25) << std::left  << (strFilename.size()>25?strFilename.substr(strFilename.size()-25,25):strFilename);
+        cout << '|' << setfill(' ') << setw(25) << std::left  << (strFuncname.size()>25?strFuncname.substr(strFuncname.size()-25,25):strFuncname);
+        cout << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
+        cout << '|';
+    }
+    else
+    {
+        mLogfile.imbue(std::locale("C.UTF-8"));
 
-	mLogfile << acTime << setfill(' ') ;
-    mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFilename.size()>25?strFilename.substr(strFilename.size()-25,25):strFilename);
-    mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFuncname.size()>25?strFuncname.substr(strFuncname.size()-25,25):strFuncname);
-    mLogfile << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
-	mLogfile << '|';
-
+        mLogfile << acTime << setfill(' ') ;
+        mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFilename.size()>25?strFilename.substr(strFilename.size()-25,25):strFilename);
+        mLogfile << '|' << setfill(' ') << setw(25) << std::left  << (strFuncname.size()>25?strFuncname.substr(strFuncname.size()-25,25):strFuncname);
+        mLogfile << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
+        mLogfile << '|';
+    }
     log( arg );
     log( args... );
-
 	_writeLineLog();
-    return;
 }
 
 }//namespace doori

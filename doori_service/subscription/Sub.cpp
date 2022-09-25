@@ -82,7 +82,7 @@ auto Sub::LogFile() noexcept -> std::string {
 
 auto Sub::LogLevel() noexcept -> Log::LEVEL {
     if(!mSubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
-        return Log::convvertLevel(mSubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
+        return Log::convertToLevel(mSubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
 
     return Application::LogLevel();
 }

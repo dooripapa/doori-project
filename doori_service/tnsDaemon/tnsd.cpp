@@ -318,7 +318,7 @@ auto Tnsd::LogFile() noexcept -> std::string {
 
 auto Tnsd::LogLevel() noexcept -> Log::LEVEL {
     if(!mDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
-        return Log::convvertLevel(mDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
+        return Log::convertToLevel(mDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
 
     return Application::LogLevel();
 }

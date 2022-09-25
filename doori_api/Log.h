@@ -16,53 +16,54 @@
 using namespace std;
 
 namespace doori{
-using std::chrono::system_clock;
+    using std::chrono::system_clock;
 
-class Log
-{
-public:
-    enum class LEVEL:unsigned int{D=1,I=2,W=3,E=4,F=5};
-    auto static convvertLevel(const std::string level) -> LEVEL;
-	auto static logging() -> Log&;
-	auto setLogEnv(const string& path, LEVEL level) -> void;
+    class Log
+    {
+    public:
+        enum class LEVEL:unsigned int{D=1,I=2,W=3,E=4,F=5};
+        auto static convertToLevel(const string& level) -> LEVEL;
+        auto static logging() -> Log&;
+        auto setLogEnv(const string& path, LEVEL level) -> void;
 
-	template<typename T>
-	auto log(T value) -> void;
+        template<typename T>
+        auto log(T value) -> void;
 
-	template<typename T, typename... Tlist>
-	auto log(T arg, Tlist ... args) -> void;
+        template<typename T, typename... Tlist>
+        auto log(T arg, Tlist ... args) -> void;
 
-	template<typename T>
-	auto writeLog(LEVEL level
-		 		,const char *filename
-		 		,const char *funcname
-		 		,const int codeLine
-		 		,T arg) -> void;
+        template<typename T>
+        auto writeLog(LEVEL level
+                    ,const char *fileName
+                    ,const char *funcName
+                    ,int codeLine
+                    ,T arg) -> void;
 
-	template<typename T, typename... Tlist>
-	auto writeLog(LEVEL level
-		 		,const char *filename
-		 		,const char *funcname
-		 		,const int codeLine
-		 		,T arg, Tlist ... args) -> void;
+        template<typename T, typename... Tlist>
+        auto writeLog(LEVEL level
+                    ,const char *fileName
+                    ,const char *funcName
+                    ,int codeLine
+                    ,T arg, Tlist ... args) -> void;
 
-private:
-	static bool mIsInit;
-	ofstream	mLogfile;
-	LEVEL	    mlevel;
-	mutex		_logMutex;		
-	static const char * kNotDefineLogPath;
-	static Log instance;
+    private:
+        ofstream	mLogfile;
+        LEVEL	    mlevel;
+        mutex		_logMutex;
+        static Log instance;
 
-	Log();
-	~Log();
+        Log();
+        ~Log();
 
-	auto _writeLog( LEVEL level ) -> void;
-	template<typename T>
-	auto _writeLog(T t) -> void{mLogfile<<t;};
-	auto _writeLineLog() -> void;
-};
-
+        auto _writeLog( LEVEL level ) -> void;
+        template<typename T>
+        auto _writeLog(T t) -> void
+        {
+            !mLogfile? cout<<t: mLogfile<<t;
+        };
+        auto _writeLineLog() -> void;
+        auto _writeLogLevel(ofstream& of, LEVEL level) -> void;
+    };
 }//namespace doori
 
 #include "Log.hpp"

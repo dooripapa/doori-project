@@ -15,104 +15,102 @@ namespace doori{
    이 변수가 초기화가 되었다는 보장을 할 수 없으므로, 사전에 선언해서
    , 런타임에 접근 가능하도록 한다.*/
 Log Log::instance; 
-bool Log::mIsInit = false;
-const char * Log::kNotDefineLogPath = "/tmp/doori.log";
 
 auto Log::setLogEnv(const string& path, LEVEL level) -> void
 {
-	mIsInit = true;
 	mlevel = level;
 
 	try{
 		mLogfile.open(path, ofstream::out|ofstream::app);
 	}
 	catch (...){
-		cout << "fail to open " << path << endl;	
-		exit(1);
+		cout << "fail to open " << path << endl;
+        std::abort();
 	}
-	return;
 }
 
 auto Log::logging() -> Log&
 {
-	if(!mIsInit) {
-		cout<< "===== Not Defined Log file Path =====" << endl;
-		int ret = access(kNotDefineLogPath, F_OK);
-		if(ret)
-		{
-			cout<< "===============================" << endl;
-			cout<< "=    Log() Error              =" << endl;
-			cout<< "=    cant write /tmp/log      =" << endl;
-			cout<< "===============================" << endl;
-			std::abort();
-		}
-		Log::instance.setLogEnv(kNotDefineLogPath, Log::LEVEL::D);
-		mIsInit = true;
-	}
-
 	return Log::instance;
 }
 
 auto Log::_writeLog( LEVEL level ) -> void
 {
-	switch( level )
-	{
-		case LEVEL::D:
-			mLogfile << "D^ ";
-			break;
-		case LEVEL::I:
-			mLogfile << "I^ ";
-			break;
-		case LEVEL::W:
-			mLogfile << "W^ ";
-			break;
-		case LEVEL::E:
-			mLogfile << "E^ ";
-			break;
-		case LEVEL::F:
-			mLogfile << "F^ ";
-			break;
-	}
+    if (!mLogfile)
+        _writeLogLevel(reinterpret_cast<ofstream&>(cout), level);
+    else
+        _writeLogLevel(mLogfile, level);
 }
 
-auto Log::_writeLineLog( ) -> void { mLogfile << endl; }
-
-Log::Log()
+auto Log::_writeLineLog( ) -> void
 {
+    !mLogfile? cout<<endl : mLogfile<<endl;
 }
 
 Log::~Log()
 {
-	if( mLogfile.is_open() )
-	{
-		mLogfile.close();
-	}
-}
-
-///@note 무조건 성공
-///@param "DEBUG|INFO|WARN|FATAL|ERROR" 해당되며, 그외(잘못된) 무조건 LEVEL::D로 리턴
-auto Log::convvertLevel(const std::string level) -> LEVEL {
-
-    if( level == "DEBUG"){
-        return LEVEL::D;
-    }
-    else if( level == "INFO"){
-        return LEVEL::I;
-    }
-    else if( level == "WARN"){
-        return LEVEL::W;
-    }
-    else if( level == "ERROR"){
-        return LEVEL::E;
-    }
-    else if( level == "FATAL"){
-        return LEVEL::F;
+    if(!mLogfile)
+    {
+        ;
     }
     else
     {
-        return LEVEL::D;
+        if( mLogfile.is_open() )
+        {
+            mLogfile.close();
+        }
     }
 }
 
+    ///@note 허가 되지 않는 문자열 입력시 프로세스 다운
+    ///@param "DEBUG|INFO|WARN|FATAL|ERROR" 해당되며, 그외(잘못된) 무조건 LEVEL::D로 리턴
+    auto Log::convertToLevel(const string& level) -> LEVEL {
+
+        if( level == "DEBUG"){
+            return LEVEL::D;
+        }
+        else if( level == "INFO"){
+            return LEVEL::I;
+        }
+        else if( level == "WARN"){
+            return LEVEL::W;
+        }
+        else if( level == "ERROR"){
+            return LEVEL::E;
+        }
+        else if( level == "FATAL"){
+            return LEVEL::F;
+        }
+        else
+        {
+            cerr<<"failed to convert from STRING to LOG::LEVEL"<<endl;
+            std::abort();
+        }
+    }
+
+    Log::Log() {
+
+    }
+
+    auto Log::_writeLogLevel(ofstream& of, Log::LEVEL level) -> void {
+        switch( level )
+        {
+            case LEVEL::D:
+                of << "D^ ";
+                break;
+            case LEVEL::I:
+                of << "I^ ";
+                break;
+            case LEVEL::W:
+                of << "W^ ";
+                break;
+            case LEVEL::E:
+                of << "E^ ";
+                break;
+            case LEVEL::F:
+                of << "F^ ";
+                break;
+        }
+    }
 
 }//namespace doori

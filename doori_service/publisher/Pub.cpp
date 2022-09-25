@@ -88,7 +88,7 @@ auto Pub::LogFile() noexcept -> std::string {
 
 auto Pub::LogLevel() noexcept -> Log::LEVEL {
     if(!mPubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
-        return Log::convvertLevel(mPubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
+        return Log::convertToLevel(mPubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
 
     return doori::Application::LogLevel();
 }
