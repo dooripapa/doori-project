@@ -6,22 +6,34 @@
 namespace doori {
 
     Bigdecimal::Bigdecimal(const std::string& value) {
+        LOG(DEBUG,"");
         if(value[0] == '-')
             m_bMinusFlag = true;
         else
             m_bMinusFlag = false;
-
-        m_bMinusFlag?m_sValue.copy(value, value.size()-1, 1);
-        m_sValue = value;
+        //마이너스기호가 있으면, 뒤에서부터 복사
+        try {
+            m_bMinusFlag? m_sValue.replace(1,value.length()-1, value):m_sValue.replace(0,value.length(), value);
+        } catch (std::out_of_range) {
+            LOG(FATAL,"Replace exeeption out_of_range");
+            std::abort();
+        }
     }
 
     Bigdecimal::Bigdecimal(std::string&& value) {
+        LOG(DEBUG,"");
         if(value[0] == '-')
             m_bMinusFlag = true;
         else
             m_bMinusFlag = false;
 
-        m_sValue = value;
+        //마이너스기호가 있으면, 뒤에서부터 복사
+        try {
+            m_bMinusFlag? m_sValue.replace(1,value.length()-1, value):m_sValue.replace(0,value.length(), value);
+        } catch (std::out_of_range) {
+            LOG(FATAL,"Replace exeeption out_of_range");
+            std::abort();
+        }
     }
 
     Bigdecimal::Bigdecimal(const Bigdecimal &rhs) {
@@ -301,6 +313,16 @@ namespace doori {
         if( this == &rhs)
             return false;
 
+        //음수 > 양수
+        if(this->m_bMinusFlag && !rhs.m_bMinusFlag)
+            return false;
+        //양수 > 음수
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag)
+            return true;
+        //다음단계로
+        else
+            ;
+
         std::string reverseString1 = this->m_sValue;
         std::string reverseString2 = rhs.m_sValue;
         reverse(reverseString1.begin(), reverseString1.end());
@@ -311,16 +333,36 @@ namespace doori {
         auto Len1 = reverseString1.length();
         auto Len2 = reverseString2.length();
 
-        if( Len1 > Len2 )
-            return true;
-        else if (Len1 < Len2 )
-            return false;
+        if( Len1 > Len2 ) {
+            if(this->m_bMinusFlag && rhs.m_bMinusFlag)
+                return false;
+            else
+                return true;
+        }
+        else if (Len1 < Len2 ) {
+            if(this->m_bMinusFlag && rhs.m_bMinusFlag)
+                return true;
+            else
+                return false;
+        }
+        // 두 숫자의 길이가 같으면, scan
         else {
             for (int i = 0; i < Len1; ++i) {
-                if( reverseString1[i] > reverseString2[i] )
-                    bStatus = true;
-                else
-                    bStatus = false;
+                if( reverseString1[i] > reverseString2[i] ) {
+                    if( this->m_bMinusFlag && rhs.m_bMinusFlag )
+                        return false;
+                    else
+                        return true;
+                }
+                else if( reverseString1[i] == reverseString2[i] ) {
+                    break;
+                }
+                else {
+                    if( this->m_bMinusFlag && rhs.m_bMinusFlag )
+                        return true;
+                    else
+                        return false;
+                }
             }
         }
         return false;
@@ -328,10 +370,20 @@ namespace doori {
 
     auto Bigdecimal::operator>=(const Bigdecimal &rhs) const -> bool {
         if( this == &rhs)
-            return true;
+            return false;
 
-        std::string reverseString1 =  this->m_sValue;
-        std::string reverseString2 =  rhs.m_sValue;
+        //음수 > 양수
+        if(this->m_bMinusFlag && !rhs.m_bMinusFlag)
+            return false;
+        //양수 > 음수
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag)
+            return true;
+        //다음단계로
+        else
+            ;
+
+        std::string reverseString1 = this->m_sValue;
+        std::string reverseString2 = rhs.m_sValue;
         reverse(reverseString1.begin(), reverseString1.end());
         reverse(reverseString2.begin(), reverseString2.end());
 
@@ -340,16 +392,36 @@ namespace doori {
         auto Len1 = reverseString1.length();
         auto Len2 = reverseString2.length();
 
-        if( Len1 > Len2 )
-            return true;
-        else if (Len1 < Len2 )
-            return false;
+        if( Len1 > Len2 ) {
+            if(this->m_bMinusFlag && rhs.m_bMinusFlag)
+                return false;
+            else
+                return true;
+        }
+        else if (Len1 < Len2 ) {
+            if(this->m_bMinusFlag && rhs.m_bMinusFlag)
+                return true;
+            else
+                return false;
+        }
+        // 두 숫자의 길이가 같으면, scan
         else {
             for (int i = 0; i < Len1; ++i) {
-                if( reverseString1[i] > reverseString2[i] )
-                    bStatus = true;
-                else
-                    bStatus = false;
+                if( reverseString1[i] > reverseString2[i] ) {
+                    if( this->m_bMinusFlag && rhs.m_bMinusFlag )
+                        return false;
+                    else
+                        return true;
+                }
+                else if( reverseString1[i] == reverseString2[i] ) {
+                    break;
+                }
+                else {
+                    if( this->m_bMinusFlag && rhs.m_bMinusFlag )
+                        return true;
+                    else
+                        return false;
+                }
             }
         }
         return false;

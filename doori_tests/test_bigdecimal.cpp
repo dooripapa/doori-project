@@ -18,6 +18,19 @@ TEST(Bigdecimal, ConstructTest)
     EXPECT_EQ("-9", value3.toString());
 }
 
+TEST(Bigdecimal, SignBiggerThan)
+{
+    doori::Bigdecimal value1{"348"};
+    doori::Bigdecimal value2{"123"};
+    // value1 > value2
+    EXPECT_GT( value1, value2 );
+
+    doori::Bigdecimal value3{"192394959192394959"};
+    doori::Bigdecimal value4{"192394959192394959"};
+    // value1 > value2
+    EXPECT_GE( value3, value4 );
+}
+
 TEST(Bigdecimal, MinusPositive)
 {
     doori::Bigdecimal value1{"348"};
