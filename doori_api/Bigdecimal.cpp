@@ -13,7 +13,7 @@ namespace doori {
             m_bMinusFlag = false;
         //마이너스기호가 있으면, 뒤에서부터 복사
         try {
-            m_bMinusFlag? m_sValue.replace(1,value.length()-1, value):m_sValue.replace(0,value.length(), value);
+            m_bMinusFlag? m_sValue=value.substr(1,value.size()-1):m_sValue=value;
         } catch (std::out_of_range) {
             LOG(FATAL,"Replace exeeption out_of_range");
             std::abort();
@@ -29,7 +29,7 @@ namespace doori {
 
         //마이너스기호가 있으면, 뒤에서부터 복사
         try {
-            m_bMinusFlag? m_sValue.replace(1,value.length()-1, value):m_sValue.replace(0,value.length(), value);
+            m_bMinusFlag? m_sValue=value.substr(1,value.size()-1):m_sValue=value;
         } catch (std::out_of_range) {
             LOG(FATAL,"Replace exeeption out_of_range");
             std::abort();
@@ -409,22 +409,22 @@ namespace doori {
             for (int i = 0; i < Len1; ++i) {
                 if( reverseString1[i] > reverseString2[i] ) {
                     if( this->m_bMinusFlag && rhs.m_bMinusFlag )
-                        return false;
+                        bStatus = false;
                     else
-                        return true;
+                        bStatus = true;
                 }
                 else if( reverseString1[i] == reverseString2[i] ) {
-                    break;
+                    bStatus = true;
                 }
                 else {
                     if( this->m_bMinusFlag && rhs.m_bMinusFlag )
-                        return true;
+                        bStatus = true;
                     else
-                        return false;
+                        bStatus = false;
                 }
             }
         }
-        return false;
+        return bStatus;
     }
 
     /**

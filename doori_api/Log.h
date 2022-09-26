@@ -59,7 +59,10 @@ namespace doori{
         template<typename T>
         auto _writeLog(T t) -> void
         {
-            !mLogfile? cout<<t: mLogfile<<t;
+            if(!mLogfile)
+                cout<<t;
+            else
+                mLogfile<<t;
         };
         auto _writeLineLog() -> void;
         auto _writeLogLevel(ofstream& of, LEVEL level) -> void;

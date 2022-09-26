@@ -25,9 +25,24 @@ TEST(Bigdecimal, SignBiggerThan)
     // value1 > value2
     EXPECT_GT( value1, value2 );
 
+    doori::Bigdecimal m_value1{"-123"};
+    doori::Bigdecimal p_value2{"123"};
+    // value1 > value2
+    EXPECT_GT( p_value2, m_value1 );
+
+    doori::Bigdecimal v1{"0"};
+    doori::Bigdecimal v2{"0"};
+    // value1 >= value2
+    EXPECT_GE( v1, v2);
+
+    doori::Bigdecimal v3{"0"};
+    doori::Bigdecimal v4{"-99999999999999"};
+    // value1 >= value2
+    EXPECT_GE( v1, v2);
+
     doori::Bigdecimal value3{"192394959192394959"};
     doori::Bigdecimal value4{"192394959192394959"};
-    // value1 > value2
+    // value1 >= value2
     EXPECT_GE( value3, value4 );
 }
 

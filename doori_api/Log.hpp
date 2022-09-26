@@ -85,8 +85,13 @@ auto Log::writeLog(LEVEL level
                     ,const int codeLine
                     ,T arg, Tlist ... args) -> void
 {
-	if( mlevel > level )
-		return;
+    if(!mLogfile) {
+        ;
+    }
+    else {
+        if( mlevel > level )
+            return;
+    }
 
 	//lock_guard 생성자를, 생성하자 마자 락을 시도
 	//소멸시, mutex(_logMutex) 해제

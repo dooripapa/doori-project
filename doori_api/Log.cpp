@@ -88,11 +88,13 @@ Log::~Log()
         }
     }
 
-    Log::Log() {
-
+    Log::Log() : mlevel(Log::LEVEL::D) {
+        //초기화
+        mLogfile.close();
     }
 
     auto Log::_writeLogLevel(ofstream& of, Log::LEVEL level) -> void {
+
         switch( level )
         {
             case LEVEL::D:
