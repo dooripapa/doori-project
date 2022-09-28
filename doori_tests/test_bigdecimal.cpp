@@ -8,15 +8,52 @@
 
 TEST(Bigdecimal, ConstructTest)
 {
-    doori::Bigdecimal value1{"5"};
-    EXPECT_EQ("5", value1.toString());
+    doori::Bigdecimal v1{"5"};
+    EXPECT_EQ("5", v1.toString());
 
-    doori::Bigdecimal value2{"9"};
-    EXPECT_EQ("9", value2.toString());
+    doori::Bigdecimal v2{"999999999999999999999999999999999999999999999999999999999"};
+    EXPECT_EQ("999999999999999999999999999999999999999999999999999999999", v2.toString());
 
-    doori::Bigdecimal value3{"-9"};
-    EXPECT_EQ("-9", value3.toString());
+    doori::Bigdecimal v3{"-9"};
+    EXPECT_EQ("-9", v3.toString());
+
+    doori::Bigdecimal v4{"-00000000000000000000000000000000000000"};
+    EXPECT_EQ("0", v4.toString());
+
+    doori::Bigdecimal v5{"+0"};
+    EXPECT_EQ("0", v5.toString());
+
+    doori::Bigdecimal v6{"+12345"};
+    EXPECT_EQ("12345", v6.toString());
+
+    doori::Bigdecimal v7{"-123456"};
+    EXPECT_EQ("-123456", v7.toString());
+
+    doori::Bigdecimal v8{"   -123456"};
+    EXPECT_EQ("-123456", v8.toString());
+
+    doori::Bigdecimal v9{"   +123456"};
+    EXPECT_EQ("123456", v9.toString());
+
+    doori::Bigdecimal v10{"   +00000000000000000000000"};
+    EXPECT_EQ("0", v10.toString());
+
+    doori::Bigdecimal v11{"   -00000"};
+    EXPECT_EQ("0", v11.toString());
+
+    doori::Bigdecimal v12{"   -0.000"};
+    EXPECT_EQ("0", v12.toString());
+
+    doori::Bigdecimal v13{"   +0.000"};
+    EXPECT_EQ("0", v13.toString());
+
+    doori::Bigdecimal v14{"   00.1234"};
+    EXPECT_EQ("0.1234", v14.toString());
+
+    doori::Bigdecimal v15{"+00.1234"};
+    EXPECT_EQ("0.1234", v15.toString());
 }
+
 
 TEST(Bigdecimal, SignBiggerThan)
 {

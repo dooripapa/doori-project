@@ -6,34 +6,11 @@
 namespace doori {
 
     Bigdecimal::Bigdecimal(const std::string& value) {
-        LOG(DEBUG,"");
-        if(value[0] == '-')
-            m_bMinusFlag = true;
-        else
-            m_bMinusFlag = false;
-        //마이너스기호가 있으면, 뒤에서부터 복사
-        try {
-            m_bMinusFlag? m_sValue=value.substr(1,value.size()-1):m_sValue=value;
-        } catch (std::out_of_range) {
-            LOG(FATAL,"Replace exeeption out_of_range");
-            std::abort();
-        }
+        init(value);
     }
 
     Bigdecimal::Bigdecimal(std::string&& value) {
-        LOG(DEBUG,"");
-        if(value[0] == '-')
-            m_bMinusFlag = true;
-        else
-            m_bMinusFlag = false;
-
-        //마이너스기호가 있으면, 뒤에서부터 복사
-        try {
-            m_bMinusFlag? m_sValue=value.substr(1,value.size()-1):m_sValue=value;
-        } catch (std::out_of_range) {
-            LOG(FATAL,"Replace exeeption out_of_range");
-            std::abort();
-        }
+        init(std::move(value));
     }
 
     Bigdecimal::Bigdecimal(const Bigdecimal &rhs) {
@@ -175,13 +152,17 @@ namespace doori {
     }
 
     auto Bigdecimal::toString() -> std::string {
-        return m_sValue;
+        return (m_bMinusFlag?("-"+m_sValue):m_sValue);
     }
 
     auto Bigdecimal::copyFrom(Bigdecimal &&rhs) noexcept -> void {
-        m_sValue = rhs.m_sValue;
+        m_bMinusFlag = rhs.m_bMinusFlag;
+        m_bFloatTypeFlag = rhs.m_bFloatTypeFlag;
+        m_sValue = std::move(rhs.m_sValue) ;
     }
     auto Bigdecimal::copyFrom(const Bigdecimal &rhs) noexcept -> void {
+        m_bMinusFlag = rhs.m_bMinusFlag;
+        m_bFloatTypeFlag = rhs.m_bFloatTypeFlag;
         m_sValue = rhs.m_sValue;
     }
 
@@ -192,6 +173,7 @@ namespace doori {
     /// \return
 
     auto Bigdecimal::minus(std::string value1, std::string value2, bool minusFlag) -> std::string {
+        LOG(DEBUG, "value1[", value1, "]", " value2[", value2, "]", " Minus Flag", minusFlag );
         std::forward_list<char> ret;
 
         if ( minusFlag ) {
@@ -284,8 +266,8 @@ namespace doori {
     }
 
     auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
+        LOG(DEBUG, "this->m_sValue:", this->m_sValue, ",rhs.m_sValue:", rhs.m_sValue);
         std::string ret = minus(this->m_sValue, rhs.m_sValue, !(*this > rhs));
-        LOG(DEBUG, "operator-(Bigdecimal &&rhs)[", ret, "]");
         return Bigdecimal{ret};
     }
 
@@ -539,5 +521,60 @@ namespace doori {
         return make_tuple(Round, reversedPlusString);
     }
 
+    auto Bigdecimal::init(const std::string &value)-> void {
+        int startPos = 0;
+        for(int i=0;i<value.size();i++)
+            if(value[i]!=0x20) {
+                startPos = i;
+                break;
+            }
+
+        if(value[startPos] == '-'){
+            m_bMinusFlag = true;
+            startPos++;
+        }
+        else if(value[startPos] == '+') {
+            m_bMinusFlag = false;
+            startPos++;
+        }
+        else
+            m_bMinusFlag = false;
+
+        //마이너스기호가 있으면, 뒤에서부터 복사
+        auto sTmpValue = value.substr(startPos,value.size()-startPos);
+
+        // 0.0000 => 0
+        // -0 => 0
+        // +0 => 0
+        // 00.00000 => 0
+        // 00.00001 => 0.00001
+        bool bZero = true;
+        int nZeroRepeatPos = 0;
+        bool bFloatStyle = false;
+        for (int i = 0; i < sTmpValue.size();++i) {
+            if(sTmpValue[i] =='0' && !bFloatStyle)
+                nZeroRepeatPos = i;
+            if(sTmpValue[i] == '.') {
+                bFloatStyle = true;
+                continue;
+            }
+            if(sTmpValue[i] != '0') {
+                bZero = false;
+                break;
+            }
+        }
+
+        if(bZero){
+            m_sValue = "0";
+            m_bMinusFlag = false;
+        }else{
+            if( nZeroRepeatPos > 0 ) {
+                m_sValue = sTmpValue.substr(nZeroRepeatPos, sTmpValue.size()-nZeroRepeatPos);
+            }
+            else{
+                m_sValue = sTmpValue;
+            }
+        }
+    }
 
 }//doori end

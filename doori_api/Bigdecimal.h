@@ -103,6 +103,7 @@ namespace doori {
          * private
          */
         private:
+        auto init(const std::string& value) -> void;
         auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
         static auto plus(std::string value1, std::string value2) -> std::string;
         auto minus(std::string value1, std::string value2, bool minusFlag) -> std::string;
