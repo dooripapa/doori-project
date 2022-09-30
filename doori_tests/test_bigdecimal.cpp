@@ -52,6 +52,9 @@ TEST(Bigdecimal, ConstructTest)
 
     doori::Bigdecimal v15{"+00.1234"};
     EXPECT_EQ("0.1234", v15.toString());
+
+    doori::Bigdecimal v16{"100.0000"};
+    EXPECT_EQ("100", v16.toString());
 }
 
 
@@ -81,6 +84,10 @@ TEST(Bigdecimal, SignBiggerThan)
     doori::Bigdecimal value4{"192394959192394959"};
     // value1 >= value2
     EXPECT_GE( value3, value4 );
+
+    doori::Bigdecimal v5{"-123.0234"};
+    doori::Bigdecimal v6{"-123.1111"};
+    EXPECT_GE(v5,v6);
 }
 
 TEST(Bigdecimal, MinusPositive)
@@ -100,5 +107,7 @@ TEST(Bigdecimal, MinusNegative)
 TEST(Bigdecimal, Minus)
 {
     EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
+    EXPECT_EQ(doori::Bigdecimal("1"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-2"));
+    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
 }
 

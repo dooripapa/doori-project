@@ -108,15 +108,24 @@ namespace doori {
         static auto plus(std::string value1, std::string value2) -> std::string;
         auto minus(std::string value1, std::string value2, bool minusFlag) -> std::string;
 //        auto divide(std::string value1, std::string value2) -> std::string;
+        auto ge(std::string v1, std::string v2) const noexcept -> bool;
+        auto eq(std::string v1, std::string v2) const noexcept -> bool;
+        auto gt(std::string v1, std::string v2) const noexcept -> bool;
+        auto fge(const Bigdecimal& v1, const Bigdecimal& v2) const noexcept -> bool;
+        auto feq(const Bigdecimal& v1, const Bigdecimal& v2) const noexcept -> bool;
+        auto fgt(const Bigdecimal& v1, const Bigdecimal& v2) const noexcept -> bool;
+        auto returnSameStringAsLen(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
         auto getFloatStyleInfo(std::string value
                                , ushort &uAboveZeroLen
                                , ushort &uZeroPos
-                               , ushort &uBelowZeroLen ) noexcept -> void;
+                               , ushort &uBelowZeroLen ) const noexcept -> void;
         auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
         auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
         std::string m_sValue;
+        std::string m_sAbovePoint;
+        std::string m_sBelowPoint;
         bool m_bMinusFlag;
         bool m_bFloatTypeFlag;
     };
