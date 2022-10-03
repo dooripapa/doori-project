@@ -106,26 +106,28 @@ namespace doori {
         auto init(const std::string& value) -> void;
         auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
         static auto plus(std::string value1, std::string value2) -> std::string;
-        auto minus(std::string value1, std::string value2, bool minusFlag) -> std::string;
+        auto minus(const Bigdecimal& v1, const Bigdecimal& v2) -> Bigdecimal;
 //        auto divide(std::string value1, std::string value2) -> std::string;
         auto ge(std::string v1, std::string v2) const noexcept -> bool;
         auto eq(std::string v1, std::string v2) const noexcept -> bool;
         auto gt(std::string v1, std::string v2) const noexcept -> bool;
-        auto fge(const Bigdecimal& v1, const Bigdecimal& v2) const noexcept -> bool;
-        auto feq(const Bigdecimal& v1, const Bigdecimal& v2) const noexcept -> bool;
-        auto fgt(const Bigdecimal& v1, const Bigdecimal& v2) const noexcept -> bool;
-        auto returnSameStringAsLen(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
+        auto fge(std::string v1, std::string v2) const noexcept -> bool;
+        auto feq(std::string v1, std::string v2) const noexcept -> bool;
+        auto fgt(std::string v1, std::string v2) const noexcept -> bool;
+    public:
+        auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
+        auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
-        auto getFloatStyleInfo(std::string value
+        auto getFloatStyleInfo(const std::string& value
                                , ushort &uAboveZeroLen
                                , ushort &uZeroPos
                                , ushort &uBelowZeroLen ) const noexcept -> void;
         auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
         auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
         std::string m_sValue;
-        std::string m_sAbovePoint;
-        std::string m_sBelowPoint;
+        std::string m_sAbovePointValue;
+        std::string m_sBelowPointValue;
         bool m_bMinusFlag;
         bool m_bFloatTypeFlag;
     };

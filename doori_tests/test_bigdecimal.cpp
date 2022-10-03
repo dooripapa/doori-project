@@ -6,6 +6,9 @@
 #include <Bigdecimal.h>
 #include <iostream>
 
+using namespace std;
+using namespace doori;
+
 TEST(Bigdecimal, ConstructTest)
 {
     doori::Bigdecimal v1{"5"};
@@ -90,6 +93,7 @@ TEST(Bigdecimal, SignBiggerThan)
     EXPECT_GE(v5,v6);
 }
 
+
 TEST(Bigdecimal, MinusPositive)
 {
     doori::Bigdecimal value1{"348"};
@@ -111,3 +115,11 @@ TEST(Bigdecimal, Minus)
     EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
 }
 
+TEST(Bigdecimal, temp)
+{
+    doori::Bigdecimal t{"0"};
+
+    auto v=t.revisionSameString("1.01", "0.000001");
+
+    LOG(DEBUG, "v1[", v.first, "]", "  ", "v2[", v.second, "]");
+}
