@@ -106,7 +106,7 @@ namespace doori {
         auto init(const std::string& value) -> void;
         auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
         static auto plus(std::string value1, std::string value2) -> std::string;
-        auto minus(const Bigdecimal& v1, const Bigdecimal& v2) -> Bigdecimal;
+        auto minus(string v1, string v2) -> string;
 //        auto divide(std::string value1, std::string value2) -> std::string;
         auto ge(std::string v1, std::string v2) const noexcept -> bool;
         auto eq(std::string v1, std::string v2) const noexcept -> bool;
@@ -117,12 +117,14 @@ namespace doori {
     public:
         auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
         auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
+        auto revisionAt(const string &v1, ushort belowZeroLen) -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
         auto getFloatStyleInfo(const std::string& value
                                , ushort &uAboveZeroLen
                                , ushort &uZeroPos
                                , ushort &uBelowZeroLen ) const noexcept -> void;
+        auto getFloatStyleInfo(const std::string& value) const noexcept -> ushort;
         auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
         auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
         std::string m_sValue;

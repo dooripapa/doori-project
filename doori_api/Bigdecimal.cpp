@@ -169,23 +169,20 @@ namespace doori {
     /// 숫자 형식의 문자열의 값을 마이너스를 한다.
     /// \param value1 양의 수
     /// \param value2 양의 수
-    /// \return
-    auto Bigdecimal::minus(const Bigdecimal& value1, const Bigdecimal& value2) -> Bigdecimal {
+    /// \return 항상 양의 수
+    auto Bigdecimal::minus(string value1, string value2) -> string {
         std::forward_list<char> ret;
 
-        if ( value2 > value1 ) {
+        if( ge(value2,value1) )
             std::swap(value1, value2);
-        }
 
-        int i=static_cast<int>(value1.size()-1);
-        int j=static_cast<int>(value2.size()-1);
+        int i=static_cast<int>(value1.length());
+        int j=static_cast<int>(value2.length());
 
         std::string itos;
         int sum, iValue, jValue;
         for(;; --i, --j) {
             if(i<0 && j<0) {
-//                if(minusFlag)
-//                    ret.push_front('-');
                 break;
             }
 
@@ -264,10 +261,42 @@ namespace doori {
     }
 
     auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
-        LOG(DEBUG, "this->m_sValue:", this->m_sValue, ",rhs.m_sValue:", rhs.m_sValue);
-//        std::string ret = minus(this->m_sValue, rhs.m_sValue, !(*this > rhs));
-        std::string ret = "0";
-        return Bigdecimal{ret};
+        //자기자신을 빼면 0을 리턴
+        if( this == &rhs)
+            return Bigdecimal{"0"};
+
+        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
+        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
+        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen = belowZeroLen1>belowZeroLen2?belowZeroLen1:belowZeroLen2;
+        //둘다 마이너스
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            if( ge(v.first, v.second) ) {
+                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+                return Bigdecimal{"-"+r};
+            }else if( eq( v.first, v.second)) {
+                return Bigdecimal{"0"};
+            }else {
+                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+                return Bigdecimal{r};
+            }
+        }
+        else if(this->m_bMinusFlag && !rhs.m_bMinusFlag) {
+            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
+            return Bigdecimal{"-"+r};
+        }
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
+            return Bigdecimal{r};
+        }
+        else{
+            if( ge(v.first, v.second) )
+                return Bigdecimal{revisionAt(minus(v.first, v.second), belowZeroLen )};
+            else if(eq(v.first, v.second) )
+                return Bigdecimal{"0"};
+            else
+                return Bigdecimal{"-"+ revisionAt(minus(v.second, v.first), belowZeroLen)};
+        }
     }
 
     auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal {
@@ -286,9 +315,39 @@ namespace doori {
         //자기자신을 빼면 0을 리턴
         if( this == &rhs)
             return Bigdecimal{"0"};
-//        std::string ret = minus(this->m_sValue, rhs.m_sValue, !(*this > rhs) );
-        std::string ret = "0";
-        return Bigdecimal{ret};
+
+        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
+        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
+        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen = belowZeroLen1>belowZeroLen2?belowZeroLen1:belowZeroLen2;
+        //둘다 마이너스
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            if( ge(v.first, v.second) ) {
+                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+                return Bigdecimal{"-"+r};
+            }else if( eq( v.first, v.second)) {
+                return Bigdecimal{"0"};
+            }else {
+                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+                return Bigdecimal{r};
+            }
+        }
+        else if(this->m_bMinusFlag && !rhs.m_bMinusFlag) {
+            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
+            return Bigdecimal{"-"+r};
+        }
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
+            return Bigdecimal{r};
+        }
+        else{
+            if( ge(v.first, v.second) )
+                return Bigdecimal{revisionAt(minus(v.first, v.second), belowZeroLen )};
+            else if(eq(v.first, v.second) )
+                return Bigdecimal{"0"};
+            else
+                return Bigdecimal{"-"+ revisionAt(minus(v.second, v.first), belowZeroLen)};
+        }
     }
 
     auto Bigdecimal::operator>(const Bigdecimal &rhs) const -> bool {
@@ -638,6 +697,34 @@ namespace doori {
                 break;
         }
         return v1.substr(startPos, v1.length()-startPos);
+    }
+
+    auto Bigdecimal::getFloatStyleInfo(const string &value) const noexcept -> ushort {
+        ushort uZeroPos = 0;
+        ushort uBelowZeroLen = value.length();
+        for (int i = 0; i < value.length(); ++i) {
+            if(value[i] == '.') {
+                uZeroPos = i;
+                break;
+            }
+        }
+
+        if (uZeroPos == 0) {
+            uBelowZeroLen = 0;
+        }
+        else {
+            uBelowZeroLen = value.size() - (uZeroPos+1);
+        }
+        return uBelowZeroLen;
+    }
+
+    /*
+     * v1 문자열에 소수점 길에 문자열 "." :at 넣는다.
+     */
+    auto Bigdecimal::revisionAt(const string &v1, ushort belowZeroLen) -> std::string {
+        string r = v1;
+        r.insert(r.length()-belowZeroLen, ".");
+        return std::string();
     }
 
 }//doori end
