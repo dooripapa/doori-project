@@ -58,21 +58,49 @@ TEST(Bigdecimal, ConstructTest)
 
     doori::Bigdecimal v16{"100.0000"};
     EXPECT_EQ("100", v16.toString());
+
+    doori::Bigdecimal v17{"100.1000"};
+    EXPECT_EQ("100.1", v17.toString());
+
+    doori::Bigdecimal v18{"0.000000"};
+    EXPECT_EQ("0", v18.toString());
 }
 
-
-TEST(Bigdecimal, SignBiggerThan)
+TEST(Bigdecimal, GT)
 {
-    doori::Bigdecimal value1{"348"};
-    doori::Bigdecimal value2{"123"};
-    // value1 > value2
-    EXPECT_GT( value1, value2 );
+//    doori::Bigdecimal v1{"348"};
+//    doori::Bigdecimal v2{"123"};
+//    // value1 > value2
+//    EXPECT_GT( v1, v2 );
+//
+//    doori::Bigdecimal v11{"123"};
+//    doori::Bigdecimal v22{"-123"};
+//    // value1 > value2
+//    EXPECT_GT( v11, v22);
+//
+//    doori::Bigdecimal v111{"0"};
+//    doori::Bigdecimal v222{"-99999999999999999999999999999999999999999999999999999999999999999999"};
+//    // value1 > value2
+//    EXPECT_GT( v111, v222);
+//
+//    doori::Bigdecimal f1{"0.110000"};
+//    doori::Bigdecimal f2{"0.100001"};
+//    // value1 > value2
+//    EXPECT_GT( f1, f2);
+//
+//    doori::Bigdecimal f11{"0.110000"};
+//    doori::Bigdecimal f22{"-0.100001"};
+//    // value1 > value2
+//    EXPECT_GT( f11, f22);
 
-    doori::Bigdecimal m_value1{"-123"};
-    doori::Bigdecimal p_value2{"123"};
+    doori::Bigdecimal f3{"1"};
+    doori::Bigdecimal f4{"0.100001"};
     // value1 > value2
-    EXPECT_GT( p_value2, m_value1 );
+    EXPECT_GT( f3, f4);
+}
 
+TEST(Bigdecimal, GE)
+{
     doori::Bigdecimal v1{"0"};
     doori::Bigdecimal v2{"0"};
     // value1 >= value2
@@ -93,7 +121,6 @@ TEST(Bigdecimal, SignBiggerThan)
     EXPECT_GE(v5,v6);
 }
 
-
 TEST(Bigdecimal, MinusPositive)
 {
     doori::Bigdecimal value1{"348"};
@@ -110,6 +137,8 @@ TEST(Bigdecimal, MinusNegative)
 
 TEST(Bigdecimal, Minus)
 {
+    auto v = doori::Bigdecimal("-1")-doori::Bigdecimal("-2");
+
     EXPECT_EQ(doori::Bigdecimal("1"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-2"));
 //    EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
 //    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));

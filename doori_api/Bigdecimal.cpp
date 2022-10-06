@@ -152,7 +152,7 @@ namespace doori {
     }
 
     auto Bigdecimal::toString() -> std::string {
-        return (m_bMinusFlag?("-"+m_sValue):m_sValue);
+        return revisionRemoveBackZero(m_bMinusFlag?("-"+m_sValue):m_sValue) ;
     }
 
     auto Bigdecimal::copyFrom(Bigdecimal &&rhs) noexcept -> void {
@@ -524,7 +524,7 @@ namespace doori {
             ushort uPointPos=0;
             getFloatStyleInfo(m_sValue,uAbovePointLen, uPointPos, uBelowPointLen );
             m_sAbovePointValue = m_sValue.substr(0, uAbovePointLen);
-            m_sBelowPointValue = m_sValue.substr(uPointPos, uBelowPointLen);
+            m_sBelowPointValue = m_sValue.substr(uPointPos+1, uBelowPointLen);
         }
     }
 
@@ -536,9 +536,6 @@ namespace doori {
      */
     auto Bigdecimal::ge(std::string v1, std::string v2) const noexcept -> bool {
         bool bStatus = true;
-
-        reverse(v1.begin(), v1.end());
-        reverse(v2.begin(), v2.end());
 
         auto Len1 = v1.length();
         auto Len2 = v2.length();
@@ -725,6 +722,38 @@ namespace doori {
         string r = v1;
         r.insert(r.length()-belowZeroLen, ".");
         return std::string();
+    }
+
+    /**
+     * 뒤에 있는 0를 삭제 함
+     * 0.10000 -> 0.1
+     * 1000 -> 1000
+     * @param v1
+     * @return
+     */
+    auto Bigdecimal::revisionRemoveBackZero(const string &v1) const noexcept -> std::string {
+        uint count= 0;
+        bool stop = false;
+        bool can = false;
+        for (int i = v1.length()-1; i > -1; --i) {
+            if( v1[i] =='0' && !stop )
+                count++;
+            else {
+                if(v1[i]=='.')
+                {
+                    can = true;
+                    break;
+                }
+                stop = true;
+            }
+        }
+        if(can) {
+            if(v1[v1.length()-(count+1)] =='.')
+                return v1.substr(0, v1.length()-(count+1));
+            return v1.substr(0, v1.length()-count);
+        }
+
+        return v1;
     }
 
 }//doori end

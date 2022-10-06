@@ -117,6 +117,7 @@ namespace doori {
     public:
         auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
         auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
+        auto revisionRemoveBackZero(const string& v1) const noexcept -> std::string;
         auto revisionAt(const string &v1, ushort belowZeroLen) -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
