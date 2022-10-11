@@ -68,30 +68,30 @@ TEST(Bigdecimal, ConstructTest)
 
 TEST(Bigdecimal, GT)
 {
-//    doori::Bigdecimal v1{"348"};
-//    doori::Bigdecimal v2{"123"};
-//    // value1 > value2
-//    EXPECT_GT( v1, v2 );
-//
-//    doori::Bigdecimal v11{"123"};
-//    doori::Bigdecimal v22{"-123"};
-//    // value1 > value2
-//    EXPECT_GT( v11, v22);
-//
-//    doori::Bigdecimal v111{"0"};
-//    doori::Bigdecimal v222{"-99999999999999999999999999999999999999999999999999999999999999999999"};
-//    // value1 > value2
-//    EXPECT_GT( v111, v222);
-//
-//    doori::Bigdecimal f1{"0.110000"};
-//    doori::Bigdecimal f2{"0.100001"};
-//    // value1 > value2
-//    EXPECT_GT( f1, f2);
-//
-//    doori::Bigdecimal f11{"0.110000"};
-//    doori::Bigdecimal f22{"-0.100001"};
-//    // value1 > value2
-//    EXPECT_GT( f11, f22);
+    doori::Bigdecimal v1{"348"};
+    doori::Bigdecimal v2{"123"};
+    // value1 > value2
+    EXPECT_GT( v1, v2 );
+
+    doori::Bigdecimal v11{"123"};
+    doori::Bigdecimal v22{"-123"};
+    // value1 > value2
+    EXPECT_GT( v11, v22);
+
+    doori::Bigdecimal v111{"0"};
+    doori::Bigdecimal v222{"-99999999999999999999999999999999999999999999999999999999999999999999"};
+    // value1 > value2
+    EXPECT_GT( v111, v222);
+
+    doori::Bigdecimal f1{"0.110000"};
+    doori::Bigdecimal f2{"0.100001"};
+    // value1 > value2
+    EXPECT_GT( f1, f2);
+
+    doori::Bigdecimal f11{"0.110000"};
+    doori::Bigdecimal f22{"-0.100001"};
+    // value1 > value2
+    EXPECT_GT( f11, f22);
 
     doori::Bigdecimal f3{"1"};
     doori::Bigdecimal f4{"0.100001"};
@@ -111,8 +111,8 @@ TEST(Bigdecimal, GE)
     // value1 >= value2
     EXPECT_GE( v1, v2);
 
-    doori::Bigdecimal value3{"192394959192394959"};
-    doori::Bigdecimal value4{"192394959192394959"};
+    doori::Bigdecimal value3{"192394959192394959192394959192394959192394959192394959192394959192394959"};
+    doori::Bigdecimal value4{"192394959192394959192394959192394959192394959192394959192394959192394959"};
     // value1 >= value2
     EXPECT_GE( value3, value4 );
 
@@ -142,13 +142,4 @@ TEST(Bigdecimal, Minus)
     EXPECT_EQ(doori::Bigdecimal("1"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-2"));
 //    EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
 //    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
-}
-
-TEST(Bigdecimal, temp)
-{
-    doori::Bigdecimal t{"0"};
-
-    auto v=t.revisionSameString("1.01", "0.000001");
-
-    LOG(DEBUG, "v1[", v.first, "]", "  ", "v2[", v.second, "]");
 }

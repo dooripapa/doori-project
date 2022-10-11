@@ -354,78 +354,44 @@ namespace doori {
         if(this==&rhs)
             return false;
 
-        if( !m_bFloatTypeFlag )
-        {
-            if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
-                if(gt(this->m_sValue, rhs.m_sValue))
-                    return false;
-                else
-                    return true;
-            }else if( !this->m_bMinusFlag && rhs.m_bMinusFlag )
-                return true;
-            else if( !this->m_bMinusFlag && !rhs.m_bMinusFlag ){
-                if( ge(this->m_sValue, rhs.m_sValue) )
-                    return true;
-                else
-                    return false;
-            }else
+        auto v= revisionSameString(this->m_sValue, rhs.m_sValue);
+
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            if(gt(v.first, v.second))
                 return false;
-        }
-        else{
-            if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
-                if(fgt(this->m_sValue, rhs.m_sValue))
-                    return false;
-                else
-                    return true;
-            }else if( !this->m_bMinusFlag && rhs.m_bMinusFlag )
+            else
                 return true;
-            else if( !this->m_bMinusFlag && !rhs.m_bMinusFlag ){
-                if( fge(this->m_sValue, rhs.m_sValue) )
-                    return true;
-                else
-                    return false;
-            }else
+        }else if( !this->m_bMinusFlag && rhs.m_bMinusFlag )
+            return true;
+        else if( !this->m_bMinusFlag && !rhs.m_bMinusFlag ){
+            if( ge(v.first, v.second) )
+                return true;
+            else
                 return false;
-        }
+        }else
+            return false;
     }
 
     auto Bigdecimal::operator>=(const Bigdecimal &rhs) const -> bool {
         if(this==&rhs)
             return true;
 
-        if( !m_bFloatTypeFlag )
-        {
-            if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
-                if(gt(this->m_sValue, rhs.m_sValue))
-                    return false;
-                else
-                    return true;
-            }else if( !this->m_bMinusFlag && rhs.m_bMinusFlag )
-                return true;
-            else if( !this->m_bMinusFlag && !rhs.m_bMinusFlag ){
-                if( ge(this->m_sValue, rhs.m_sValue) )
-                    return true;
-                else
-                    return false;
-            }else
+        auto v= revisionSameString(this->m_sValue, rhs.m_sValue);
+
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            if(gt(v.first, v.second))
                 return false;
-        }
-        else{
-            if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
-                if(fgt(this->m_sValue, rhs.m_sValue))
-                    return false;
-                else
-                    return true;
-            }else if( !this->m_bMinusFlag && rhs.m_bMinusFlag )
+            else
                 return true;
-            else if( !this->m_bMinusFlag && !rhs.m_bMinusFlag ){
-                if( ge(this->m_sValue, rhs.m_sValue) )
-                    return true;
-                else
-                    return false;
-            }else
+        }else if( !this->m_bMinusFlag && rhs.m_bMinusFlag )
+            return true;
+        else if( !this->m_bMinusFlag && !rhs.m_bMinusFlag ){
+            if( ge(v.first, v.second) )
+                return true;
+            else
                 return false;
-        }
+        }else
+            return false;
     }
 
     /**
