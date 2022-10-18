@@ -166,65 +166,43 @@ namespace doori {
         m_sValue = rhs.m_sValue;
     }
 
-    /// 숫자 형식의 문자열의 값을 마이너스를 한다.
-    /// \param value1 양의 수
-    /// \param value2 양의 수
-    /// \return 항상 양의 수
+    /**
+     * @note value1값이 항상 value2보다 커야 한다.
+     * @param value1 : 양의 정수 문자열
+     * @param value2 : 양의 정수 문자열
+     * @return
+     */
     auto Bigdecimal::minus(string value1, string value2) -> string {
         std::forward_list<char> ret;
 
-        if( ge(value2,value1) )
-            std::swap(value1, value2);
-
         int i=static_cast<int>(value1.length());
         int j=static_cast<int>(value2.length());
+        //배열은 0부터 시작
+        i--;
+        j--;
 
-        std::string itos;
-        int sum, iValue, jValue;
-        for(;; --i, --j) {
-            if(i<0 && j<0) {
-                break;
-            }
-
-            if(i<0) iValue = 0;
-            else iValue = value1[i]-'0';
-
-            if(j<0) jValue = 0;
-            else jValue = value2[j]-'0';
-
-            sum = iValue - jValue;
-            if( sum < 0) {
-                if( i-1 < 0 )
-                    ;
-                else
-                {
-                    value1[i-1]--;
-                    sum = 10 + iValue - jValue;
-                }
-            }
-            sum = abs(sum);
-            itos = std::to_string(sum);
-            if( itos[0] == '0' )
-                ;
+        short r,v1, v2;
+        for(;i>-1 || j>-1; --i, --j) {
+            v1=value1[i]-'0';
+            if(j>-1)
+                v2=value2[j]-'0';
             else
-                ret.push_front(itos[0]);
+                v2=0;
+            r=v1-v2;
+
+            if(r<0){
+                r=10+r;
+                value1[i-1]--;
+                ret.push_front('0'+r);
+            }
+            else {
+                ret.push_front('0'+r);
+            }
         }
+
         return std::string{ret.begin(),ret.end()};
     }
 
-    auto Bigdecimal::operator==(const Bigdecimal &rhs) const -> bool {
-        if ( this == &rhs )
-            return true;
-
-        return (this->m_sValue == rhs.m_sValue);
-    }
-
-    auto Bigdecimal::operator==(Bigdecimal &&rhs) const -> bool {
-        if ( this == &rhs )
-            return true;
-
-        return (this->m_sValue == rhs.m_sValue);
-    }
 
     auto Bigdecimal::operator=(const Bigdecimal &rhs) -> Bigdecimal & {
         if ( this == &rhs )
@@ -242,23 +220,48 @@ namespace doori {
         return *this;
     }
 
-    auto Bigdecimal::operator==(const std::string &rhs) const -> bool {
-        return (this->m_sValue == rhs);
-    }
-
-    auto Bigdecimal::operator==(std::string &&rhs) const -> bool {
-        return (this->m_sValue == rhs);
-    }
-
     auto Bigdecimal::operator=(const std::string &rhs) -> Bigdecimal & {
-        this->m_sValue = rhs;
+        init(rhs);
         return *this;
     }
 
     auto Bigdecimal::operator=(std::string &&rhs) -> Bigdecimal & {
-        this->m_sValue = rhs;
+        init(rhs);
         return *this;
     }
+
+    auto Bigdecimal::operator==(const std::string &rhs) const -> bool {
+        return (*this == Bigdecimal{rhs});
+    }
+
+    auto Bigdecimal::operator==(std::string &&rhs) const -> bool {
+        return (*this == Bigdecimal{rhs});
+    }
+
+    auto Bigdecimal::operator==(const Bigdecimal &rhs) const -> bool {
+        if ( this == &rhs )
+            return true;
+
+        if(this->m_bMinusFlag == rhs.m_bMinusFlag
+        && this->m_bFloatTypeFlag == rhs.m_bFloatTypeFlag
+        && this->m_sValue == rhs.m_sValue )
+            return true;
+        else
+            return false;
+    }
+
+    auto Bigdecimal::operator==(Bigdecimal &&rhs) const -> bool {
+        if ( this == &rhs )
+            return true;
+
+        if(this->m_bMinusFlag     == rhs.m_bMinusFlag
+        && this->m_bFloatTypeFlag == rhs.m_bFloatTypeFlag
+        && this->m_sValue         == rhs.m_sValue )
+            return true;
+        else
+            return false;
+    }
+
 
     auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
         //자기자신을 빼면 0을 리턴
@@ -341,7 +344,7 @@ namespace doori {
             return Bigdecimal{r};
         }
         else{
-            if( ge(v.first, v.second) )
+            if( gt(v.first, v.second) )
                 return Bigdecimal{revisionAt(minus(v.first, v.second), belowZeroLen )};
             else if(eq(v.first, v.second) )
                 return Bigdecimal{"0"};
@@ -686,8 +689,9 @@ namespace doori {
      */
     auto Bigdecimal::revisionAt(const string &v1, ushort belowZeroLen) -> std::string {
         string r = v1;
-        r.insert(r.length()-belowZeroLen, ".");
-        return std::string();
+        if(belowZeroLen>0)
+            r.insert(r.length()-belowZeroLen, ".");
+        return r;
     }
 
     /**

@@ -64,6 +64,9 @@ TEST(Bigdecimal, ConstructTest)
 
     doori::Bigdecimal v18{"0.000000"};
     EXPECT_EQ("0", v18.toString());
+
+    doori::Bigdecimal v19{"-0.8999999"};
+    EXPECT_EQ("-0.8999999", v19.toString());
 }
 
 TEST(Bigdecimal, GT)
@@ -121,25 +124,23 @@ TEST(Bigdecimal, GE)
     EXPECT_GE(v5,v6);
 }
 
-TEST(Bigdecimal, MinusPositive)
+TEST(Bigdecimal, MINUS)
 {
-    doori::Bigdecimal value1{"348"};
-    doori::Bigdecimal value2{"123"};
-    EXPECT_EQ(doori::Bigdecimal("225"), value1-value2 );
-}
+    doori::Bigdecimal v1{"348.87"};
+    doori::Bigdecimal v2{"123.9"};
+    auto r=v1-v2;
+    EXPECT_EQ(doori::Bigdecimal("224.97"), r);
 
-TEST(Bigdecimal, MinusNegative)
-{
-    doori::Bigdecimal value1{"23"};
-    doori::Bigdecimal value2{"348"};
-    EXPECT_EQ(doori::Bigdecimal("-325"), value1-value2 );
-}
+    doori::Bigdecimal v3{"1.0000001"};
+    doori::Bigdecimal v4{"1.9"};
+    auto k = v3-v4;
+    EXPECT_EQ(doori::Bigdecimal("0.8999999"), k);
 
-TEST(Bigdecimal, Minus)
-{
-    auto v = doori::Bigdecimal("-1")-doori::Bigdecimal("-2");
+    doori::Bigdecimal m1{"23"};
+    doori::Bigdecimal m2{"348"};
+    EXPECT_EQ(doori::Bigdecimal("-325"), m1-m2);
 
     EXPECT_EQ(doori::Bigdecimal("1"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-2"));
-//    EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
-//    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
+    EXPECT_EQ(doori::Bigdecimal("34"),  doori::Bigdecimal("100")-doori::Bigdecimal("66"));
+    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
 }
