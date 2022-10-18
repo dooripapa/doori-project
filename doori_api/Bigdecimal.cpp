@@ -158,11 +158,15 @@ namespace doori {
     auto Bigdecimal::copyFrom(Bigdecimal &&rhs) noexcept -> void {
         m_bMinusFlag = rhs.m_bMinusFlag;
         m_bFloatTypeFlag = rhs.m_bFloatTypeFlag;
+        m_sBelowPointValue = rhs.m_sBelowPointValue;
+        m_sAbovePointValue = rhs.m_sAbovePointValue;
         m_sValue = std::move(rhs.m_sValue) ;
     }
     auto Bigdecimal::copyFrom(const Bigdecimal &rhs) noexcept -> void {
         m_bMinusFlag = rhs.m_bMinusFlag;
         m_bFloatTypeFlag = rhs.m_bFloatTypeFlag;
+        m_sBelowPointValue = rhs.m_sBelowPointValue;
+        m_sAbovePointValue = rhs.m_sAbovePointValue;
         m_sValue = rhs.m_sValue;
     }
 
