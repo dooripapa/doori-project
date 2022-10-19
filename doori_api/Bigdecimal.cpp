@@ -499,6 +499,8 @@ namespace doori {
             m_sAbovePointValue = m_sValue.substr(0, uAbovePointLen);
             m_sBelowPointValue = m_sValue.substr(uPointPos+1, uBelowPointLen);
         }
+        else
+            m_bFloatTypeFlag = false;
     }
 
     /**
