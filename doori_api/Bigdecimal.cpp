@@ -284,7 +284,7 @@ namespace doori {
             }else if( eq( v.first, v.second)) {
                 return Bigdecimal{"0"};
             }else {
-                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+                auto r = revisionAt(minus(v.second, v.first), belowZeroLen);
                 return Bigdecimal{r};
             }
         }
@@ -307,15 +307,11 @@ namespace doori {
     }
 
     auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal {
-//        std::string ret = minus(this->m_sValue, rhs, !(*this > Bigdecimal{rhs}) );
-        std::string ret = "0";
-        return Bigdecimal{ret};
+        return *this - Bigdecimal{std::move(rhs)};
     }
 
     auto Bigdecimal::operator-(const std::string &rhs) -> Bigdecimal {
-//        std::string ret = minus(this->m_sValue, rhs, !(*this > Bigdecimal{rhs}));
-        std::string ret = "0";
-        return Bigdecimal{ret};
+        return *this - Bigdecimal{std::move(rhs)};
     }
 
     auto Bigdecimal::operator-(const Bigdecimal &rhs) -> Bigdecimal {
@@ -335,7 +331,7 @@ namespace doori {
             }else if( eq( v.first, v.second)) {
                 return Bigdecimal{"0"};
             }else {
-                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+                auto r = revisionAt(minus(v.second, v.first), belowZeroLen);
                 return Bigdecimal{r};
             }
         }
@@ -463,7 +459,7 @@ namespace doori {
         // 00.00001 => 0.00001
         bool bZero = true;
         bool bFloatStyle = false;
-        int  nZeroRepeatPos = 0;
+        int  nZeroRepeatPos = -1;
         for (int i = 0; i < sTmpValue.size();++i) {
             if(sTmpValue[i] =='0' && !bFloatStyle)
                 nZeroRepeatPos = i;
