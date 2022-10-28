@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 
     conn.connectTo();
 
-    doori::Stream   buffer, recvBuffer;
+    doori::Stream   recvBuffer;
     doori::Data     sendData;
     doori::DataSegment segment;
 

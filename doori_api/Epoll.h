@@ -84,7 +84,7 @@ public:
      * @note 이 함수에서 호출되면, 블록킹 모드로 전환되고, 자동으로 처리됨
      * @return
      */
-    auto runningEventDelegateMethod() -> int;
+    [[noreturn]] auto runningEventDelegateMethod() -> int;
     /**
      * Epoll의 event container 초기화
      * @param event_container : EpollEvents 객체
@@ -96,7 +96,7 @@ public:
      * @param timeout : event 발생할때까지 timeout
      * @return int : trigger 된 event 수
      */
-    auto waitForEvents(EpollEvents& event_container, const int& timeout ) -> int;
+    auto waitForEvents(EpollEvents& event_container, const int& timeout ) const -> int;
     /**
      * 해당 file descriptor에 데이터 수신 후, delegation 위임하여, 처리하도록 함
      * @param socket_fd : file descriptor

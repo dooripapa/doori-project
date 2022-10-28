@@ -8,18 +8,18 @@
 
 namespace doori{
 
-auto Subscriber::startSubscriber(doori::Connection forSubscriber) noexcept -> void {
-    processingMultisessions(forSubscriber);
-}
+    auto Subscriber::startSubscriber(doori::Connection forSubscriber) noexcept -> void {
+        processingMultisessions(forSubscriber);
+    }
 
-auto Subscriber::onSubscribing() noexcept -> void{
-    while(true)
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-}
+    auto Subscriber::onSubscribing() noexcept -> void{
+        while(true)
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
 
-Subscriber::Subscriber(std::function<int(int, Stream &)> delegation) : ICommunication(delegation) {
+    Subscriber::Subscriber(std::function<int(int, Stream &)> delegation) : ICommunication(delegation) {
 
-}
+    }
 
 
 }

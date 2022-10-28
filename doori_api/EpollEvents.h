@@ -21,7 +21,7 @@ public:
     bool operator==(const event_iterator& rhs) const {return p==rhs.p;}
     bool operator!=(const event_iterator& rhs) const {return p!=rhs.p;}
     event_iterator& operator*() {return *this;}
-    int getFd(){return p->data.fd;}
+    auto getFd() const  -> int {return p->data.fd;} ;
 private:
     struct epoll_event *p;
 };
