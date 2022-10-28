@@ -129,22 +129,98 @@ TEST(Bigdecimal, GE)
 
 TEST(Bigdecimal, MINUS)
 {
-//    doori::Bigdecimal v1{"348.87"};
-//    doori::Bigdecimal v2{"123.9"};
-//    auto r=v1-v2;
-//    EXPECT_EQ(doori::Bigdecimal("224.97"), r);
-//
-//    doori::Bigdecimal v3{"1.0000001"};
-//    doori::Bigdecimal v4{"1.9"};
-//    auto k = v3-v4;
-//    EXPECT_EQ(doori::Bigdecimal("-0.8999999"), k);
-//
-//    doori::Bigdecimal m1{"23"};
-//    doori::Bigdecimal m2{"348"};
-//    EXPECT_EQ(doori::Bigdecimal("-325"), m1-m2);
-//
-//    EXPECT_EQ(doori::Bigdecimal("1"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-2"));
+    doori::Bigdecimal v1{"348.87"};
+    doori::Bigdecimal v2{"123.9"};
+    auto r=v1-v2;
+    EXPECT_EQ(doori::Bigdecimal("224.97"), r);
+
+    doori::Bigdecimal v3{"1.0000001"};
+    doori::Bigdecimal v4{"1.9"};
+    auto k = v3-v4;
+    EXPECT_EQ(doori::Bigdecimal("-0.8999999"), k);
+
+    doori::Bigdecimal m1{"23"};
+    doori::Bigdecimal m2{"348"};
+    EXPECT_EQ(doori::Bigdecimal("-325"), m1-m2);
+
+    EXPECT_EQ(doori::Bigdecimal("1"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-2"));
     auto v = doori::Bigdecimal("100")-doori::Bigdecimal("66");
     EXPECT_EQ(doori::Bigdecimal("34"),  v);
-//    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
+    EXPECT_EQ(doori::Bigdecimal("10"),  doori::Bigdecimal("-1")-doori::Bigdecimal("-11"));
+}
+
+TEST(Bigdecimal, PLUS)
+{
+    doori::Bigdecimal v1{"1"};
+    doori::Bigdecimal v2{"2"};
+    auto r1=v1+v2;
+    EXPECT_EQ(doori::Bigdecimal("3"), r1);
+
+    doori::Bigdecimal v3{"99291929394"};
+    doori::Bigdecimal v4{"99291929394"};
+    auto r2=v3+v4;
+    EXPECT_EQ(doori::Bigdecimal("198583858788"), r2);
+
+    doori::Bigdecimal v5{"1"};
+    doori::Bigdecimal v6{"-1000"};
+    auto r3=v5+v6;
+    EXPECT_EQ(doori::Bigdecimal("-999"), r3);
+
+    doori::Bigdecimal v7{"120.1234"};
+    doori::Bigdecimal v8{"1273.123909"};
+    auto r4=v7+v8;
+    EXPECT_EQ(doori::Bigdecimal("1393.247309"), r4);
+
+    doori::Bigdecimal v9{"-120.1234"};
+    doori::Bigdecimal v10{"1273.123909"};
+    auto r5=v9+v10;
+    EXPECT_EQ(doori::Bigdecimal("1153.000509"), r5);
+
+    doori::Bigdecimal v11{"120.1234"};
+    doori::Bigdecimal v12{"-1273.123909"};
+    auto r6=v11+v12;
+    EXPECT_EQ(doori::Bigdecimal("-1153.000509"), r6);
+
+    doori::Bigdecimal v13{"0.1"};
+    doori::Bigdecimal v14{"0.1"};
+    auto r7=v13+v14;
+    EXPECT_EQ(doori::Bigdecimal("0.2"), r7);
+}
+
+TEST(Bigdecimal, MULTIPLY)
+{
+    doori::Bigdecimal v1{"1"};
+    doori::Bigdecimal v2{"2"};
+    auto r1=v1*v2;
+    EXPECT_EQ(doori::Bigdecimal("2"), r1);
+
+//    doori::Bigdecimal v3{"99291929394"};
+//    doori::Bigdecimal v4{"99291929394"};
+//    auto r2=v3+v4;
+//    EXPECT_EQ(doori::Bigdecimal("198583858788"), r2);
+//
+//    doori::Bigdecimal v5{"1"};
+//    doori::Bigdecimal v6{"-1000"};
+//    auto r3=v5+v6;
+//    EXPECT_EQ(doori::Bigdecimal("-999"), r3);
+//
+//    doori::Bigdecimal v7{"120.1234"};
+//    doori::Bigdecimal v8{"1273.123909"};
+//    auto r4=v7+v8;
+//    EXPECT_EQ(doori::Bigdecimal("1393.247309"), r4);
+//
+//    doori::Bigdecimal v9{"-120.1234"};
+//    doori::Bigdecimal v10{"1273.123909"};
+//    auto r5=v9+v10;
+//    EXPECT_EQ(doori::Bigdecimal("1153.000509"), r5);
+//
+//    doori::Bigdecimal v11{"120.1234"};
+//    doori::Bigdecimal v12{"-1273.123909"};
+//    auto r6=v11+v12;
+//    EXPECT_EQ(doori::Bigdecimal("-1153.000509"), r6);
+//
+//    doori::Bigdecimal v13{"0.1"};
+//    doori::Bigdecimal v14{"0.1"};
+//    auto r7=v13+v14;
+//    EXPECT_EQ(doori::Bigdecimal("0.2"), r7);
 }

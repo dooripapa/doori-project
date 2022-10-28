@@ -71,17 +71,34 @@ namespace doori {
      * @param rhs
      * @return Bigdecimal
      */
-    auto Bigdecimal::operator+(const Bigdecimal &rhs) -> Bigdecimal& {
-        ushort uLhsAboveZeroLen = 0;
-        ushort uLhsZeroPos = 0;
-        ushort uLhsBelowZeroLen = 0;
-        getFloatStyleInfo(this->m_sValue, uLhsAboveZeroLen, uLhsZeroPos, uLhsBelowZeroLen );
+    auto Bigdecimal::operator+(const Bigdecimal &rhs) -> Bigdecimal {
+        if( this == &rhs)
+            return { *this + *this };
 
-        ushort uRhsAboveZeroLen = 0;
-        ushort uRhsZeroPos = 0;
-        ushort uRhsBelowZeroLen = 0;
-        getFloatStyleInfo(this->m_sValue, uRhsAboveZeroLen, uRhsZeroPos, uRhsBelowZeroLen );
-        return *this;
+        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
+        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
+        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen = belowZeroLen1>belowZeroLen2?belowZeroLen1:belowZeroLen2;
+        //둘다 마이너스
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            auto r = revisionAt(plus(v.first, v.second), belowZeroLen);
+            return Bigdecimal{"-"+r};
+        }
+        else if(this->m_bMinusFlag && !rhs.m_bMinusFlag) {
+            auto tLeft = *this;
+            auto tRight = rhs;
+            tLeft.m_bMinusFlag = false;
+            return { tRight - tLeft };
+        }
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            auto tLeft = *this;
+            auto tRight = rhs;
+            tRight.m_bMinusFlag = false;
+            return { tLeft - tRight };
+        }
+        else{
+            return Bigdecimal{revisionAt(plus(v.first, v.second), belowZeroLen )};
+        }
     }
 
     auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal & {
@@ -94,7 +111,7 @@ namespace doori {
         int zeroCharCnt=0;
         std::list<std::string> stringList;
 
-        for_each(rhs.m_sValue.begin(), rhs.m_sValue.end(), [&](int i){
+        for_each(begin(rhs.m_sValue), end(rhs.m_sValue), [&](int i){
             auto el = std::to_string(i);
             for(int m=el.length()-1 ;m>=0;m--, zeroCharCnt++) {
                 stringList.push_back(multiply(sRet, el[m], zeroCharCnt));
@@ -459,11 +476,12 @@ namespace doori {
         // 00.00001 => 0.00001
         bool bZero = true;
         bool bFloatStyle = false;
-        int  nZeroRepeatPos = -1;
+        int  nZeroRepeatPos = 0;
         for (int i = 0; i < sTmpValue.size();++i) {
             if(sTmpValue[i] =='0' && !bFloatStyle)
-                nZeroRepeatPos = i;
+                nZeroRepeatPos++;
             if(sTmpValue[i] == '.') {
+                nZeroRepeatPos--;
                 bFloatStyle = true;
                 continue;
             }
@@ -691,8 +709,11 @@ namespace doori {
      */
     auto Bigdecimal::revisionAt(const string &v1, ushort belowZeroLen) -> std::string {
         string r = v1;
-        if(belowZeroLen>0)
+        if(belowZeroLen>0) {
             r.insert(r.length()-belowZeroLen, ".");
+            if(r[0] == '.')
+                r.insert(0, "0");
+        }
         return r;
     }
 
