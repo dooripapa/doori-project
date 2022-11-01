@@ -101,35 +101,34 @@ namespace doori {
         }
     }
 
-    auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal & {
-        std::string sI;
-        std::string sBefore;
-        std::string sSum="1";
-        std::string sSumRet="0";
-        std::string sRet="1";
+    auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal {
+        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
+        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
+        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
 
-        int zeroCharCnt=0;
-        std::list<std::string> stringList;
+        auto sum = Bigdecimal("0");
 
-        for_each(begin(rhs.m_sValue), end(rhs.m_sValue), [&](int i){
-            auto el = std::to_string(i);
-            for(int m=el.length()-1 ;m>=0;m--, zeroCharCnt++) {
-                stringList.push_back(multiply(sRet, el[m], zeroCharCnt));
+        if(!ge(v.first, v.second))
+            swap(v.first, v.second);
+
+        if(ge(v.first, v.second)) {
+            for(int i=v.second.length()-1, zeroSpace=0;i>-1;i--, zeroSpace++) {
+                auto value = multiply(v.first, v.second[i],zeroSpace);
+
+                sum = Bigdecimal(sum) + Bigdecimal(value);
             }
-            zeroCharCnt=0;
+        }
 
-            for(auto ori:stringList) {
-                sSumRet = plus(sSumRet, ori);
-            }
-            stringList.clear();
-
-            sRet = sSumRet;
-            sSumRet = "0";
-        });
-        return *this;
+        return sum;
     }
 
 
+    /**
+     * 양의 수 문자열을 입력 받는다. 양의 수 문자열의 합을 리턴한다.
+     * @param value1 양의 수 문자열
+     * @param value2 양의 수 문자열
+     * @return
+     */
     auto Bigdecimal::plus(std::string value1, std::string value2) -> std::string {
         std::forward_list<char> ret;
         int i=static_cast<int>(value1.size()-1);

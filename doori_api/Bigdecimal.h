@@ -51,7 +51,7 @@ namespace doori {
          * @param rhs
          * @return
          */
-        auto operator*(const Bigdecimal& rhs)-> Bigdecimal&;
+        auto operator*(const Bigdecimal& rhs)-> Bigdecimal;
 
         /**
          * + 연산 오버라이딩

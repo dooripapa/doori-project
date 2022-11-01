@@ -194,6 +194,16 @@ TEST(Bigdecimal, MULTIPLY)
     auto r1=v1*v2;
     EXPECT_EQ(doori::Bigdecimal("2"), r1);
 
+    doori::Bigdecimal v3{"100"};
+    doori::Bigdecimal v4{"222"};
+    auto r2=v3*v4;
+    EXPECT_EQ(doori::Bigdecimal("22200"), r2);
+
+    doori::Bigdecimal v5{"998929390101010"};
+    doori::Bigdecimal v6{"100012030120000"};
+    auto r3=v5*v6;
+    EXPECT_EQ(doori::Bigdecimal("99904956250535441962421200000"), r3);
+
 //    doori::Bigdecimal v3{"99291929394"};
 //    doori::Bigdecimal v4{"99291929394"};
 //    auto r2=v3+v4;
