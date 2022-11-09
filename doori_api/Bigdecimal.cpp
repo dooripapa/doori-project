@@ -27,6 +27,19 @@ namespace doori {
         copyFrom(std::move(rhs));
     }
 
+    /**
+     * 곱하기를 합니다. A * B, 단, B는 1의 자리수이며, 10의 자리라고 가정하면, zeroCharCnt을 1로 셋팅
+     * ex) 100 * 100 이라고 하면, multiply("100", '1', 2)
+     * ex) 123 * 456 이라고 하면,
+     *   multiply("123", "6", 0)
+     * + multiply("123", "5", 1)
+     * + multiply("123", "4", 2)
+     *  와 같다.
+     * @param value
+     * @param c
+     * @param zeroCharCnt
+     * @return
+     */
     auto Bigdecimal::multiply(std::string value, char c, uint zeroCharCnt) -> std::string {
         int i=value.size()-1;
         int iValue = 0;
@@ -106,6 +119,11 @@ namespace doori {
         auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
         auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
 
+        // 0이면 한쪽은 float타입이 아님.
+        // revisionSameString 함수에서 보정해서 두 수의 양의 문자열을 리턴함
+        ushort corrctZeroLen=belowZeroLen1>belowZeroLen2?belowZeroLen1:belowZeroLen2;
+        corrctZeroLen *= 2;
+
         auto sum = Bigdecimal("0");
 
         if(!ge(v.first, v.second))
@@ -118,8 +136,22 @@ namespace doori {
                 sum = Bigdecimal(sum) + Bigdecimal(value);
             }
         }
+        auto corrctValue = revisionAt(sum.m_sValue, corrctZeroLen);
 
-        return sum;
+        char sign;
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag)
+            sign='+';
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag)
+            sign='-';
+        else if(this->m_bMinusFlag && !rhs.m_bMinusFlag)
+            sign='-';
+        else
+            sign='+';
+
+        if (sign=='-')
+            return Bigdecimal{"-"+revisionRemoveBackZero(corrctValue) };
+
+        return Bigdecimal{revisionRemoveBackZero(corrctValue) };
     }
 
 
