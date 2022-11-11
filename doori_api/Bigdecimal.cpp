@@ -741,6 +741,10 @@ namespace doori {
     auto Bigdecimal::revisionAt(const string &v1, ushort belowZeroLen) -> std::string {
         string r = v1;
         if(belowZeroLen>0) {
+            int v = r.length()-belowZeroLen;
+            if(v<0){
+                r.insert(0, abs(v), '0');
+            }
             r.insert(r.length()-belowZeroLen, ".");
             if(r[0] == '.')
                 r.insert(0, "0");

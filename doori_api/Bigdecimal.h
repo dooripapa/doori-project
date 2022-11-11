@@ -7,6 +7,7 @@
 
 #include "Log.h"
 #include <iostream>
+#include <stdlib.h>
 #include <forward_list>
 #include <list>
 #include <algorithm>
@@ -16,6 +17,9 @@ namespace doori {
      * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함 
      */
     class Bigdecimal {
+
+        friend class DooriTest;
+
         public:
         /*
          * 기본 생성자 호출 금지

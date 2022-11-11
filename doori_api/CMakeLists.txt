@@ -45,8 +45,8 @@ set(HEADER_FILES
         Tree.h
         Tree.hpp
         Json.h
-		Bigdecimal.h 
-		)
+		Bigdecimal.h
+        DooriTest.h)
 
 set(SRC_FILES
         Addr.cpp
@@ -70,7 +70,7 @@ set(SRC_FILES
         Subscriber.cpp
         Topic.cpp
         Json.cpp 
-		Bigdecimal.cpp)
+		Bigdecimal.cpp DooriTest.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
