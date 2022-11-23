@@ -20,7 +20,7 @@ Application::~Application() {
 }
 
 auto Application::ProcessName() noexcept -> std::string {
-    return std::string("a.out");
+    return std::string{"a.out"};
 }
 
 auto Application::Daemonize() noexcept -> bool {
