@@ -98,6 +98,13 @@ namespace doori {
         }
 
         /**
+         *  / 기호 오버라이딩
+         *  @param rhs
+         *  @return
+         */
+        auto operator/(const Bigdecimal& rhs) -> Bigdecimal;
+
+        /**
          * 값을 문자열로 리턴 합니다.
          * @return std::string
          */
@@ -106,19 +113,18 @@ namespace doori {
         /*
          * private
          */
-        private:
+    private:
         auto init(const std::string& value) -> void;
         auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
-        static auto plus(std::string value1, std::string value2) -> std::string;
+        auto plus(std::string value1, std::string value2) -> std::string;
         auto minus(string v1, string v2) -> string;
-//        auto divide(std::string value1, std::string value2) -> std::string;
-        auto ge(std::string v1, std::string v2) const noexcept -> bool;
-        auto eq(std::string v1, std::string v2) const noexcept -> bool;
-        auto gt(std::string v1, std::string v2) const noexcept -> bool;
-        auto fge(std::string v1, std::string v2) const noexcept -> bool;
-        auto feq(std::string v1, std::string v2) const noexcept -> bool;
-        auto fgt(std::string v1, std::string v2) const noexcept -> bool;
-    public:
+        auto divide(std::string v1, std::string v2) -> tuple<std::string, std::string>;
+        [[nodiscard]] auto ge(std::string v1, std::string v2) const noexcept -> bool;
+        [[nodiscard]] auto eq(std::string v1, std::string v2) const noexcept -> bool;
+        [[nodiscard]] auto gt(std::string v1, std::string v2) const noexcept -> bool;
+        [[nodiscard]] auto fge(std::string v1, std::string v2) const noexcept -> bool;
+        [[nodiscard]] auto feq(std::string v1, std::string v2) const noexcept -> bool;
+        [[nodiscard]] auto fgt(std::string v1, std::string v2) const noexcept -> bool;
         auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
         auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
         auto revisionRemoveBackZero(const string& v1) const noexcept -> std::string;

@@ -784,4 +784,109 @@ namespace doori {
         return v1;
     }
 
+    auto Bigdecimal::operator/(const Bigdecimal &rhs) -> Bigdecimal {
+        if( rhs == "0" )
+            throw runtime_error("Attempted to divide by zero\n");
+
+        if( this->toString() == "0" )
+            return Bigdecimal{ "0" };
+
+        if( this == &rhs)
+            return Bigdecimal{ "1" };
+
+        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
+        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
+        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen = belowZeroLen1>belowZeroLen2?belowZeroLen1:belowZeroLen2;
+        //둘다 마이너스
+        if(this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            auto r = revisionAt(plus(v.first, v.second), belowZeroLen);
+            return Bigdecimal{"-"+r};
+        }
+        else if(this->m_bMinusFlag && !rhs.m_bMinusFlag) {
+            auto tLeft = *this;
+            auto tRight = rhs;
+            tLeft.m_bMinusFlag = false;
+            return { tRight - tLeft };
+        }
+        else if(!this->m_bMinusFlag && rhs.m_bMinusFlag) {
+            auto tLeft = *this;
+            auto tRight = rhs;
+            tRight.m_bMinusFlag = false;
+            return { tLeft - tRight };
+        }
+        else{
+            return Bigdecimal{revisionAt(plus(v.first, v.second), belowZeroLen )};
+        }
+    }
+
+    /**
+     * @note value1값이 항상 value2보다 커야 한다.
+     * @param value1 : 양의 정수 문자열
+     * @param value2 : 양의 정수 문자열
+     * @return tuple<string, string>, quotient, remainder
+     */
+    auto Bigdecimal::divide(std::string v1, std::string v2) -> std::tuple<std::string, std::string>
+    {
+        auto lenV1 = v1.length();
+        auto lenV2 = v2.length();
+
+        auto lenDifference = lenV1 - lenV2;
+
+        auto zCorrectV2 = v2.append(lenDifference, '0');
+
+        auto standardValuePosition = v1[0] - zCorrectV2[0];
+        char multiplyC = v1[0]+standardValuePosition;
+
+        auto retValue2 = multiply(zCorrectV2, multiplyC, 0);
+
+        string quotient, remainder;
+        if( ge(v1, retValue2) )
+        {
+            for(auto i=0; i<10; i++)
+            {
+                auto repeatRet = multiply(zCorrectV2, multiplyC+i, 0);
+                if(eq(repeatRet, v1))
+                {
+                    multiplyC += i;
+                    quotient = string{multiplyC}.append(lenDifference, '0');
+                    remainder = minus(v1, repeatRet);
+                    break;
+                }
+                if(gt(repeatRet, v1))
+                {
+                    multiplyC += i;
+                    multiplyC -= 1;
+                    quotient = string{multiplyC}.append(lenDifference, '0');
+                    repeatRet = multiply(zCorrectV2, multiplyC, 0);
+                    remainder = minus(v1, repeatRet);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for(auto i=0; i<10; i++)
+            {
+                auto repeatRet = multiply(zCorrectV2, multiplyC-i, lenDifference);
+                if( eq(repeatRet, v1) )
+                {
+                    multiplyC += i;
+                    quotient = string{multiplyC}.append(lenDifference, '0');
+                    remainder = minus(v1, repeatRet);
+                    break;
+                }
+                if( gt(repeatRet, v1) )
+                {
+                    multiplyC += i;
+                    multiplyC += 1;
+                    quotient = string{multiplyC}.append(lenDifference, '0');
+                    remainder = minus(v1, repeatRet);
+                    break;
+                }
+            }
+        }
+        return {quotient, remainder};
+    };
+
 }//doori end

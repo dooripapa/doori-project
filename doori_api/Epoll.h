@@ -7,7 +7,6 @@
 #pragma once
 #include <iostream>
 #include <functional>
-#include <tuple>
 #include "Connection.h"
 #include "Stream.h"
 #include "EpollEvents.h"

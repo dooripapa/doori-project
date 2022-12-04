@@ -260,3 +260,11 @@ TEST(Bigdecimal, MULTIPLY)
     auto r10=v19*v20;
     EXPECT_EQ(doori::Bigdecimal("0"), r10);
 }
+
+TEST(Bigdecimal, DIVIDE)
+{
+    doori::Bigdecimal a{""};
+    auto r11 = a.divide("365274", "5874");
+
+    EXPECT_EQ(doori::Bigdecimal("0"), "0");
+}
