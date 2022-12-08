@@ -263,8 +263,9 @@ TEST(Bigdecimal, MULTIPLY)
 
 TEST(Bigdecimal, DIVIDE)
 {
-    doori::Bigdecimal a{""};
-    auto r11 = a.divide("365274", "5874");
+    DooriTest test{};
 
-    EXPECT_EQ(doori::Bigdecimal("0"), "0");
+    auto r = test.divide("365274", "5874");
+
+    cout<<"test"<<endl;
 }

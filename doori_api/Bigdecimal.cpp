@@ -833,59 +833,26 @@ namespace doori {
 
         auto lenDifference = lenV1 - lenV2;
 
-        auto zCorrectV2 = v2.append(lenDifference, '0');
-
-        auto standardValuePosition = v1[0] - zCorrectV2[0];
-        char multiplyC = v1[0]+standardValuePosition;
-
-        auto retValue2 = multiply(zCorrectV2, multiplyC, 0);
-
-        string quotient, remainder;
-        if( ge(v1, retValue2) )
+        string r;
+        for(int i=lenV2;i<lenDifference;i++)
         {
-            for(auto i=0; i<10; i++)
-            {
-                auto repeatRet = multiply(zCorrectV2, multiplyC+i, 0);
-                if(eq(repeatRet, v1))
+            auto forDivideValue = v1.substr(0,lenV2);
+            if( ge(forDivideValue, v2) ) {
+                for(int k=1;k<10;k++)
                 {
-                    multiplyC += i;
-                    quotient = string{multiplyC}.append(lenDifference, '0');
-                    remainder = minus(v1, repeatRet);
-                    break;
+                    r = multiply(v2, '0'+k, 0);
+                    if( gt(r,forDivideValue) ) {
+                        r = multiply(v2, '0'+k-1, 0);
+                        break;
+                    }
                 }
-                if(gt(repeatRet, v1))
-                {
-                    multiplyC += i;
-                    multiplyC -= 1;
-                    quotient = string{multiplyC}.append(lenDifference, '0');
-                    repeatRet = multiply(zCorrectV2, multiplyC, 0);
-                    remainder = minus(v1, repeatRet);
-                    break;
-                }
+                r = minus(forDivideValue, r);
+            }
+            else {
+                r = minus(forDivideValue, v2);
             }
         }
-        else
-        {
-            for(auto i=0; i<10; i++)
-            {
-                auto repeatRet = multiply(zCorrectV2, multiplyC-i, lenDifference);
-                if( eq(repeatRet, v1) )
-                {
-                    multiplyC += i;
-                    quotient = string{multiplyC}.append(lenDifference, '0');
-                    remainder = minus(v1, repeatRet);
-                    break;
-                }
-                if( gt(repeatRet, v1) )
-                {
-                    multiplyC += i;
-                    multiplyC += 1;
-                    quotient = string{multiplyC}.append(lenDifference, '0');
-                    remainder = minus(v1, repeatRet);
-                    break;
-                }
-            }
-        }
+
         return {quotient, remainder};
     };
 

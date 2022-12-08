@@ -16,6 +16,10 @@ namespace doori {
             Bigdecimal v{"Test"};
             return v.revisionAt(v1, belowZeroLen);;
         }
+        auto divide(const std::string &v1, const std::string &v2) -> tuple<string, string> {
+            Bigdecimal v{"Test"};
+            return v.divide(v1, v2);
+        }
     };
 
 }
