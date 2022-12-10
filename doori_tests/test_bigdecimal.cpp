@@ -265,7 +265,7 @@ TEST(Bigdecimal, DIVIDE)
 {
     DooriTest test{};
 
-    auto r = test.divide("365274", "5874");
-
-    cout<<"test"<<endl;
+    auto r = test.findMaxLimit("452", "56");
+    cout<<"test"<< get<0>(r) <<endl;
+    cout<<"test"<< get<1>(r) <<endl;
 }

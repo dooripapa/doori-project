@@ -115,7 +115,7 @@ namespace doori {
          */
     private:
         auto init(const std::string& value) -> void;
-        auto multiply(std::string value, char c, uint zeroCharCnt) -> std::string;
+        auto multiply(std::string value, char c, uint zeroCharCnt) const -> std::string;
         auto plus(std::string value1, std::string value2) -> std::string;
         auto minus(string v1, string v2) -> string;
         auto divide(std::string v1, std::string v2) -> tuple<std::string, std::string>;
@@ -138,6 +138,8 @@ namespace doori {
         auto getFloatStyleInfo(const std::string& value) const noexcept -> ushort;
         auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
         auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
+        [[nodiscard]] auto findMaxLimit(const string& v1, const string& v2) const noexcept -> tuple<short,string>;
+    private:
         std::string m_sValue;
         std::string m_sAbovePointValue;
         std::string m_sBelowPointValue;

@@ -40,7 +40,7 @@ namespace doori {
      * @param zeroCharCnt
      * @return
      */
-    auto Bigdecimal::multiply(std::string value, char c, uint zeroCharCnt) -> std::string {
+    auto Bigdecimal::multiply(std::string value, char c, uint zeroCharCnt) const -> std::string {
         int i=value.size()-1;
         int iValue = 0;
         int jValue = c-'0';
@@ -833,27 +833,54 @@ namespace doori {
 
         auto lenDifference = lenV1 - lenV2;
 
-        string r;
-        for(int i=lenV2;i<lenDifference;i++)
+        string r1, r2;
+        string quotient{""};
+        string remainder{"0"};
+        for(int i=0;i<lenV1;i++)
         {
-            auto forDivideValue = v1.substr(0,lenV2);
-            if( ge(forDivideValue, v2) ) {
-                for(int k=1;k<10;k++)
-                {
-                    r = multiply(v2, '0'+k, 0);
-                    if( gt(r,forDivideValue) ) {
-                        r = multiply(v2, '0'+k-1, 0);
-                        break;
-                    }
-                }
-                r = minus(forDivideValue, r);
+            r1=v1.substr(i, lenV2);
+            if( ge(r1, v2) ) {
+                auto ret = findMaxLimit(r1, v2);
+                quotient.append(to_string(get<0>(ret)));
             }
-            else {
-                r = minus(forDivideValue, v2);
+            else
+            {
+                if( i==(lenV1+1) ) {
+                    quotient.append("0");
+                    remainder.append("0");
+                    break;
+                }
+
+                r1=v1.substr(i, lenV2+i);
+                auto ret = findMaxLimit(r1, v2);
             }
         }
 
         return {quotient, remainder};
+    }
+
+    /**
+     * @note v1값이 v2값보다 항상 커야 한다. 성능을 위해서, v1길이는 v2보다 최대 한자리 더 크다
+     * v2 1...9까지 곱하기를 해서, v1를 넘지 않는 값을 리턴
+     * @param value1 : 양의 정수 문자열
+     * @param value2 : 양의 정수 문자열
+     * @return 넘지않는 최대 곱하기 수, 최대곱하기 수의 결과값.
+     */
+    auto Bigdecimal::findMaxLimit(const string& v1, const string& v2) const noexcept -> tuple<short, std::string> {
+        if(v1.length() > v2.length()+1)
+            abort();
+
+        string b, a;
+        short prevB;
+        for(int i=1; i<=9;i++) {
+            a = multiply(v2, '0'+i, 0);
+            if( gt(a, v1) )
+                return {prevB,b};
+
+            b = a;
+            prevB = i;
+        }
+        return {0,""};
     };
 
 }//doori end
