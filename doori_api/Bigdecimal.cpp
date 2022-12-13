@@ -814,47 +814,51 @@ namespace doori {
         string quotient{""};
         string remainder{"0"};
 
-        int startP = 0;
-        int copyPossibleLen = lenV2;
-        int limitLen = lenV1;
+        int startP, limitLen;
+        int const copyPossibleLen = lenV2;
 
         for (;;) {
-            subV1 = tmpV1.substr(0, copyPossibleLen);
+            startP = 0;
+            limitLen = tmpV1.length();
+            subV1 = tmpV1.substr(startP, copyPossibleLen);
             if (ge(subV1, tmpV2)) {
                 auto ret = findMaxLimit(subV1, tmpV2);
                 quotient.append(to_string(get<0>(ret)));
 
                 minusV = minus(subV1, get<1>(ret));
                 minusV = revisionRemoveFrontZero(minusV);
+                if (minusV.length() == 0)
+                    remainder = "0";
+                else
+                    remainder = minusV;
 
-                remainder = minusV;
                 startP = copyPossibleLen;
                 if (startP < limitLen) {
                     tmpV1 = minusV.append(tmpV1.substr(startP, limitLen - startP));
-                    limitLen -= startP;
                 } else
                     break;
             } else if ((copyPossibleLen + 1) <= limitLen) {
-                copyPossibleLen += 1;
-                subV1 = tmpV1.substr(0, copyPossibleLen);
+                subV1 = tmpV1.substr(startP, copyPossibleLen + 1);
 
                 auto ret = findMaxLimit(subV1, tmpV2);
                 quotient.append(to_string(get<0>(ret)));
 
                 minusV = minus(subV1, get<1>(ret));
                 minusV = revisionRemoveFrontZero(minusV);
+                if (minusV.length() == 0)
+                    remainder = "0";
+                else
+                    remainder = minusV;
 
-                remainder = minusV;
-                startP = copyPossibleLen;
+                startP = (copyPossibleLen + 1);
                 if (startP < limitLen) {
                     tmpV1 = minusV.append(tmpV1.substr(startP, limitLen - startP));
-                    limitLen -= startP;
-                    //다시 기본값으로 셋팅
-                    copyPossibleLen = lenV2;
                 } else
                     break;
-            } else
+            } else {
+                quotient.append(subV1);
                 break;
+            }
         }
 
         return {quotient, remainder};
@@ -873,7 +877,7 @@ namespace doori {
 
         string b, a;
         short prevB;
-        for (int i = 1; i <= 9; i++) {
+        for (int i = 1; i <= 10; i++) {
             a = multiply(v2, '0' + i, 0);
             if (gt(a, v1))
                 return {prevB, b};

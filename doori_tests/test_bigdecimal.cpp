@@ -259,6 +259,11 @@ TEST(Bigdecimal, MULTIPLY)
     doori::Bigdecimal v20{"0"};
     auto r10=v19*v20;
     EXPECT_EQ(doori::Bigdecimal("0"), r10);
+
+    doori::Bigdecimal v21{"2394293593245"};
+    doori::Bigdecimal v22{"16477"};
+    auto r11=v21*v22;
+    EXPECT_EQ(doori::Bigdecimal{"39452130943849234"}, r11 + doori::Bigdecimal{"1355407951369"} );
 }
 
 TEST(Bigdecimal, DIVIDE)
@@ -268,6 +273,9 @@ TEST(Bigdecimal, DIVIDE)
     auto r = test.divide("172", "27");
     cout<< get<0>(r) << ":" << get<1>(r) << endl;
 
+    r = test.divide("1", "1");
+    cout<< get<0>(r) << ":" << get<1>(r) << endl;
+
     r = test.divide("10", "1");
     cout<< get<0>(r) << ":" << get<1>(r) << endl;
 
@@ -275,5 +283,11 @@ TEST(Bigdecimal, DIVIDE)
     cout<< get<0>(r) << ":" << get<1>(r) << endl;
 
     r = test.divide("11111111", "10000000");
+    cout<< get<0>(r) << ":" << get<1>(r) << endl;
+
+    r = test.divide("2345823", "3");
+    cout<< get<0>(r) << ":" << get<1>(r) << endl;
+
+    r = test.divide("39452130943849234", "2394293593245");
     cout<< get<0>(r) << ":" << get<1>(r) << endl;
 }
