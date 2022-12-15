@@ -111,6 +111,9 @@ namespace doori {
     }
 
     auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal {
+        if (rhs == "0" || this->toString() == "0")
+            return Bigdecimal{"0"};
+
         auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
         auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
         auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
@@ -769,30 +772,47 @@ namespace doori {
         if (this->toString() == "0")
             return Bigdecimal{"0"};
 
-        if (this == &rhs)
+        if (*this == rhs)
             return Bigdecimal{"1"};
 
         auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
         auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
-        auto belowZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
-        //둘다 마이너스
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            auto r = revisionAt(plus(v.first, v.second), belowZeroLen);
-            return Bigdecimal{"-" + r};
-        } else if (this->m_bMinusFlag && !rhs.m_bMinusFlag) {
-            auto tLeft = *this;
-            auto tRight = rhs;
-            tLeft.m_bMinusFlag = false;
-            return {tRight - tLeft};
-        } else if (!this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            auto tLeft = *this;
-            auto tRight = rhs;
-            tRight.m_bMinusFlag = false;
-            return {tLeft - tRight};
-        } else {
-            return Bigdecimal{revisionAt(plus(v.first, v.second), belowZeroLen)};
+        auto vPair = revisionSameString(this->m_sValue, rhs.m_sValue);
+
+        int nDecimalPointCount = 0;
+        std::tuple<string, string> vRet{"0", "0"};
+
+        string quotient{""};
+        string remainder{""};
+        bool bCommaOnce = false;
+
+        for (int i = 1; i <= MAX_DECIMAL_POINT; ) {
+
+            if (gt(vPair.first, vPair.second)) {
+                vRet = divide(vPair.first, vPair.second);
+                quotient += get<0>(vRet);
+
+                if( get<1>(vRet) == "0") //나머지가 0이면
+                    break;
+
+                vPair.first = get<1>(vRet);
+
+                i++; //최대소수점
+            } else {
+                if (i == 1) {
+                    quotient += "0.";
+                    bCommaOnce = true;
+                }
+                else if(!bCommaOnce){
+                    quotient += ".";
+                    bCommaOnce = true;
+                }
+
+                nDecimalPointCount++;
+                vPair.first += "0";
+            }
         }
+        return Bigdecimal{quotient};
     }
 
     /**

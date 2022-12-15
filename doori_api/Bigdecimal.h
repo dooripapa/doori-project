@@ -115,7 +115,7 @@ namespace doori {
          */
     private:
         auto init(const std::string& value) -> void;
-        auto multiply(std::string value, char c, uint zeroCharCnt) const -> std::string;
+        [[nodiscard]] auto multiply(std::string value, char c, uint zeroCharCnt) const -> std::string;
         auto plus(std::string value1, std::string value2) -> std::string;
         auto minus(string v1, string v2) -> string;
         auto divide(std::string v1, std::string v2) -> tuple<std::string, std::string>;
@@ -125,9 +125,9 @@ namespace doori {
         [[nodiscard]] auto fge(std::string v1, std::string v2) const noexcept -> bool;
         [[nodiscard]] auto feq(std::string v1, std::string v2) const noexcept -> bool;
         [[nodiscard]] auto fgt(std::string v1, std::string v2) const noexcept -> bool;
-        auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
-        auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
-        auto revisionRemoveBackZero(const string& v1) const noexcept -> std::string;
+        [[nodiscard]] auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
+        [[nodiscard]] auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
+        [[nodiscard]] auto revisionRemoveBackZero(const string& v1) const noexcept -> std::string;
         auto revisionAt(const string &v1, ushort belowZeroLen) -> std::string;
         auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
         auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
@@ -135,9 +135,7 @@ namespace doori {
                                , ushort &uAboveZeroLen
                                , ushort &uZeroPos
                                , ushort &uBelowZeroLen ) const noexcept -> void;
-        auto getFloatStyleInfo(const std::string& value) const noexcept -> ushort;
-        auto compareFloatStyleBelowZero(const std::string& lhs, const std::string& rhs) noexcept -> bool;
-        auto plusFloatStyleBelowZero(const string &rhs, const string &lhs) noexcept -> std::tuple<uint8_t ,string>;
+        [[nodiscard]] auto getFloatStyleInfo(const std::string& value) const noexcept -> ushort;
         [[nodiscard]] auto findMaxLimit(const string& v1, const string& v2) const noexcept -> tuple<short,string>;
     private:
         std::string m_sValue;
@@ -145,6 +143,10 @@ namespace doori {
         std::string m_sBelowPointValue;
         bool m_bMinusFlag;
         bool m_bFloatTypeFlag;
+
+        enum {
+            MAX_DECIMAL_POINT = 8
+        };
     };
 }
 

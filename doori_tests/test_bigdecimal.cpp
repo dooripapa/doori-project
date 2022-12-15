@@ -290,4 +290,32 @@ TEST(Bigdecimal, DIVIDE)
 
     r = test.divide("39452130943849234", "2394293593245");
     cout<< get<0>(r) << ":" << get<1>(r) << endl;
+
+    r = test.divide("17268", "5420");
+    cout<< get<0>(r) << ":" << get<1>(r) << endl;
+
+    doori::Bigdecimal v1{"1"};
+    doori::Bigdecimal v2{"1"};
+    auto r1=v1/v2;
+    EXPECT_EQ(doori::Bigdecimal("1"), r1);
+
+    doori::Bigdecimal v3{"1"};
+    doori::Bigdecimal v4{"0"};
+    EXPECT_ANY_THROW(v3/v4);
+
+    doori::Bigdecimal v5{"2"};
+    doori::Bigdecimal v6{"7"};
+    auto r2 = v5/v6;
+    EXPECT_EQ(doori::Bigdecimal("0.28571428"), r2);
+
+    doori::Bigdecimal v7{"2"};
+    doori::Bigdecimal v8{"5"};
+    auto r3 = v7/v8;
+    EXPECT_EQ(doori::Bigdecimal("0.4"), r3);
+
+    doori::Bigdecimal v7{"2"};
+    doori::Bigdecimal v8{"5"};
+    auto r3 = v7/v8;
+    EXPECT_EQ(doori::Bigdecimal("0.4"), r3);
+
 }
