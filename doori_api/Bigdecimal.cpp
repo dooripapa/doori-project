@@ -40,7 +40,7 @@ namespace doori {
      * @param zeroCharCnt
      * @return
      */
-    auto Bigdecimal::multiply(std::string value, char c, uint zeroCharCnt) const -> std::string {
+    auto Bigdecimal::multiply(std::string value, char c, uint zeroCharCnt) noexcept -> std::string {
         int i = value.size() - 1;
         int iValue = 0;
         int jValue = c - '0';
@@ -87,26 +87,32 @@ namespace doori {
         if (this == &rhs)
             return {*this + *this};
 
-        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
-        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen1 = getDecimalLength(this->m_String);
+        auto belowZeroLen2 = getDecimalLength(rhs.m_String);
+        auto v = correctAsIntegerString(this->m_String, rhs.m_String);
         auto belowZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
-        //둘다 마이너스
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            auto r = revisionAt(plus(v.first, v.second), belowZeroLen);
-            return Bigdecimal{"-" + r};
-        } else if (this->m_bMinusFlag && !rhs.m_bMinusFlag) {
-            auto tLeft = *this;
-            auto tRight = rhs;
-            tLeft.m_bMinusFlag = false;
-            return {tRight - tLeft};
-        } else if (!this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            auto tLeft = *this;
-            auto tRight = rhs;
-            tRight.m_bMinusFlag = false;
-            return {tLeft - tRight};
-        } else {
-            return Bigdecimal{revisionAt(plus(v.first, v.second), belowZeroLen)};
+
+        Bigdecimal tLeft{""};
+        Bigdecimal tRight{""};
+        string r;
+        switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
+            case SIGN::BOTH_MINUS:
+                r = makeUpPoint(plus(v.first, v.second), belowZeroLen);
+                return Bigdecimal{"-" + r};
+                // 예를 들어, (-100) + (90) = 90 - 100 같으므로, 빼기로 보정
+            case SIGN::ONLY_FRIST_MINUS:
+                tLeft = *this;
+                tRight = rhs;
+                tLeft.m_IsNegative = false;
+                return {tRight - tLeft};
+                // 예를 들어, 100 + (-90) = 100 - 90 같으므로, 빼기로 보정
+            case SIGN::ONLY_SECOND_MINUS:
+                tLeft = *this;
+                tRight = rhs;
+                tRight.m_IsNegative = false;
+                return {tLeft - tRight};
+            case SIGN::BOTH_PLUS:
+                return Bigdecimal{makeUpPoint(plus(v.first, v.second), belowZeroLen)};
         }
     }
 
@@ -114,12 +120,12 @@ namespace doori {
         if (rhs == "0" || this->toString() == "0")
             return Bigdecimal{"0"};
 
-        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
-        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen1 = getDecimalLength(this->m_String);
+        auto belowZeroLen2 = getDecimalLength(rhs.m_String);
+        auto v = correctAsIntegerString(this->m_String, rhs.m_String);
 
         // 0이면 한쪽은 float타입이 아님.
-        // revisionSameString 함수에서 보정해서 두 수의 양의 문자열을 리턴함
+        // correctAsIntegerString 함수에서 보정해서 두 수의 양의 문자열을 리턴함
         ushort corrctZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
         corrctZeroLen *= 2;
 
@@ -135,22 +141,11 @@ namespace doori {
                 sum = Bigdecimal(sum) + Bigdecimal(value);
             }
         }
-        auto corrctValue = revisionAt(sum.m_sValue, corrctZeroLen);
+        auto corrctValue = makeUpPoint(sum.m_String, corrctZeroLen);
 
-        char sign;
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag)
-            sign = '+';
-        else if (!this->m_bMinusFlag && rhs.m_bMinusFlag)
-            sign = '-';
-        else if (this->m_bMinusFlag && !rhs.m_bMinusFlag)
-            sign = '-';
-        else
-            sign = '+';
+        auto sign = IsNegative(this->m_IsNegative, rhs.m_IsNegative) ? "-" : "";
 
-        if (sign == '-')
-            return Bigdecimal{"-" + revisionRemoveBackZero(corrctValue)};
-
-        return Bigdecimal{revisionRemoveBackZero(corrctValue)};
+        return Bigdecimal{sign + removeSuffixZero(corrctValue)};
     }
 
 
@@ -160,7 +155,7 @@ namespace doori {
      * @param value2 양의 수 문자열
      * @return
      */
-    auto Bigdecimal::plus(std::string value1, std::string value2) -> std::string {
+    auto Bigdecimal::plus(std::string value1, std::string value2) noexcept -> std::string {
         std::forward_list<char> ret;
         int i = static_cast<int>(value1.size() - 1);
         int j = static_cast<int>(value2.size() - 1);
@@ -198,23 +193,19 @@ namespace doori {
     }
 
     auto Bigdecimal::toString() -> std::string {
-        return revisionRemoveBackZero(m_bMinusFlag ? ("-" + m_sValue) : m_sValue);
+        return removeSuffixZero(m_IsNegative ? ("-" + m_String) : m_String);
     }
 
     auto Bigdecimal::copyFrom(Bigdecimal &&rhs) noexcept -> void {
-        m_bMinusFlag = rhs.m_bMinusFlag;
-        m_bFloatTypeFlag = rhs.m_bFloatTypeFlag;
-        m_sBelowPointValue = rhs.m_sBelowPointValue;
-        m_sAbovePointValue = rhs.m_sAbovePointValue;
-        m_sValue = std::move(rhs.m_sValue);
+        m_IsNegative = rhs.m_IsNegative;
+        m_IsFloatType = rhs.m_IsFloatType;
+        m_String = std::move(rhs.m_String);
     }
 
     auto Bigdecimal::copyFrom(const Bigdecimal &rhs) noexcept -> void {
-        m_bMinusFlag = rhs.m_bMinusFlag;
-        m_bFloatTypeFlag = rhs.m_bFloatTypeFlag;
-        m_sBelowPointValue = rhs.m_sBelowPointValue;
-        m_sAbovePointValue = rhs.m_sAbovePointValue;
-        m_sValue = rhs.m_sValue;
+        m_IsNegative = rhs.m_IsNegative;
+        m_IsFloatType = rhs.m_IsFloatType;
+        m_String = rhs.m_String;
     }
 
     /**
@@ -223,7 +214,7 @@ namespace doori {
      * @param value2 : 양의 정수 문자열
      * @return
      */
-    auto Bigdecimal::minus(string value1, string value2) -> string {
+    auto Bigdecimal::minus(string value1, string value2) noexcept -> string {
         std::forward_list<char> ret;
 
         int i = static_cast<int>(value1.length());
@@ -292,61 +283,18 @@ namespace doori {
         if (this == &rhs)
             return true;
 
-        if (this->m_bMinusFlag == rhs.m_bMinusFlag
-            && this->m_bFloatTypeFlag == rhs.m_bFloatTypeFlag
-            && this->m_sValue == rhs.m_sValue)
-            return true;
-        else
-            return false;
+        return (this->m_IsNegative == rhs.m_IsNegative
+                && this->m_IsFloatType == rhs.m_IsFloatType
+                && this->m_String == rhs.m_String);
     }
 
     auto Bigdecimal::operator==(Bigdecimal &&rhs) const -> bool {
         if (this == &rhs)
             return true;
 
-        if (this->m_bMinusFlag == rhs.m_bMinusFlag
-            && this->m_bFloatTypeFlag == rhs.m_bFloatTypeFlag
-            && this->m_sValue == rhs.m_sValue)
-            return true;
-        else
-            return false;
-    }
-
-
-    auto Bigdecimal::operator-(Bigdecimal &&rhs) -> Bigdecimal {
-        //자기자신을 빼면 0을 리턴
-        if (this == &rhs)
-            return Bigdecimal{"0"};
-
-        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
-        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
-        auto belowZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
-        //둘다 마이너스
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            if (ge(v.first, v.second)) {
-                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
-                return Bigdecimal{"-" + r};
-            } else if (eq(v.first, v.second)) {
-                return Bigdecimal{"0"};
-            } else {
-                auto r = revisionAt(minus(v.second, v.first), belowZeroLen);
-                return Bigdecimal{r};
-            }
-        } else if (this->m_bMinusFlag && !rhs.m_bMinusFlag) {
-            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
-            return Bigdecimal{"-" + r};
-        } else if (!this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
-            return Bigdecimal{r};
-        } else {
-            if (ge(v.first, v.second))
-                return Bigdecimal{revisionAt(minus(v.first, v.second), belowZeroLen)};
-            else if (eq(v.first, v.second))
-                return Bigdecimal{"0"};
-            else
-                return Bigdecimal{"-" + revisionAt(minus(v.second, v.first), belowZeroLen)};
-        }
+        return (this->m_IsNegative == rhs.m_IsNegative
+                && this->m_IsFloatType == rhs.m_IsFloatType
+                && this->m_String == rhs.m_String);
     }
 
     auto Bigdecimal::operator-(std::string &&rhs) -> Bigdecimal {
@@ -362,34 +310,39 @@ namespace doori {
         if (this == &rhs)
             return Bigdecimal{"0"};
 
-        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
-        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen1 = getDecimalLength(this->m_String);
+        auto belowZeroLen2 = getDecimalLength(rhs.m_String);
+        auto v = correctAsIntegerString(this->m_String, rhs.m_String);
         auto belowZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
         //둘다 마이너스
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            if (ge(v.first, v.second)) {
-                auto r = revisionAt(minus(v.first, v.second), belowZeroLen);
+
+        Bigdecimal tLeft{""};
+        Bigdecimal tRight{""};
+        string r;
+        switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
+            case SIGN::BOTH_MINUS:
+                if (ge(v.first, v.second)) {
+                    r = makeUpPoint(minus(v.first, v.second), belowZeroLen);
+                    return Bigdecimal{"-" + r};
+                } else if (eq(v.first, v.second)) {
+                    return Bigdecimal{"0"};
+                } else {
+                    r = makeUpPoint(minus(v.second, v.first), belowZeroLen);
+                    return Bigdecimal{r};
+                }
+            case SIGN::ONLY_FRIST_MINUS:
+                r = makeUpPoint(plus(this->m_String, rhs.m_String), belowZeroLen);
                 return Bigdecimal{"-" + r};
-            } else if (eq(v.first, v.second)) {
-                return Bigdecimal{"0"};
-            } else {
-                auto r = revisionAt(minus(v.second, v.first), belowZeroLen);
+            case SIGN::ONLY_SECOND_MINUS:
+                r = makeUpPoint(plus(this->m_String, rhs.m_String), belowZeroLen);
                 return Bigdecimal{r};
-            }
-        } else if (this->m_bMinusFlag && !rhs.m_bMinusFlag) {
-            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
-            return Bigdecimal{"-" + r};
-        } else if (!this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            auto r = revisionAt(plus(this->m_sValue, rhs.m_sValue), belowZeroLen);
-            return Bigdecimal{r};
-        } else {
-            if (gt(v.first, v.second))
-                return Bigdecimal{revisionAt(minus(v.first, v.second), belowZeroLen)};
-            else if (eq(v.first, v.second))
-                return Bigdecimal{"0"};
-            else
-                return Bigdecimal{"-" + revisionAt(minus(v.second, v.first), belowZeroLen)};
+            case SIGN::BOTH_PLUS:
+                if (gt(v.first, v.second))
+                    return Bigdecimal{makeUpPoint(minus(v.first, v.second), belowZeroLen)};
+                else if (eq(v.first, v.second))
+                    return Bigdecimal{"0"};
+                else
+                    return Bigdecimal{"-" + makeUpPoint(minus(v.second, v.first), belowZeroLen)};
         }
     }
 
@@ -397,44 +350,48 @@ namespace doori {
         if (this == &rhs)
             return false;
 
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto v = correctAsIntegerString(this->m_String, rhs.m_String);
 
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            if (gt(v.first, v.second))
+        switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
+            case SIGN::BOTH_MINUS:
+                if (gt(v.first, v.second))
+                    return false;
+                else
+                    return true;
+            case SIGN::ONLY_FRIST_MINUS:
                 return false;
-            else
+            case SIGN::ONLY_SECOND_MINUS:
                 return true;
-        } else if (!this->m_bMinusFlag && rhs.m_bMinusFlag)
-            return true;
-        else if (!this->m_bMinusFlag && !rhs.m_bMinusFlag) {
-            if (ge(v.first, v.second))
-                return true;
-            else
-                return false;
-        } else
-            return false;
+            case SIGN::BOTH_PLUS:
+                if (ge(v.first, v.second))
+                    return true;
+                else
+                    return false;
+        }
     }
 
     auto Bigdecimal::operator>=(const Bigdecimal &rhs) const -> bool {
         if (this == &rhs)
             return true;
 
-        auto v = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto v = correctAsIntegerString(this->m_String, rhs.m_String);
 
-        if (this->m_bMinusFlag && rhs.m_bMinusFlag) {
-            if (gt(v.first, v.second))
+        switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
+            case SIGN::BOTH_MINUS:
+                if (gt(v.first, v.second))
+                    return false;
+                else
+                    return true;
+            case SIGN::ONLY_FRIST_MINUS:
                 return false;
-            else
+            case SIGN::ONLY_SECOND_MINUS:
                 return true;
-        } else if (!this->m_bMinusFlag && rhs.m_bMinusFlag)
-            return true;
-        else if (!this->m_bMinusFlag && !rhs.m_bMinusFlag) {
-            if (ge(v.first, v.second))
-                return true;
-            else
-                return false;
-        } else
-            return false;
+            case SIGN::BOTH_PLUS:
+                if (ge(v.first, v.second))
+                    return true;
+                else
+                    return false;
+        }
     }
 
     /**
@@ -444,8 +401,8 @@ namespace doori {
      * @param uZero : 소소점 위치값
      * @param uBelowZero : 소수점 아래의 bbbbb 소수점 길이값
      */
-    auto Bigdecimal::getFloatStyleInfo(const std::string &value, ushort &uAboveZeroLen, ushort &uZeroPos,
-                                       ushort &uBelowZeroLen) const noexcept -> void {
+    auto Bigdecimal::getDecimalMetaInfo(const std::string &value, ushort &uAboveZeroLen, ushort &uZeroPos,
+                                        ushort &uBelowZeroLen) noexcept -> void {
         uAboveZeroLen = 0;
         uZeroPos = 0;
         uBelowZeroLen = value.length();
@@ -475,13 +432,13 @@ namespace doori {
 
         //앞 부분 기호(+, -) 판단
         if (value[startPos] == '-') {
-            m_bMinusFlag = true;
+            m_IsNegative = true;
             startPos++;
         } else if (value[startPos] == '+') {
-            m_bMinusFlag = false;
+            m_IsNegative = false;
             startPos++;
         } else {
-            m_bMinusFlag = false;
+            m_IsNegative = false;
         }
 
         //마이너스기호가 있으면, 뒤에서부터 복사
@@ -493,14 +450,14 @@ namespace doori {
         // 00.00000 => 0
         // 00.00001 => 0.00001
         bool bZero = true;
-        bool bFloatStyle = false;
+        m_IsFloatType = false;
         int nZeroRepeatPos = 0;
         for (int i = 0; i < sTmpValue.size(); ++i) {
-            if (sTmpValue[i] == '0' && !bFloatStyle)
+            if (sTmpValue[i] == '0' && !m_IsFloatType)
                 nZeroRepeatPos++;
             if (sTmpValue[i] == '.') {
                 nZeroRepeatPos--;
-                bFloatStyle = true;
+                m_IsFloatType = true;
                 continue;
             }
             if (sTmpValue[i] != '0') {
@@ -510,27 +467,17 @@ namespace doori {
         }
 
         if (bZero) {
-            m_sValue = "0";
-            m_bMinusFlag = false;
-            m_bFloatTypeFlag = false;
+            m_String = "0";
+            m_IsNegative = false;
+            m_IsFloatType = false;
         } else {
             if (nZeroRepeatPos > 0) {
-                m_sValue = sTmpValue.substr(nZeroRepeatPos, sTmpValue.size() - nZeroRepeatPos);
+                m_String = sTmpValue.substr(nZeroRepeatPos, sTmpValue.size() - nZeroRepeatPos);
             } else {
-                m_sValue = sTmpValue;
+                m_String = sTmpValue;
             }
         }
 
-        if (bFloatStyle) {
-            m_bFloatTypeFlag = true;
-            ushort uAbovePointLen = 0;
-            ushort uBelowPointLen = 0;
-            ushort uPointPos = 0;
-            getFloatStyleInfo(m_sValue, uAbovePointLen, uPointPos, uBelowPointLen);
-            m_sAbovePointValue = m_sValue.substr(0, uAbovePointLen);
-            m_sBelowPointValue = m_sValue.substr(uPointPos + 1, uBelowPointLen);
-        } else
-            m_bFloatTypeFlag = false;
     }
 
     /**
@@ -539,7 +486,7 @@ namespace doori {
      * @param v2 양의 수
      * @return
      */
-    auto Bigdecimal::ge(std::string v1, std::string v2) const noexcept -> bool {
+    auto Bigdecimal::ge(std::string v1, std::string v2) noexcept -> bool {
         bool bStatus = true;
 
         auto Len1 = v1.length();
@@ -568,7 +515,7 @@ namespace doori {
      * @param v2 양의 수
      * @return
      */
-    auto Bigdecimal::eq(std::string v1, std::string v2) const noexcept -> bool {
+    auto Bigdecimal::eq(std::string v1, std::string v2) noexcept -> bool {
         bool bStatus = true;
 
         reverse(v1.begin(), v1.end());
@@ -596,7 +543,7 @@ namespace doori {
      * @param v2 양의 수
      * @return
      */
-    auto Bigdecimal::gt(std::string v1, std::string v2) const noexcept -> bool {
+    auto Bigdecimal::gt(std::string v1, std::string v2) noexcept -> bool {
         if (ge(v1, v2)) {
             if (eq(v1, v2))
                 return false;
@@ -617,8 +564,8 @@ namespace doori {
      * @param v2 양의 소수점 문자열, 또는 양의 수 문자열
      * @return
      */
-    auto Bigdecimal::revisionSameString(const string &v1,
-                                        const string &v2) const noexcept -> std::pair<std::string, std::string> {
+    auto Bigdecimal::correctAsIntegerString(const string &v1,
+                                            const string &v2) noexcept -> std::pair<std::string, std::string> {
         ushort v1AboveLen = 0;
         ushort v1PointPos = 0;
         ushort v1BelowLen = 0;
@@ -627,8 +574,8 @@ namespace doori {
         ushort v2PointPos = 0;
         ushort v2BelowLen = 0;
 
-        getFloatStyleInfo(v1, v1AboveLen, v1PointPos, v1BelowLen);
-        getFloatStyleInfo(v2, v2AboveLen, v2PointPos, v2BelowLen);
+        getDecimalMetaInfo(v1, v1AboveLen, v1PointPos, v1BelowLen);
+        getDecimalMetaInfo(v2, v2AboveLen, v2PointPos, v2BelowLen);
 
         uint AbsolutedMultiplyLen1 = 0;
         uint AbsolutedMultiplyLen2 = 0;
@@ -647,7 +594,7 @@ namespace doori {
         for (int i = 0; i < AbsolutedMultiplyLen2; ++i)
             v2Temp += '0';
 
-        return make_pair(revisionRemoveFrontZero(v1Temp), revisionRemoveFrontZero(v2Temp));
+        return make_pair(removePrefixZero(v1Temp), removePrefixZero(v2Temp));
     }
 
     /**
@@ -657,7 +604,7 @@ namespace doori {
      * @return
      */
     auto Bigdecimal::fge(std::string v1, std::string v2) const noexcept -> bool {
-        auto vPair = revisionSameString(v1, v2);
+        auto vPair = correctAsIntegerString(v1, v2);
         return ge(vPair.first, vPair.second);
     }
 
@@ -668,7 +615,7 @@ namespace doori {
      * @return
      */
     auto Bigdecimal::feq(std::string v1, std::string v2) const noexcept -> bool {
-        auto vPair = revisionSameString(v1, v2);
+        auto vPair = correctAsIntegerString(v1, v2);
         return eq(vPair.first, vPair.second);
     }
 
@@ -679,7 +626,7 @@ namespace doori {
      * @return
      */
     auto Bigdecimal::fgt(std::string v1, std::string v2) const noexcept -> bool {
-        auto vPair = revisionSameString(v1, v2);
+        auto vPair = correctAsIntegerString(v1, v2);
         return gt(vPair.first, vPair.second);
     }
 
@@ -688,7 +635,7 @@ namespace doori {
      * @param v1
      * @return
      */
-    auto Bigdecimal::revisionRemoveFrontZero(const string &v1) const noexcept -> std::string {
+    auto Bigdecimal::removePrefixZero(const string &v1) noexcept -> std::string {
         uint startPos = 0;
         for (int i = 0; i < v1.length(); ++i) {
             if (v1[i] == '0')
@@ -699,7 +646,13 @@ namespace doori {
         return v1.substr(startPos, v1.length() - startPos);
     }
 
-    auto Bigdecimal::getFloatStyleInfo(const string &value) const noexcept -> ushort {
+    /**
+     * 소수부의 길이를 리턴함
+     * @param value
+     * @return
+     * @example 1234.567 -> 567 3값을 리턴함
+     */
+    auto Bigdecimal::getDecimalLength(const string &value) noexcept -> ushort {
         ushort uZeroPos = 0;
         ushort uBelowZeroLen = value.length();
         for (int i = 0; i < value.length(); ++i) {
@@ -717,10 +670,13 @@ namespace doori {
         return uBelowZeroLen;
     }
 
-    /*
+    /**
      * v1 문자열에 소수점 길에 문자열 "." :at 넣는다.
+     * @param v1
+     * @param belowZeroLen : 소수점 길이값
+     * @return
      */
-    auto Bigdecimal::revisionAt(const string &v1, ushort belowZeroLen) -> std::string {
+    auto Bigdecimal::makeUpPoint(const string &v1, ushort belowZeroLen) -> std::string {
         string r = v1;
         if (belowZeroLen > 0) {
             int v = r.length() - belowZeroLen;
@@ -735,13 +691,13 @@ namespace doori {
     }
 
     /**
-     * 뒤에 있는 0를 삭제 함
+     * 소수점자리의 있는 0를 삭제 함
      * 0.10000 -> 0.1
      * 1000 -> 1000
      * @param v1
      * @return
      */
-    auto Bigdecimal::revisionRemoveBackZero(const string &v1) const noexcept -> std::string {
+    auto Bigdecimal::removeSuffixZero(const string &v1) noexcept -> std::string {
         uint count = 0;
         bool stop = false;
         bool can = false;
@@ -767,7 +723,7 @@ namespace doori {
 
     auto Bigdecimal::operator/(const Bigdecimal &rhs) -> Bigdecimal {
         if (rhs == "0")
-            throw runtime_error("Attempted to divide by zero\n");
+            throw runtime_error("Attempted to findTheRest by zero\n");
 
         if (this->toString() == "0")
             return Bigdecimal{"0"};
@@ -775,78 +731,81 @@ namespace doori {
         if (*this == rhs)
             return Bigdecimal{"1"};
 
-        auto belowZeroLen1 = getFloatStyleInfo(this->m_sValue);
-        auto belowZeroLen2 = getFloatStyleInfo(rhs.m_sValue);
-        auto vPair = revisionSameString(this->m_sValue, rhs.m_sValue);
+        auto belowZeroLen1 = getDecimalLength(this->m_String);
+        auto belowZeroLen2 = getDecimalLength(rhs.m_String);
+        auto vPair = correctAsIntegerString(this->m_String, rhs.m_String);
 
         int nDecimalPointCount = 0;
         std::tuple<string, string> vRet{"0", "0"};
 
-        string quotient{""};
-        string remainder{""};
-        bool bCommaOnce = false;
+        string quotient;
+        string remainder;
+        bool OnComma = false;
 
-        for (int i = 1; i <= MAX_DECIMAL_POINT; ) {
-
+        int zeroCharCount = 0;
+        for (int i = 1; i <= MAX_DECIMAL_POINT;) {
             if (gt(vPair.first, vPair.second)) {
-                vRet = divide(vPair.first, vPair.second);
+                zeroCharCount = 0;
+                vRet = findTheRest(vPair.first, vPair.second);
                 quotient += get<0>(vRet);
 
-                if( get<1>(vRet) == "0") //나머지가 0이면
+                if (get<1>(vRet) == "0") //나머지가 0이면, 완벽하게 나누어짐
                     break;
 
                 vPair.first = get<1>(vRet);
 
-                i++; //최대소수점
+                i++; //최대소수점를 넘을 수 없도록 count 시작
             } else {
                 if (i == 1) {
                     quotient += "0.";
-                    bCommaOnce = true;
-                }
-                else if(!bCommaOnce){
+                    OnComma = true;
+                } else if (!OnComma) {
                     quotient += ".";
-                    bCommaOnce = true;
+                    OnComma = true;
                 }
 
-                nDecimalPointCount++;
+                if (OnComma)
+                    nDecimalPointCount++;
+
                 vPair.first += "0";
+
+                if (zeroCharCount++ > 0)
+                    quotient += "0";
             }
         }
         return Bigdecimal{quotient};
     }
 
     /**
+     * V1 / V2. 몫과 나머지를 구한다.
      * @note value1값이 항상 value2보다 커야 한다.
      * @param value1 : 양의 정수 문자열
      * @param value2 : 양의 정수 문자열
-     * @return tuple<string, string>, quotient, remainder
+     * @return tuple<string, string>{quotient, remainder}
      */
-    auto Bigdecimal::divide(std::string v1, std::string v2) -> std::tuple<std::string, std::string> {
+    auto Bigdecimal::findTheRest(std::string v1, std::string v2) noexcept -> std::tuple<std::string, std::string> {
         auto lenV1 = v1.length();
         auto lenV2 = v2.length();
 
-        string minusV = "";
-
-        string tmpV1 = v1;
-        string tmpV2 = v2;
+        string minusV;
 
         string subV1, r2;
-        string quotient{""};
+        string quotient;
         string remainder{"0"};
 
-        int startP, limitLen;
-        int const copyPossibleLen = lenV2;
+        size_t startP, limitLen;
+        auto const copyPossibleLen = lenV2;
 
         for (;;) {
             startP = 0;
-            limitLen = tmpV1.length();
-            subV1 = tmpV1.substr(startP, copyPossibleLen);
-            if (ge(subV1, tmpV2)) {
-                auto ret = findMaxLimit(subV1, tmpV2);
+            limitLen = v1.length();
+            subV1 = v1.substr(startP, copyPossibleLen);
+            if (ge(subV1, v2)) {
+                auto ret = findMaxLimit(subV1, v2);
                 quotient.append(to_string(get<0>(ret)));
 
                 minusV = minus(subV1, get<1>(ret));
-                minusV = revisionRemoveFrontZero(minusV);
+                minusV = removePrefixZero(minusV);
                 if (minusV.length() == 0)
                     remainder = "0";
                 else
@@ -854,17 +813,17 @@ namespace doori {
 
                 startP = copyPossibleLen;
                 if (startP < limitLen) {
-                    tmpV1 = minusV.append(tmpV1.substr(startP, limitLen - startP));
+                    v1 = minusV.append(v1.substr(startP, limitLen - startP));
                 } else
                     break;
             } else if ((copyPossibleLen + 1) <= limitLen) {
-                subV1 = tmpV1.substr(startP, copyPossibleLen + 1);
+                subV1 = v1.substr(startP, copyPossibleLen + 1);
 
-                auto ret = findMaxLimit(subV1, tmpV2);
+                auto ret = findMaxLimit(subV1, v2);
                 quotient.append(to_string(get<0>(ret)));
 
                 minusV = minus(subV1, get<1>(ret));
-                minusV = revisionRemoveFrontZero(minusV);
+                minusV = removePrefixZero(minusV);
                 if (minusV.length() == 0)
                     remainder = "0";
                 else
@@ -872,7 +831,7 @@ namespace doori {
 
                 startP = (copyPossibleLen + 1);
                 if (startP < limitLen) {
-                    tmpV1 = minusV.append(tmpV1.substr(startP, limitLen - startP));
+                    v1 = minusV.append(v1.substr(startP, limitLen - startP));
                 } else
                     break;
             } else {
@@ -891,7 +850,7 @@ namespace doori {
      * @param value2 : 양의 정수 문자열
      * @return 넘지않는 최대 곱하기 수, 최대곱하기 수의 결과값.
      */
-    auto Bigdecimal::findMaxLimit(const string &v1, const string &v2) const noexcept -> tuple<short, std::string> {
+    auto Bigdecimal::findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<short, std::string> {
         if (v1.length() > v2.length() + 1)
             abort();
 
@@ -906,6 +865,30 @@ namespace doori {
             prevB = i;
         }
         return {0, ""};
-    };
+    }
+
+    auto Bigdecimal::IsNegative(bool minusFlag1, bool minusFlag2) noexcept -> bool {
+        if (minusFlag1 != minusFlag2)
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * 부호비교
+     * @param minusFlag1
+     * @param minusFlag2
+     * @return 부호가 같으면 0, +,- 이면 1,  -,+이면 2
+     */
+    auto Bigdecimal::compairSign(bool minusFlag1, bool minusFlag2) noexcept -> SIGN {
+        if (minusFlag1 && minusFlag2)
+            return SIGN::BOTH_MINUS;
+        else if (minusFlag1 && !minusFlag2)
+            return SIGN::ONLY_FRIST_MINUS;
+        else if (!minusFlag1 && minusFlag2)
+            return SIGN::ONLY_SECOND_MINUS;
+        else
+            return SIGN::BOTH_PLUS;
+    }
 
 }//doori end

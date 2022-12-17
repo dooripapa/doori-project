@@ -13,6 +13,7 @@
 #include <algorithm>
 
 namespace doori {
+
     /**
      * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함 
      */
@@ -20,7 +21,15 @@ namespace doori {
 
         friend class DooriTest;
 
-        public:
+    private:
+        enum class SIGN : int{
+            BOTH_MINUS,
+            BOTH_PLUS,
+            ONLY_FRIST_MINUS,
+            ONLY_SECOND_MINUS
+        };
+
+    public:
         /*
          * 기본 생성자 호출 금지
          */
@@ -30,71 +39,81 @@ namespace doori {
          * 생성자
          * @param value
          */
-        explicit Bigdecimal(const std::string& value);
-        explicit Bigdecimal(std::string&& value);
+        explicit Bigdecimal(const std::string &value);
+
+        explicit Bigdecimal(std::string &&value);
 
         /**
          * 복사생성자, 이동생성자
          * @param rhs
          */
-        Bigdecimal(const Bigdecimal& rhs);
-        Bigdecimal(Bigdecimal&& rhs) noexcept ;
+        Bigdecimal(const Bigdecimal &rhs);
+
+        Bigdecimal(Bigdecimal &&rhs) noexcept;
 
         /**
          * = 연산자 오버라이딩
          * @param rhs
          * @return
          */
-        auto operator=(const Bigdecimal& rhs)-> Bigdecimal&;
-        auto operator=(Bigdecimal&& rhs)-> Bigdecimal&;
-        auto operator=(const std::string& rhs)-> Bigdecimal&;
-        auto operator=(std::string&& rhs)-> Bigdecimal&;
+        auto operator=(const Bigdecimal &rhs) -> Bigdecimal &;
+
+        auto operator=(Bigdecimal &&rhs) -> Bigdecimal &;
+
+        auto operator=(const std::string &rhs) -> Bigdecimal &;
+
+        auto operator=(std::string &&rhs) -> Bigdecimal &;
 
         /**
          * * 연산자 오버라이딩
          * @param rhs
          * @return
          */
-        auto operator*(const Bigdecimal& rhs)-> Bigdecimal;
+        auto operator*(const Bigdecimal &rhs) -> Bigdecimal;
 
         /**
          * + 연산 오버라이딩
          * @param rhs
          * @return
          */
-        auto operator+(const Bigdecimal& rhs)-> Bigdecimal;
+        auto operator+(const Bigdecimal &rhs) -> Bigdecimal;
 
         /**
          * >, >= 비교연산자 오버라이딩
          * @param rhs
          * @return
          */
-        auto operator>(const Bigdecimal& rhs) const -> bool;
-        auto operator>=(const Bigdecimal& rhs) const -> bool;
+        auto operator>(const Bigdecimal &rhs) const -> bool;
+
+        auto operator>=(const Bigdecimal &rhs) const -> bool;
 
         /**
          * - 오버라이딩
          * @param rhs
          * @return
          */
-        auto operator-(const Bigdecimal& rhs)-> Bigdecimal;
-        auto operator-(Bigdecimal&& rhs)-> Bigdecimal;
-        auto operator-(std::string&& rhs)-> Bigdecimal;
-        auto operator-(const std::string& rhs)-> Bigdecimal;
+        auto operator-(const Bigdecimal &rhs) -> Bigdecimal;
+
+        auto operator-(std::string &&rhs) -> Bigdecimal;
+
+        auto operator-(const std::string &rhs) -> Bigdecimal;
 
         /**
          * == 오버라이딩
          * @param rhs
          * @return
          */
-        auto operator==(const Bigdecimal& rhs) const -> bool;
-        auto operator==(Bigdecimal&& rhs) const -> bool;
-        auto operator==(const std::string& rhs) const -> bool;
-        auto operator==(std::string&& rhs) const -> bool;
-        template <int N>
-        auto operator==(char const(&value)[N]) const -> bool
-        {
-            return (m_sValue == std::string(value));
+        auto operator==(const Bigdecimal &rhs) const -> bool;
+
+        auto operator==(Bigdecimal &&rhs) const -> bool;
+
+        auto operator==(const std::string &rhs) const -> bool;
+
+        auto operator==(std::string &&rhs) const -> bool;
+
+        template<int N>
+        auto operator==(char const(&value)[N]) const -> bool {
+            return (m_String == std::string(value));
         }
 
         /**
@@ -102,7 +121,7 @@ namespace doori {
          *  @param rhs
          *  @return
          */
-        auto operator/(const Bigdecimal& rhs) -> Bigdecimal;
+        auto operator/(const Bigdecimal &rhs) -> Bigdecimal;
 
         /**
          * 값을 문자열로 리턴 합니다.
@@ -114,39 +133,60 @@ namespace doori {
          * private
          */
     private:
-        auto init(const std::string& value) -> void;
-        [[nodiscard]] auto multiply(std::string value, char c, uint zeroCharCnt) const -> std::string;
-        auto plus(std::string value1, std::string value2) -> std::string;
-        auto minus(string v1, string v2) -> string;
-        auto divide(std::string v1, std::string v2) -> tuple<std::string, std::string>;
-        [[nodiscard]] auto ge(std::string v1, std::string v2) const noexcept -> bool;
-        [[nodiscard]] auto eq(std::string v1, std::string v2) const noexcept -> bool;
-        [[nodiscard]] auto gt(std::string v1, std::string v2) const noexcept -> bool;
+        auto init(const std::string &value) -> void;
+
+        [[nodiscard]] static auto multiply(std::string value, char c, uint zeroCharCnt) noexcept -> std::string;
+
+        [[nodiscard]] static auto plus(std::string value1, std::string value2) noexcept -> std::string;
+
+        [[nodiscard]] static auto minus(string v1, string v2) noexcept -> string;
+
+        [[nodiscard]] static auto findTheRest(std::string v1, std::string v2) noexcept -> tuple<std::string, std::string>;
+
+        [[nodiscard]] static auto ge(std::string v1, std::string v2) noexcept -> bool;
+
+        [[nodiscard]] static auto eq(std::string v1, std::string v2) noexcept -> bool;
+
+        [[nodiscard]] static auto gt(std::string v1, std::string v2) noexcept -> bool;
+
         [[nodiscard]] auto fge(std::string v1, std::string v2) const noexcept -> bool;
+
         [[nodiscard]] auto feq(std::string v1, std::string v2) const noexcept -> bool;
+
         [[nodiscard]] auto fgt(std::string v1, std::string v2) const noexcept -> bool;
-        [[nodiscard]] auto revisionSameString(const string& v1, const string& v2) const noexcept -> std::pair<std::string, std::string>;
-        [[nodiscard]] auto revisionRemoveFrontZero(const string& v1) const noexcept -> std::string;
-        [[nodiscard]] auto revisionRemoveBackZero(const string& v1) const noexcept -> std::string;
-        auto revisionAt(const string &v1, ushort belowZeroLen) -> std::string;
-        auto copyFrom(const Bigdecimal& rhs) noexcept ->void;
-        auto copyFrom(Bigdecimal&& rhs) noexcept ->void;
-        auto getFloatStyleInfo(const std::string& value
-                               , ushort &uAboveZeroLen
-                               , ushort &uZeroPos
-                               , ushort &uBelowZeroLen ) const noexcept -> void;
-        [[nodiscard]] auto getFloatStyleInfo(const std::string& value) const noexcept -> ushort;
-        [[nodiscard]] auto findMaxLimit(const string& v1, const string& v2) const noexcept -> tuple<short,string>;
+
+        [[nodiscard]] static auto correctAsIntegerString(const string &v1, const string &v2) noexcept -> std::pair<std::string, std::string>;
+
+        [[nodiscard]] static auto removePrefixZero(const string &v1) noexcept -> std::string;
+
+        [[nodiscard]] static auto removeSuffixZero(const string &v1) noexcept -> std::string;
+
+        [[nodiscard]] auto makeUpPoint(const string &v1, ushort belowZeroLen) -> std::string;
+
+        auto copyFrom(const Bigdecimal &rhs) noexcept -> void;
+
+        auto copyFrom(Bigdecimal &&rhs) noexcept -> void;
+
+        static auto getDecimalMetaInfo(const std::string &value, ushort &uAboveZeroLen, ushort &uZeroPos,
+                                ushort &uBelowZeroLen) noexcept -> void;
+
+        [[nodiscard]] static auto IsNegative(bool minusFlag1, bool minusFlag2) noexcept -> bool;
+
+        [[nodiscard]] static auto getDecimalLength(const std::string &value) noexcept -> ushort;
+
+        [[nodiscard]] static auto findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<short, string>;
+
+        static auto compairSign(bool minusFlag1, bool minusFlag2) noexcept -> SIGN;
+
     private:
-        std::string m_sValue;
-        std::string m_sAbovePointValue;
-        std::string m_sBelowPointValue;
-        bool m_bMinusFlag;
-        bool m_bFloatTypeFlag;
+        std::string m_String;
+        bool m_IsNegative;
+        bool m_IsFloatType;
 
         enum {
             MAX_DECIMAL_POINT = 8
         };
+
     };
 }
 

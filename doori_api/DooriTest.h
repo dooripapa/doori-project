@@ -14,11 +14,11 @@ namespace doori {
     struct DooriTest {
         auto revisionAt(const std::string &v1, ushort belowZeroLen) -> std::string {
             Bigdecimal v{"Test"};
-            return v.revisionAt(v1, belowZeroLen);;
+            return v.makeUpPoint(v1, belowZeroLen);;
         }
         auto divide(const std::string &v1, const std::string &v2) -> tuple<string, string> {
             Bigdecimal v{"Test"};
-            return v.divide(v1, v2);
+            return v.findTheRest(v1, v2);
         }
         auto findMaxLimit(const string& v1, const string& v2) const noexcept -> tuple<short, std::string> {
             Bigdecimal v{"Test"};
