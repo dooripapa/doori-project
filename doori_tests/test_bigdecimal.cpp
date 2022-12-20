@@ -313,8 +313,18 @@ TEST(Bigdecimal, DIVIDE)
     auto r3 = v7/v8;
     EXPECT_EQ(doori::Bigdecimal("0.4"), r3);
 
+    doori::Bigdecimal v71{"-2"};
+    doori::Bigdecimal v81{"5"};
+    auto r31 = v71/v81;
+    EXPECT_EQ(doori::Bigdecimal("-0.4"), r31);
+
     doori::Bigdecimal v9{"19293"};
     doori::Bigdecimal v10{"7777"};
     auto r4 = v9/v10;
     EXPECT_EQ(doori::Bigdecimal("2.48077664"), r4);
+
+    doori::Bigdecimal v11{"1929.3"};
+    doori::Bigdecimal v12{"-777.7"};
+    auto r5 = v11/v12;
+    EXPECT_EQ(doori::Bigdecimal("-2.48077664"), r5);
 }

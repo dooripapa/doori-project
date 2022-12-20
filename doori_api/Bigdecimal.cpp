@@ -773,7 +773,15 @@ namespace doori {
                     quotient += "0";
             }
         }
-        return Bigdecimal{quotient};
+
+        switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
+            case SIGN::BOTH_MINUS:
+            case SIGN::BOTH_PLUS:
+                return Bigdecimal{quotient};
+            case SIGN::ONLY_FRIST_MINUS:
+            case SIGN::ONLY_SECOND_MINUS:
+                return Bigdecimal{"-"+quotient};
+        }
     }
 
     /**
