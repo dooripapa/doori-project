@@ -98,7 +98,8 @@ namespace doori {
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
                 r = makeUpPoint(plus(v.first, v.second), belowZeroLen);
-                return Bigdecimal{"-" + r};
+                r = "-" + r;
+                break;
                 // 예를 들어, (-100) + (90) = 90 - 100 같으므로, 빼기로 보정
             case SIGN::ONLY_FRIST_MINUS:
                 tLeft = *this;
@@ -112,8 +113,10 @@ namespace doori {
                 tRight.m_IsNegative = false;
                 return {tLeft - tRight};
             case SIGN::BOTH_PLUS:
-                return Bigdecimal{makeUpPoint(plus(v.first, v.second), belowZeroLen)};
+                r = makeUpPoint(plus(v.first, v.second), belowZeroLen);
+                break;
         }
+        return Bigdecimal{r};
     }
 
     auto Bigdecimal::operator*(const Bigdecimal &rhs) -> Bigdecimal {
@@ -230,6 +233,7 @@ namespace doori {
                 v2 = value2[j] - '0';
             else
                 v2 = 0;
+
             r = v1 - v2;
 
             if (r < 0) {
@@ -318,32 +322,36 @@ namespace doori {
 
         Bigdecimal tLeft{""};
         Bigdecimal tRight{""};
-        string r;
+        string result, r;
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
                 if (ge(v.first, v.second)) {
                     r = makeUpPoint(minus(v.first, v.second), belowZeroLen);
-                    return Bigdecimal{"-" + r};
-                } else if (eq(v.first, v.second)) {
-                    return Bigdecimal{"0"};
-                } else {
-                    r = makeUpPoint(minus(v.second, v.first), belowZeroLen);
-                    return Bigdecimal{r};
-                }
+                    result = "-" + r;
+                } else if (eq(v.first, v.second))
+                    result = "0";
+                else
+                    result = makeUpPoint(minus(v.second, v.first), belowZeroLen);
+                break;
             case SIGN::ONLY_FRIST_MINUS:
                 r = makeUpPoint(plus(this->m_String, rhs.m_String), belowZeroLen);
-                return Bigdecimal{"-" + r};
+                result = "-" + r;
+                break;
             case SIGN::ONLY_SECOND_MINUS:
-                r = makeUpPoint(plus(this->m_String, rhs.m_String), belowZeroLen);
-                return Bigdecimal{r};
+                result = makeUpPoint(plus(this->m_String, rhs.m_String), belowZeroLen);
+                break;
             case SIGN::BOTH_PLUS:
                 if (gt(v.first, v.second))
-                    return Bigdecimal{makeUpPoint(minus(v.first, v.second), belowZeroLen)};
+                    result = makeUpPoint(minus(v.first, v.second), belowZeroLen);
                 else if (eq(v.first, v.second))
-                    return Bigdecimal{"0"};
-                else
-                    return Bigdecimal{"-" + makeUpPoint(minus(v.second, v.first), belowZeroLen)};
+                    result = "0";
+                else {
+                    r = makeUpPoint(minus(v.second, v.first), belowZeroLen);
+                    result = "-" + r;
+                }
+                break;
         }
+        return Bigdecimal{result};
     }
 
     auto Bigdecimal::operator>(const Bigdecimal &rhs) const -> bool {
@@ -352,22 +360,29 @@ namespace doori {
 
         auto v = correctAsIntegerString(this->m_String, rhs.m_String);
 
+        bool result;
+
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
                 if (gt(v.first, v.second))
-                    return false;
+                    result = false;
                 else
-                    return true;
+                    result =  true;
+                break;
             case SIGN::ONLY_FRIST_MINUS:
-                return false;
+                result = false;
+                break;
             case SIGN::ONLY_SECOND_MINUS:
-                return true;
+                result = true;
+                break;
             case SIGN::BOTH_PLUS:
                 if (ge(v.first, v.second))
-                    return true;
+                    result = true;
                 else
-                    return false;
+                    result = false;
+                break;
         }
+        return result;
     }
 
     auto Bigdecimal::operator>=(const Bigdecimal &rhs) const -> bool {
@@ -376,22 +391,29 @@ namespace doori {
 
         auto v = correctAsIntegerString(this->m_String, rhs.m_String);
 
+        bool result;
+
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
                 if (gt(v.first, v.second))
-                    return false;
+                    result = false;
                 else
-                    return true;
+                    result = true;
+                break;
             case SIGN::ONLY_FRIST_MINUS:
-                return false;
+                result = false;
+                break;
             case SIGN::ONLY_SECOND_MINUS:
-                return true;
+                result = true;
+                break;
             case SIGN::BOTH_PLUS:
                 if (ge(v.first, v.second))
-                    return true;
+                    result = true;
                 else
-                    return false;
+                    result = false;
+                break;
         }
+        return result;
     }
 
     /**
@@ -755,6 +777,9 @@ namespace doori {
                 vPair.first = get<1>(vRet);
 
                 i++; //최대소수점를 넘을 수 없도록 count 시작
+            } else if ( eq(vPair.first, vPair.second) ) {
+                quotient += "1";
+                break;
             } else {
                 if (i == 1) {
                     quotient += "0.";
@@ -774,14 +799,18 @@ namespace doori {
             }
         }
 
+        string result;
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
             case SIGN::BOTH_PLUS:
-                return Bigdecimal{quotient};
+                result = quotient;
+                break;
             case SIGN::ONLY_FRIST_MINUS:
             case SIGN::ONLY_SECOND_MINUS:
-                return Bigdecimal{"-"+quotient};
+                result = "-"+quotient;
+                break;
         }
+        return Bigdecimal{result};
     }
 
     /**

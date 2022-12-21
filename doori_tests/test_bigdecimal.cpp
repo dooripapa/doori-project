@@ -268,45 +268,39 @@ TEST(Bigdecimal, MULTIPLY)
 
 TEST(Bigdecimal, DIVIDE)
 {
-    DooriTest test{};
-
-    auto r = test.divide("172", "27");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("1", "1");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("10", "1");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("10", "9");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("11111111", "10000000");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("2345823", "3");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("39452130943849234", "2394293593245");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
-
-    r = test.divide("17268", "5420");
-    cout<< get<0>(r) << ":" << get<1>(r) << endl;
+    doori::Bigdecimal v3{"1"};
+    doori::Bigdecimal v4{"0"};
+    EXPECT_ANY_THROW(v3/v4);
 
     doori::Bigdecimal v1{"1"};
     doori::Bigdecimal v2{"1"};
     auto r1=v1/v2;
     EXPECT_EQ(doori::Bigdecimal("1"), r1);
 
-    doori::Bigdecimal v3{"1"};
-    doori::Bigdecimal v4{"0"};
-    EXPECT_ANY_THROW(v3/v4);
+    doori::Bigdecimal v11{"-1"};
+    doori::Bigdecimal v21{"1"};
+    auto r11=v11/v21;
+    EXPECT_EQ(doori::Bigdecimal("-1"), r11);
+
+    doori::Bigdecimal v111{"-1"};
+    doori::Bigdecimal v211{"-1"};
+    auto r111=v111/v211;
+    EXPECT_EQ(doori::Bigdecimal("1"), r111);
+
+    doori::Bigdecimal v1111{"1"};
+    doori::Bigdecimal v2111{"-1"};
+    auto r1111=v1111/v2111;
+    EXPECT_EQ(doori::Bigdecimal("-1"), r1111);
 
     doori::Bigdecimal v5{"2"};
     doori::Bigdecimal v6{"7"};
     auto r2 = v5/v6;
     EXPECT_EQ(doori::Bigdecimal("0.28571428"), r2);
+
+    doori::Bigdecimal v72{"5"};
+    doori::Bigdecimal v82{"2"};
+    auto r32 = v72/v82;
+    EXPECT_EQ(doori::Bigdecimal("2.5"), r32);
 
     doori::Bigdecimal v7{"2"};
     doori::Bigdecimal v8{"5"};
@@ -322,9 +316,4 @@ TEST(Bigdecimal, DIVIDE)
     doori::Bigdecimal v10{"7777"};
     auto r4 = v9/v10;
     EXPECT_EQ(doori::Bigdecimal("2.48077664"), r4);
-
-    doori::Bigdecimal v11{"1929.3"};
-    doori::Bigdecimal v12{"-777.7"};
-    auto r5 = v11/v12;
-    EXPECT_EQ(doori::Bigdecimal("-2.48077664"), r5);
 }
