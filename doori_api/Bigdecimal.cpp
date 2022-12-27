@@ -577,7 +577,7 @@ namespace doori {
 
 
     /**
-     * float string 두개를 소수점 이하 길이에 대해서 보전한다.
+     * float string 두개를 소수점 길이에 대해서 보전한다.
      * 1.234, 12.34 이면  1234, 12340
      * 111.002 111.00002 이면 1110020, 1110002
      * 111.01, 0.001 이면 111010, 1
@@ -672,7 +672,7 @@ namespace doori {
      * 소수부의 길이를 리턴함
      * @param value
      * @return
-     * @example 1234.567 -> 567 3값을 리턴함
+     * @example 1234.567 -> 소주점은 567이므로 길이 3값을 리턴함
      */
     auto Bigdecimal::getDecimalLength(const string &value) noexcept -> ushort {
         ushort uZeroPos = 0;
