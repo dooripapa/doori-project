@@ -776,7 +776,6 @@ namespace doori {
 
                 vPair.first = get<1>(vRet);
 
-                i++; //최대소수점를 넘을 수 없도록 count 시작
             } else if ( eq(vPair.first, vPair.second) ) {
                 quotient += "1";
                 break;
@@ -797,6 +796,7 @@ namespace doori {
                 if (zeroCharCount++ > 0)
                     quotient += "0";
             }
+            i++; //최대소수점를 넘을 수 없도록 count 시작
         }
 
         string result;

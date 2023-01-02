@@ -184,7 +184,7 @@ namespace doori {
         bool m_IsFloatType;
 
         enum {
-            MAX_DECIMAL_POINT = 8
+            MAX_DECIMAL_POINT = 9
         };
 
     };

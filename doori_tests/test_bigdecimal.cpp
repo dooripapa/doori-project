@@ -599,7 +599,377 @@ TEST(Bigdecimal, PLUS)
     EXPECT_EQ( doori::Bigdecimal{"-801"}, a99+b99);
 }
 
-TEST(Bigdecimal, MULTIPLY)
+TEST(Bigdecimal, float_multiply)
+{
+    doori::Bigdecimal a1{"50.81"};
+    doori::Bigdecimal b1{"-49.98"};
+    EXPECT_EQ( doori::Bigdecimal{"-2539.4838"}, a1*b1 );
+
+    doori::Bigdecimal a2{"97.92"};
+    doori::Bigdecimal b2{"-47.73"};
+    EXPECT_EQ( doori::Bigdecimal{"-4673.7216"}, a2*b2 );
+
+    doori::Bigdecimal a3{"55.02"};
+    doori::Bigdecimal b3{"-89.51"};
+    EXPECT_EQ( doori::Bigdecimal{"-4924.8402"}, a3*b3 );
+
+    doori::Bigdecimal a4{"76.01"};
+    doori::Bigdecimal b4{"-99.8"};
+    EXPECT_EQ( doori::Bigdecimal{"-7585.798"}, a4*b4 );
+
+    doori::Bigdecimal a5{"17.17"};
+    doori::Bigdecimal b5{"-5.85"};
+    EXPECT_EQ( doori::Bigdecimal{"-100.4445"}, a5*b5 );
+
+    doori::Bigdecimal a6{"90.87"};
+    doori::Bigdecimal b6{"23.55"};
+    EXPECT_EQ( doori::Bigdecimal{"2139.9885"}, a6*b6 );
+
+    doori::Bigdecimal a7{"-28.44"};
+    doori::Bigdecimal b7{"81.93"};
+    EXPECT_EQ( doori::Bigdecimal{"-2330.0892"}, a7*b7 );
+
+    doori::Bigdecimal a8{"-33.6"};
+    doori::Bigdecimal b8{"94.49"};
+    EXPECT_EQ( doori::Bigdecimal{"-3174.864"}, a8*b8 );
+
+    doori::Bigdecimal a9{"-59.7"};
+    doori::Bigdecimal b9{"-47.1"};
+    EXPECT_EQ( doori::Bigdecimal{"2811.87"}, a9*b9 );
+
+    doori::Bigdecimal a10{"-7.28"};
+    doori::Bigdecimal b10{"2.42"};
+    EXPECT_EQ( doori::Bigdecimal{"-17.6176"}, a10*b10 );
+
+    doori::Bigdecimal a11{"87.25"};
+    doori::Bigdecimal b11{"-57.35"};
+    EXPECT_EQ( doori::Bigdecimal{"-5003.7875"}, a11*b11 );
+
+    doori::Bigdecimal a12{"-60.72"};
+    doori::Bigdecimal b12{"-81.41"};
+    EXPECT_EQ( doori::Bigdecimal{"4943.2152"}, a12*b12 );
+
+    doori::Bigdecimal a13{"-99.38"};
+    doori::Bigdecimal b13{"49.38"};
+    EXPECT_EQ( doori::Bigdecimal{"-4907.3844"}, a13*b13 );
+
+    doori::Bigdecimal a14{"89.25"};
+    doori::Bigdecimal b14{"-50.7"};
+    EXPECT_EQ( doori::Bigdecimal{"-4524.975"}, a14*b14 );
+
+    doori::Bigdecimal a15{"-83.34"};
+    doori::Bigdecimal b15{"-67.7"};
+    EXPECT_EQ( doori::Bigdecimal{"5642.118"}, a15*b15 );
+
+    doori::Bigdecimal a16{"-41.93"};
+    doori::Bigdecimal b16{"-71.59"};
+    EXPECT_EQ( doori::Bigdecimal{"3001.7687"}, a16*b16 );
+
+    doori::Bigdecimal a17{"-98.86"};
+    doori::Bigdecimal b17{"-5.34"};
+    EXPECT_EQ( doori::Bigdecimal{"527.9124"}, a17*b17 );
+
+    doori::Bigdecimal a18{"4.53"};
+    doori::Bigdecimal b18{"75.61"};
+    EXPECT_EQ( doori::Bigdecimal{"342.5133"}, a18*b18 );
+
+    doori::Bigdecimal a19{"-93.01"};
+    doori::Bigdecimal b19{"77.62"};
+    EXPECT_EQ( doori::Bigdecimal{"-7219.4362"}, a19*b19 );
+
+    doori::Bigdecimal a20{"-36.46"};
+    doori::Bigdecimal b20{"92.55"};
+    EXPECT_EQ( doori::Bigdecimal{"-3374.373"}, a20*b20 );
+
+    doori::Bigdecimal a21{"-22.59"};
+    doori::Bigdecimal b21{"-59.43"};
+    EXPECT_EQ( doori::Bigdecimal{"1342.5237"}, a21*b21 );
+
+    doori::Bigdecimal a22{"-47.55"};
+    doori::Bigdecimal b22{"-18.28"};
+    EXPECT_EQ( doori::Bigdecimal{"869.214"}, a22*b22 );
+
+    doori::Bigdecimal a23{"-27.33"};
+    doori::Bigdecimal b23{"30.09"};
+    EXPECT_EQ( doori::Bigdecimal{"-822.3597"}, a23*b23 );
+
+    doori::Bigdecimal a24{"-53.02"};
+    doori::Bigdecimal b24{"91"};
+    EXPECT_EQ( doori::Bigdecimal{"-4824.82"}, a24*b24 );
+
+    doori::Bigdecimal a25{"82.21"};
+    doori::Bigdecimal b25{"26.54"};
+    EXPECT_EQ( doori::Bigdecimal{"2181.8534"}, a25*b25 );
+
+    doori::Bigdecimal a26{"-40.84"};
+    doori::Bigdecimal b26{"-21.62"};
+    EXPECT_EQ( doori::Bigdecimal{"882.9608"}, a26*b26 );
+
+    doori::Bigdecimal a27{"-53.4"};
+    doori::Bigdecimal b27{"-95.4"};
+    EXPECT_EQ( doori::Bigdecimal{"5094.36"}, a27*b27 );
+
+    doori::Bigdecimal a28{"34.84"};
+    doori::Bigdecimal b28{"46.41"};
+    EXPECT_EQ( doori::Bigdecimal{"1616.9244"}, a28*b28 );
+
+    doori::Bigdecimal a29{"26.04"};
+    doori::Bigdecimal b29{"59.09"};
+    EXPECT_EQ( doori::Bigdecimal{"1538.7036"}, a29*b29 );
+
+    doori::Bigdecimal a30{"-28.21"};
+    doori::Bigdecimal b30{"9.21"};
+    EXPECT_EQ( doori::Bigdecimal{"-259.8141"}, a30*b30 );
+}
+
+TEST(Bigdecimal, integer_multiply)
+{
+    doori::Bigdecimal a1{"9658"};
+    doori::Bigdecimal b1{"-4829"};
+    EXPECT_EQ( doori::Bigdecimal{"-46638482"},a1*b1 );
+
+    doori::Bigdecimal a2{"8295"};
+    doori::Bigdecimal b2{"-9983"};
+    EXPECT_EQ( doori::Bigdecimal{"-82808985"},a2*b2 );
+
+    doori::Bigdecimal a3{"-4427"};
+    doori::Bigdecimal b3{"-9798"};
+    EXPECT_EQ( doori::Bigdecimal{"43375746"},a3*b3 );
+
+    doori::Bigdecimal a4{"-7085"};
+    doori::Bigdecimal b4{"9107"};
+    EXPECT_EQ( doori::Bigdecimal{"-64523095"},a4*b4 );
+
+    doori::Bigdecimal a5{"-8149"};
+    doori::Bigdecimal b5{"-4509"};
+    EXPECT_EQ( doori::Bigdecimal{"36743841"},a5*b5 );
+
+    doori::Bigdecimal a6{"-5954"};
+    doori::Bigdecimal b6{"2340"};
+    EXPECT_EQ( doori::Bigdecimal{"-13932360"},a6*b6 );
+
+    doori::Bigdecimal a7{"-2631"};
+    doori::Bigdecimal b7{"-5280"};
+    EXPECT_EQ( doori::Bigdecimal{"13891680"},a7*b7 );
+
+    doori::Bigdecimal a8{"-3161"};
+    doori::Bigdecimal b8{"-7891"};
+    EXPECT_EQ( doori::Bigdecimal{"24943451"},a8*b8 );
+
+    doori::Bigdecimal a9{"-9613"};
+    doori::Bigdecimal b9{"8434"};
+    EXPECT_EQ( doori::Bigdecimal{"-81076042"},a9*b9 );
+
+    doori::Bigdecimal a10{"4707"};
+    doori::Bigdecimal b10{"-95"};
+    EXPECT_EQ( doori::Bigdecimal{"-447165"},a10*b10 );
+
+    doori::Bigdecimal a11{"-7095"};
+    doori::Bigdecimal b11{"4525"};
+    EXPECT_EQ( doori::Bigdecimal{"-32104875"},a11*b11 );
+
+    doori::Bigdecimal a12{"-9441"};
+    doori::Bigdecimal b12{"-9412"};
+    EXPECT_EQ( doori::Bigdecimal{"88858692"},a12*b12 );
+
+    doori::Bigdecimal a13{"-4885"};
+    doori::Bigdecimal b13{"-1207"};
+    EXPECT_EQ( doori::Bigdecimal{"5896195"},a13*b13 );
+
+    doori::Bigdecimal a14{"-2409"};
+    doori::Bigdecimal b14{"4148"};
+    EXPECT_EQ( doori::Bigdecimal{"-9992532"},a14*b14 );
+
+    doori::Bigdecimal a15{"2661"};
+    doori::Bigdecimal b15{"249"};
+    EXPECT_EQ( doori::Bigdecimal{"662589"},a15*b15 );
+
+    doori::Bigdecimal a16{"-3954"};
+    doori::Bigdecimal b16{"-7044"};
+    EXPECT_EQ( doori::Bigdecimal{"27851976"},a16*b16 );
+
+    doori::Bigdecimal a17{"-4945"};
+    doori::Bigdecimal b17{"5886"};
+    EXPECT_EQ( doori::Bigdecimal{"-29106270"},a17*b17 );
+
+    doori::Bigdecimal a18{"-7240"};
+    doori::Bigdecimal b18{"-4136"};
+    EXPECT_EQ( doori::Bigdecimal{"29944640"},a18*b18 );
+
+    doori::Bigdecimal a19{"-4993"};
+    doori::Bigdecimal b19{"-4346"};
+    EXPECT_EQ( doori::Bigdecimal{"21699578"},a19*b19 );
+
+    doori::Bigdecimal a20{"-5058"};
+    doori::Bigdecimal b20{"-865"};
+    EXPECT_EQ( doori::Bigdecimal{"4375170"},a20*b20 );
+
+    doori::Bigdecimal a21{"3209"};
+    doori::Bigdecimal b21{"-7812"};
+    EXPECT_EQ( doori::Bigdecimal{"-25068708"},a21*b21 );
+
+    doori::Bigdecimal a22{"6119"};
+    doori::Bigdecimal b22{"5304"};
+    EXPECT_EQ( doori::Bigdecimal{"32455176"},a22*b22 );
+
+    doori::Bigdecimal a23{"-4963"};
+    doori::Bigdecimal b23{"3170"};
+    EXPECT_EQ( doori::Bigdecimal{"-15732710"},a23*b23 );
+
+    doori::Bigdecimal a24{"-7450"};
+    doori::Bigdecimal b24{"-2385"};
+    EXPECT_EQ( doori::Bigdecimal{"17768250"},a24*b24 );
+
+    doori::Bigdecimal a25{"-7366"};
+    doori::Bigdecimal b25{"-937"};
+    EXPECT_EQ( doori::Bigdecimal{"6901942"},a25*b25 );
+
+    doori::Bigdecimal a26{"-858"};
+    doori::Bigdecimal b26{"81"};
+    EXPECT_EQ( doori::Bigdecimal{"-69498"},a26*b26 );
+
+    doori::Bigdecimal a27{"1430"};
+    doori::Bigdecimal b27{"-6937"};
+    EXPECT_EQ( doori::Bigdecimal{"-9919910"},a27*b27 );
+
+    doori::Bigdecimal a28{"6570"};
+    doori::Bigdecimal b28{"3293"};
+    EXPECT_EQ( doori::Bigdecimal{"21635010"},a28*b28 );
+
+    doori::Bigdecimal a29{"-3036"};
+    doori::Bigdecimal b29{"-2452"};
+    EXPECT_EQ( doori::Bigdecimal{"7444272"},a29*b29 );
+
+    doori::Bigdecimal a30{"-462"};
+    doori::Bigdecimal b30{"-6322"};
+    EXPECT_EQ( doori::Bigdecimal{"2920764"},a30*b30 );
+}
+
+TEST(Bigdecimal, float_divide)
+{
+    doori::Bigdecimal a1{"-19.39"};
+    doori::Bigdecimal b1{"94.21"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.2058167922"}, a1/b1);
+
+    doori::Bigdecimal a2{"-6.78"};
+    doori::Bigdecimal b2{"61.53"};
+    auto r1=a2/b2;
+    EXPECT_EQ( doori::Bigdecimal{"-0.1101901511"}, a2/b2);
+
+    doori::Bigdecimal a3{"83.69"};
+    doori::Bigdecimal b3{"34.58"};
+    EXPECT_EQ( doori::Bigdecimal{"2.4201850780"}, a3/b3);
+
+    doori::Bigdecimal a4{"97.19"};
+    doori::Bigdecimal b4{"63.91"};
+    EXPECT_EQ( doori::Bigdecimal{"1.5207322797"}, a4/b4);
+
+    doori::Bigdecimal a5{"88.89"};
+    doori::Bigdecimal b5{"44.96"};
+    EXPECT_EQ( doori::Bigdecimal{"1.9770907473"}, a5/b5);
+
+    doori::Bigdecimal a6{"2.46"};
+    doori::Bigdecimal b6{"-92.79"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.0265114775"}, a6/b6);
+
+    doori::Bigdecimal a7{"82.22"};
+    doori::Bigdecimal b7{"33.78"};
+    EXPECT_EQ( doori::Bigdecimal{"2.4339846062"}, a7/b7);
+
+    doori::Bigdecimal a8{"-50.83"};
+    doori::Bigdecimal b8{"89.57"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.5674891146"}, a8/b8);
+
+    doori::Bigdecimal a9{"-43.58"};
+    doori::Bigdecimal b9{"-89.91"};
+    EXPECT_EQ( doori::Bigdecimal{"0.4847069291"}, a9/b9);
+
+    doori::Bigdecimal a10{"-10.01"};
+    doori::Bigdecimal b10{"1.81"};
+    EXPECT_EQ( doori::Bigdecimal{"-5.5303867403"}, a10/b10);
+
+    doori::Bigdecimal a11{"-8.57"};
+    doori::Bigdecimal b11{"20.95"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.4090692124"}, a11/b11);
+
+    doori::Bigdecimal a12{"-23.31"};
+    doori::Bigdecimal b12{"59.83"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.3896038776"}, a12/b12);
+
+    doori::Bigdecimal a13{"-69.5"};
+    doori::Bigdecimal b13{"79.53"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.8738840689"}, a13/b13);
+
+    doori::Bigdecimal a14{"17.28"};
+    doori::Bigdecimal b14{"79.51"};
+    EXPECT_EQ( doori::Bigdecimal{"0.2173311533"}, a14/b14);
+
+    doori::Bigdecimal a15{"-62.3"};
+    doori::Bigdecimal b15{"-57.56"};
+    EXPECT_EQ( doori::Bigdecimal{"1.0823488533"}, a15/b15);
+
+    doori::Bigdecimal a16{"83.38"};
+    doori::Bigdecimal b16{"6.05"};
+    EXPECT_EQ( doori::Bigdecimal{"13.7818181818"}, a16/b16);
+
+    doori::Bigdecimal a17{"41.62"};
+    doori::Bigdecimal b17{"38"};
+    EXPECT_EQ( doori::Bigdecimal{"1.0952631578"}, a17/b17);
+
+    doori::Bigdecimal a18{"-75.58"};
+    doori::Bigdecimal b18{"12.81"};
+    EXPECT_EQ( doori::Bigdecimal{"-5.9000780640"}, a18/b18);
+
+    doori::Bigdecimal a19{"31.45"};
+    doori::Bigdecimal b19{"15.8"};
+    EXPECT_EQ( doori::Bigdecimal{"1.9905063291"}, a19/b19);
+
+    doori::Bigdecimal a20{"26.75"};
+    doori::Bigdecimal b20{"16.68"};
+    EXPECT_EQ( doori::Bigdecimal{"1.6037170263"}, a20/b20);
+
+    doori::Bigdecimal a21{"-16.6"};
+    doori::Bigdecimal b21{"31.1"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.5337620578"}, a21/b21);
+
+    doori::Bigdecimal a22{"-76.8"};
+    doori::Bigdecimal b22{"71.7"};
+    EXPECT_EQ( doori::Bigdecimal{"-1.0711297071"}, a22/b22);
+
+    doori::Bigdecimal a23{"28.96"};
+    doori::Bigdecimal b23{"46.39"};
+    EXPECT_EQ( doori::Bigdecimal{"0.6242724725"}, a23/b23);
+
+    doori::Bigdecimal a24{"-55.3"};
+    doori::Bigdecimal b24{"34.05"};
+    EXPECT_EQ( doori::Bigdecimal{"-1.6240822320"}, a24/b24);
+
+    doori::Bigdecimal a25{"-35.53"};
+    doori::Bigdecimal b25{"-62.32"};
+    EXPECT_EQ( doori::Bigdecimal{"0.5701219512"}, a25/b25);
+
+    doori::Bigdecimal a26{"54.8"};
+    doori::Bigdecimal b26{"-81.92"};
+    EXPECT_EQ( doori::Bigdecimal{"-0.6689453125"}, a26/b26);
+
+    doori::Bigdecimal a27{"-65.11"};
+    doori::Bigdecimal b27{"-38.14"};
+    EXPECT_EQ( doori::Bigdecimal{"1.7071316203"}, a27/b27);
+
+    doori::Bigdecimal a28{"-24.62"};
+    doori::Bigdecimal b28{"-50.49"};
+    EXPECT_EQ( doori::Bigdecimal{"0.4876213111"}, a28/b28);
+
+    doori::Bigdecimal a29{"39.04"};
+    doori::Bigdecimal b29{"64.7"};
+    EXPECT_EQ( doori::Bigdecimal{"0.6034003091"}, a29/b29);
+
+    doori::Bigdecimal a30{"-82.35"};
+    doori::Bigdecimal b30{"16.32"};
+    EXPECT_EQ( doori::Bigdecimal{"-5.0459558823"}, a30/b30);
+}
+
+TEST(Bigdecimal, design_multify)
 {
     doori::Bigdecimal v1{"1"};
     doori::Bigdecimal v2{"2"};
@@ -662,7 +1032,7 @@ TEST(Bigdecimal, MULTIPLY)
     EXPECT_EQ(doori::Bigdecimal{"39452130943849234"}, r11 + doori::Bigdecimal{"1355407951369"} );
 }
 
-TEST(Bigdecimal, DIVIDE)
+TEST(Bigdecimal, design_divide)
 {
     doori::Bigdecimal v3{"1"};
     doori::Bigdecimal v4{"0"};
