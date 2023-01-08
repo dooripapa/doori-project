@@ -1082,3 +1082,15 @@ TEST(Bigdecimal, design_divide)
     auto r4 = v9/v10;
     EXPECT_EQ(doori::Bigdecimal("2.480776649"), r4);
 }
+
+TEST(Bigdecimal, design_calculate)
+{
+    auto r = doori::Bigdecimal{"9123912938129382934829348239"} * doori::Bigdecimal{"0.912389348394894584958"};
+    std::cout << r.toString() << std::endl;
+
+    auto r1 = doori::Bigdecimal{"8324560980431615848446804538.000241607397553188962"} / doori::Bigdecimal{"0.912389348394894584958"} ;
+    EXPECT_EQ (doori::Bigdecimal{"9123912938129382934829348239"} ,r1);
+
+    auto r2 = doori::Bigdecimal{"8324560980431615848446804538.000241607397553188962"} / doori::Bigdecimal{"9123912938129382934829348239"} ;
+    EXPECT_EQ (doori::Bigdecimal{"0.9123893483"} ,r2);
+}
