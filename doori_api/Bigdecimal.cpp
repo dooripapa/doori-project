@@ -129,7 +129,7 @@ namespace doori {
 
         // 0이면 한쪽은 float타입이 아님.
         // correctAsIntegerString 함수에서 보정해서 두 수의 양의 문자열을 리턴함
-        ushort corrctZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
+        uint corrctZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
         corrctZeroLen *= 2;
 
         auto sum = Bigdecimal("0");
@@ -226,7 +226,7 @@ namespace doori {
         i--;
         j--;
 
-        short r, v1, v2;
+        int r, v1, v2;
         for (; i > -1 || j > -1; --i, --j) {
             v1 = value1[i] - '0';
             if (j > -1)
@@ -423,8 +423,8 @@ namespace doori {
      * @param uZero : 소소점 위치값
      * @param uBelowZero : 소수점 아래의 bbbbb 소수점 길이값
      */
-    auto Bigdecimal::getDecimalMetaInfo(const std::string &value, ushort &uAboveZeroLen, ushort &uZeroPos,
-                                        ushort &uBelowZeroLen) noexcept -> void {
+    auto Bigdecimal::getDecimalMetaInfo(const std::string &value, uint &uAboveZeroLen, uint &uZeroPos,
+                                        uint &uBelowZeroLen) noexcept -> void {
         uAboveZeroLen = 0;
         uZeroPos = 0;
         uBelowZeroLen = value.length();
@@ -588,13 +588,13 @@ namespace doori {
      */
     auto Bigdecimal::correctAsIntegerString(const string &v1,
                                             const string &v2) noexcept -> std::pair<std::string, std::string> {
-        ushort v1AboveLen = 0;
-        ushort v1PointPos = 0;
-        ushort v1BelowLen = 0;
+        uint v1AboveLen = 0;
+        uint v1PointPos = 0;
+        uint v1BelowLen = 0;
 
-        ushort v2AboveLen = 0;
-        ushort v2PointPos = 0;
-        ushort v2BelowLen = 0;
+        uint v2AboveLen = 0;
+        uint v2PointPos = 0;
+        uint v2BelowLen = 0;
 
         getDecimalMetaInfo(v1, v1AboveLen, v1PointPos, v1BelowLen);
         getDecimalMetaInfo(v2, v2AboveLen, v2PointPos, v2BelowLen);
@@ -674,9 +674,9 @@ namespace doori {
      * @return
      * @example 1234.567 -> 소주점은 567이므로 길이 3값을 리턴함
      */
-    auto Bigdecimal::getDecimalLength(const string &value) noexcept -> ushort {
-        ushort uZeroPos = 0;
-        ushort uBelowZeroLen = value.length();
+    auto Bigdecimal::getDecimalLength(const string &value) noexcept -> uint {
+        uint uZeroPos = 0;
+        uint uBelowZeroLen = value.length();
         for (int i = 0; i < value.length(); ++i) {
             if (value[i] == '.') {
                 uZeroPos = i;
@@ -698,7 +698,7 @@ namespace doori {
      * @param belowZeroLen : 소수점 길이값
      * @return
      */
-    auto Bigdecimal::makeUpPoint(const string &v1, ushort belowZeroLen) -> std::string {
+    auto Bigdecimal::makeUpPoint(const string &v1, uint belowZeroLen) -> std::string {
         string r = v1;
         if (belowZeroLen > 0) {
             int v = r.length() - belowZeroLen;
@@ -753,8 +753,6 @@ namespace doori {
         if (*this == rhs)
             return Bigdecimal{"1"};
 
-        auto belowZeroLen1 = getDecimalLength(this->m_String);
-        auto belowZeroLen2 = getDecimalLength(rhs.m_String);
         auto vPair = correctAsIntegerString(this->m_String, rhs.m_String);
 
         int nDecimalPointCount = 0;
@@ -765,7 +763,7 @@ namespace doori {
         bool OnComma = false;
 
         int zeroCharCount = 0;
-        for (int i = 1; i <= MAX_DECIMAL_POINT;) {
+        for (int i = 1;;++i) {
             if (gt(vPair.first, vPair.second)) {
                 zeroCharCount = 0;
                 vRet = findTheRest(vPair.first, vPair.second);
@@ -777,7 +775,7 @@ namespace doori {
                 vPair.first = get<1>(vRet);
 
             } else if ( eq(vPair.first, vPair.second) ) {
-                quotient += "1";
+                quotient += "1"; //같으면 몫은 1
                 break;
             } else {
                 if (i == 1) {
@@ -788,15 +786,17 @@ namespace doori {
                     OnComma = true;
                 }
 
-                if (OnComma)
+                if (OnComma) {
                     nDecimalPointCount++;
+                    if( nDecimalPointCount > MAX_DECIMAL_POINT )
+                        break;
+                }
 
                 vPair.first += "0";
 
                 if (zeroCharCount++ > 0)
                     quotient += "0";
             }
-            i++; //최대소수점를 넘을 수 없도록 count 시작
         }
 
         string result;
@@ -887,12 +887,12 @@ namespace doori {
      * @param value2 : 양의 정수 문자열
      * @return 넘지않는 최대 곱하기 수, 최대곱하기 수의 결과값.
      */
-    auto Bigdecimal::findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<short, std::string> {
+    auto Bigdecimal::findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<int, std::string> {
         if (v1.length() > v2.length() + 1)
             abort();
 
         string b, a;
-        short prevB;
+        int prevB;
         for (int i = 1; i <= 10; i++) {
             a = multiply(v2, '0' + i, 0);
             if (gt(a, v1))

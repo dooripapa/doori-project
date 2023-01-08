@@ -853,12 +853,11 @@ TEST(Bigdecimal, float_divide)
 
     doori::Bigdecimal a2{"-6.78"};
     doori::Bigdecimal b2{"61.53"};
-    auto r1=a2/b2;
     EXPECT_EQ( doori::Bigdecimal{"-0.1101901511"}, a2/b2);
 
     doori::Bigdecimal a3{"83.69"};
     doori::Bigdecimal b3{"34.58"};
-    EXPECT_EQ( doori::Bigdecimal{"2.4201850780"}, a3/b3);
+    EXPECT_EQ( doori::Bigdecimal{"2.420185078"}, a3/b3);
 
     doori::Bigdecimal a4{"97.19"};
     doori::Bigdecimal b4{"63.91"};
@@ -918,7 +917,7 @@ TEST(Bigdecimal, float_divide)
 
     doori::Bigdecimal a18{"-75.58"};
     doori::Bigdecimal b18{"12.81"};
-    EXPECT_EQ( doori::Bigdecimal{"-5.9000780640"}, a18/b18);
+    EXPECT_EQ( doori::Bigdecimal{"-5.900078064"}, a18/b18);
 
     doori::Bigdecimal a19{"31.45"};
     doori::Bigdecimal b19{"15.8"};
@@ -942,7 +941,7 @@ TEST(Bigdecimal, float_divide)
 
     doori::Bigdecimal a24{"-55.3"};
     doori::Bigdecimal b24{"34.05"};
-    EXPECT_EQ( doori::Bigdecimal{"-1.6240822320"}, a24/b24);
+    EXPECT_EQ( doori::Bigdecimal{"-1.624082232"}, a24/b24);
 
     doori::Bigdecimal a25{"-35.53"};
     doori::Bigdecimal b25{"-62.32"};
@@ -1061,7 +1060,7 @@ TEST(Bigdecimal, design_divide)
     doori::Bigdecimal v5{"2"};
     doori::Bigdecimal v6{"7"};
     auto r2 = v5/v6;
-    EXPECT_EQ(doori::Bigdecimal("0.28571428"), r2);
+    EXPECT_EQ(doori::Bigdecimal("0.2857142857"), r2);
 
     doori::Bigdecimal v72{"5"};
     doori::Bigdecimal v82{"2"};
@@ -1081,5 +1080,5 @@ TEST(Bigdecimal, design_divide)
     doori::Bigdecimal v9{"19293"};
     doori::Bigdecimal v10{"7777"};
     auto r4 = v9/v10;
-    EXPECT_EQ(doori::Bigdecimal("2.48077664"), r4);
+    EXPECT_EQ(doori::Bigdecimal("2.480776649"), r4);
 }

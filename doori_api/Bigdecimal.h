@@ -15,7 +15,7 @@
 namespace doori {
 
     /**
-     * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함 
+     * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함
      */
     class Bigdecimal {
 
@@ -161,20 +161,20 @@ namespace doori {
 
         [[nodiscard]] static auto removeSuffixZero(const string &v1) noexcept -> std::string;
 
-        [[nodiscard]] auto makeUpPoint(const string &v1, ushort belowZeroLen) -> std::string;
+        [[nodiscard]] auto makeUpPoint(const string &v1, uint belowZeroLen) -> std::string;
 
         auto copyFrom(const Bigdecimal &rhs) noexcept -> void;
 
         auto copyFrom(Bigdecimal &&rhs) noexcept -> void;
 
-        static auto getDecimalMetaInfo(const std::string &value, ushort &uAboveZeroLen, ushort &uZeroPos,
-                                ushort &uBelowZeroLen) noexcept -> void;
+        static auto getDecimalMetaInfo(const std::string &value, uint &uAboveZeroLen, uint &uZeroPos,
+                                uint &uBelowZeroLen) noexcept -> void;
 
         [[nodiscard]] static auto IsNegative(bool minusFlag1, bool minusFlag2) noexcept -> bool;
 
-        [[nodiscard]] static auto getDecimalLength(const std::string &value) noexcept -> ushort;
+        [[nodiscard]] static auto getDecimalLength(const std::string &value) noexcept -> uint;
 
-        [[nodiscard]] static auto findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<short, string>;
+        [[nodiscard]] static auto findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<int, string>;
 
         static auto compairSign(bool minusFlag1, bool minusFlag2) noexcept -> SIGN;
 
@@ -184,7 +184,7 @@ namespace doori {
         bool m_IsFloatType;
 
         enum {
-            MAX_DECIMAL_POINT = 9
+            MAX_DECIMAL_POINT = 10
         };
 
     };
