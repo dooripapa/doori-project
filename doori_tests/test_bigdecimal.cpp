@@ -1093,4 +1093,31 @@ TEST(Bigdecimal, design_calculate)
 
     auto r2 = doori::Bigdecimal{"8324560980431615848446804538.000241607397553188962"} / doori::Bigdecimal{"9123912938129382934829348239"} ;
     EXPECT_EQ (doori::Bigdecimal{"0.9123893483"} ,r2);
+
+    auto r3 = doori::Bigdecimal{"9123912938129382934829348239"} * doori::Bigdecimal{"912389348394894584958"};
+    EXPECT_EQ (doori::Bigdecimal{"8324560980431615848446804538000241607397553188962"} ,r3);
+
+    auto r4 = doori::Bigdecimal{"9123912938129382934829348239"} + doori::Bigdecimal{"9123912938129382934829348239"} + doori::Bigdecimal{"9123912938129382934829348239"} + doori::Bigdecimal{"9123912938129382934829348239"};
+    auto aaa = r4/doori::Bigdecimal{"4"};
+    EXPECT_EQ (doori::Bigdecimal{"9123912938129382934829348239"} ,aaa );
+
+    auto r5 = doori::Bigdecimal{"9123912938129382934829348239"} * doori::Bigdecimal{"9123912938129382934829348239"} ;
+    EXPECT_EQ (doori::Bigdecimal{"9123912938129382934829348239"} ,r5/doori::Bigdecimal{"9123912938129382934829348239"} );
+
+    auto r6 = doori::Bigdecimal{"1"};
+    for(int i=0;i<10;i++) {
+        r6 = r6 * doori::Bigdecimal{"234"};
+        std::cout << "r6:"<<r6.toString() << std::endl;
+    }
+
+    auto r7 = r6;
+    for(int i=0;i<10;i++) {
+        r7 = r7 / doori::Bigdecimal{"234"};
+        std::cout << "r7:"<<r7.toString() << std::endl;
+    }
+//
+//    doori::Bigdecimal a{"492219"};
+//    doori::Bigdecimal b{"234"};
+//    auto r = a/b;
+//    EXPECT_EQ( doori::Bigdecimal{"2103500970336180939264"}, r);
 }
