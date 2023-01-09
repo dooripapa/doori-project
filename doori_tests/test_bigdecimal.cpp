@@ -1115,9 +1115,4 @@ TEST(Bigdecimal, design_calculate)
         r7 = r7 / doori::Bigdecimal{"234"};
         std::cout << "r7:"<<r7.toString() << std::endl;
     }
-//
-//    doori::Bigdecimal a{"492219"};
-//    doori::Bigdecimal b{"234"};
-//    auto r = a/b;
-//    EXPECT_EQ( doori::Bigdecimal{"2103500970336180939264"}, r);
 }
