@@ -848,15 +848,12 @@ namespace doori {
                 //나머지기 0이면
                 if (remainder == "") {
                     remainder = "0";
-                    break;
                 }
                 subV1 = minusV;
             } else {
                 quotient.append(1, '0');
             }
         }
-        if (i < v1.length())
-            quotient.append(v1.length() - (i+1), '0');
 
         quotient = removePrefixZero(quotient);
 
