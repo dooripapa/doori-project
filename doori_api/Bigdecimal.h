@@ -15,8 +15,8 @@
 namespace doori {
 
     /**
-     * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함
-     */
+    * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함
+    */
     class Bigdecimal {
 
         friend class DooriTest;
@@ -66,33 +66,46 @@ namespace doori {
 
         /**
          * * 연산자 오버라이딩
+         * *= 연산자 오버라이딩
          * @param rhs
          * @return
          */
         auto operator*(const Bigdecimal &rhs) -> Bigdecimal;
 
+        auto operator*=(const Bigdecimal &rhs) -> Bigdecimal;
+
         /**
          * + 연산 오버라이딩
+         * += 연산 오버라이딩
          * @param rhs
          * @return
          */
         auto operator+(const Bigdecimal &rhs) -> Bigdecimal;
 
+        auto operator+=(const Bigdecimal &rhs) -> Bigdecimal;
+
         /**
          * >, >= 비교연산자 오버라이딩
+         * <, <= 비교연산자 오버라이딩
          * @param rhs
          * @return
          */
         auto operator>(const Bigdecimal &rhs) const -> bool;
 
+        auto operator<(const Bigdecimal &rhs) const -> bool;
+
         auto operator>=(const Bigdecimal &rhs) const -> bool;
 
+        auto operator<=(const Bigdecimal &rhs) const -> bool;
         /**
          * - 오버라이딩
+         * -= 오버라이딩
          * @param rhs
          * @return
          */
         auto operator-(const Bigdecimal &rhs) -> Bigdecimal;
+
+        auto operator-=(const Bigdecimal &rhs) -> Bigdecimal;
 
         auto operator-(std::string &&rhs) -> Bigdecimal;
 
@@ -122,6 +135,8 @@ namespace doori {
          *  @return
          */
         auto operator/(const Bigdecimal &rhs) -> Bigdecimal;
+
+        auto operator/=(const Bigdecimal &rhs) -> Bigdecimal;
 
         /**
          * 값을 문자열로 리턴 합니다.
@@ -186,7 +201,6 @@ namespace doori {
         enum {
             MAX_DECIMAL_POINT = 10
         };
-
     };
 }
 

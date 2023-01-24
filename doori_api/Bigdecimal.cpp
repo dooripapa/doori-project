@@ -79,10 +79,10 @@ namespace doori {
     }
 
     /**
-     * 부동소수점, 정수형타입 문자열을 두수를 더합니다.
-     * @param rhs
-     * @return Bigdecimal
-     */
+    * 부동소수점, 정수형타입 문자열을 두수를 더합니다.
+    * @param rhs
+    * @return Bigdecimal
+    */
     auto Bigdecimal::operator+(const Bigdecimal &rhs) -> Bigdecimal {
         if (this == &rhs)
             return {*this + *this};
@@ -92,8 +92,8 @@ namespace doori {
         auto v = correctAsIntegerString(this->m_String, rhs.m_String);
         auto belowZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
 
-        Bigdecimal tLeft{""};
-        Bigdecimal tRight{""};
+        Bigdecimal tLeft{"0"};
+        Bigdecimal tRight{"0"};
         string r;
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
@@ -116,6 +116,8 @@ namespace doori {
                 r = makeUpPoint(plus(v.first, v.second), belowZeroLen);
                 break;
         }
+        if(r.empty())
+            r = "0";
         return Bigdecimal{r};
     }
 
@@ -153,11 +155,11 @@ namespace doori {
 
 
     /**
-     * 양의 수 문자열을 입력 받는다. 양의 수 문자열의 합을 리턴한다.
-     * @param value1 양의 수 문자열
-     * @param value2 양의 수 문자열
-     * @return
-     */
+    * 양의 수 문자열을 입력 받는다. 양의 수 문자열의 합을 리턴한다.
+    * @param value1 양의 수 문자열
+    * @param value2 양의 수 문자열
+    * @return
+    */
     auto Bigdecimal::plus(std::string value1, std::string value2) noexcept -> std::string {
         std::forward_list<char> ret;
         int i = static_cast<int>(value1.size() - 1);
@@ -212,11 +214,11 @@ namespace doori {
     }
 
     /**
-     * @note value1값이 항상 value2보다 커야 한다.
-     * @param value1 : 양의 정수 문자열
-     * @param value2 : 양의 정수 문자열
-     * @return
-     */
+    * @note value1값이 항상 value2보다 커야 한다.
+    * @param value1 : 양의 정수 문자열
+    * @param value2 : 양의 정수 문자열
+    * @return
+    */
     auto Bigdecimal::minus(string value1, string value2) noexcept -> string {
         std::forward_list<char> ret;
 
@@ -320,8 +322,8 @@ namespace doori {
         auto belowZeroLen = belowZeroLen1 > belowZeroLen2 ? belowZeroLen1 : belowZeroLen2;
         //둘다 마이너스
 
-        Bigdecimal tLeft{""};
-        Bigdecimal tRight{""};
+        Bigdecimal tLeft{"0"};
+        Bigdecimal tRight{"0"};
         string result, r;
         switch (compairSign(this->m_IsNegative, rhs.m_IsNegative)) {
             case SIGN::BOTH_MINUS:
@@ -351,6 +353,8 @@ namespace doori {
                 }
                 break;
         }
+        if(result.empty())
+            result = "0";
         return Bigdecimal{result};
     }
 
@@ -417,12 +421,12 @@ namespace doori {
     }
 
     /**
-     * Float 형식의 문자열  xxxxx.bbbbb
-     * @param value : 입력받은 문자열
-     * @param uAboveZero : 소수점 앞 xxxxx 정수값 길이
-     * @param uZero : 소소점 위치값
-     * @param uBelowZero : 소수점 아래의 bbbbb 소수점 길이값
-     */
+    * Float 형식의 문자열  xxxxx.bbbbb
+    * @param value : 입력받은 문자열
+    * @param uAboveZero : 소수점 앞 xxxxx 정수값 길이
+    * @param uZero : 소소점 위치값
+    * @param uBelowZero : 소수점 아래의 bbbbb 소수점 길이값
+    */
     auto Bigdecimal::getDecimalMetaInfo(const std::string &value, uint &uAboveZeroLen, uint &uZeroPos,
                                         uint &uBelowZeroLen) noexcept -> void {
         uAboveZeroLen = 0;
@@ -445,12 +449,73 @@ namespace doori {
     }
 
     auto Bigdecimal::init(const std::string &value) -> void {
-        int startPos = 0;
-        for (int i = 0; i < value.size(); i++)
-            if (value[i] != 0x20) {
-                startPos = i;
-                break;
+        int startPos = -1;
+        int prefixNumPos = -1;
+        int minusSignPos = -1;
+        int plusSignPos = -1;
+        int spaceSignPos = -1;
+        int pointSignPos = -1;
+        bool minusSignOnce = false;
+        bool plusSignOnce = false;
+        bool pointSignOnce = false;
+
+        // 정합성 체크
+        for (int i = 0; i < value.size(); i++) {
+            if ( '0' <= value[i] && value[i] <= '9') {
+                if(startPos==-1)
+                    startPos = i;
+                prefixNumPos = i;
+                if(minusSignOnce && prefixNumPos < minusSignPos && prefixNumPos != -1 && minusSignPos !=-1)
+                    throw runtime_error("bad number:" + value);
+                if(plusSignOnce && prefixNumPos < plusSignPos && prefixNumPos != -1 && plusSignPos !=-1)
+                    throw runtime_error("bad number:" + value);
             }
+            else if(value[i] == '-') {
+                if(startPos==-1)
+                    startPos = i;
+                minusSignPos = i;
+                if (!minusSignOnce)
+                    minusSignOnce = true;
+                else
+                    throw runtime_error("bad number:" + value);
+                if( minusSignPos > prefixNumPos && minusSignPos != -1 && prefixNumPos != -1)
+                    throw runtime_error("bad number:" + value);
+            }
+            else if(value[i] == '+') {
+                if(startPos==-1)
+                    startPos = i;
+                plusSignPos = i;
+                if (!plusSignOnce)
+                    plusSignOnce = true;
+                else
+                    throw runtime_error("bad number:" + value);
+                if( plusSignPos > prefixNumPos && plusSignPos != -1 && prefixNumPos != -1)
+                    throw runtime_error("bad number:" + value);
+            }
+            else if(value[i] == ' ') {
+                spaceSignPos = i;
+                if( spaceSignPos > minusSignPos && spaceSignPos != -1 && minusSignPos != -1)
+                    throw runtime_error("bad number:" + value);
+                if( spaceSignPos > plusSignPos && spaceSignPos != -1 && plusSignPos != -1)
+                    throw runtime_error("bad number:" + value);
+                if( spaceSignPos > prefixNumPos && spaceSignPos != -1 && prefixNumPos != -1 )
+                    throw runtime_error("bad number:" + value);
+            }
+            else if(value[i] == '.') {
+                pointSignPos = i;
+                if(!pointSignOnce)
+                    pointSignOnce = true;
+                else
+                    throw runtime_error("bad number:" + value);
+                if( pointSignPos < minusSignPos && pointSignPos != -1 && minusSignPos != -1)
+                    throw runtime_error("bad number:" + value);
+                if( pointSignPos < plusSignPos && pointSignPos != -1 && plusSignPos != -1)
+                    throw runtime_error("bad number:" + value);
+            }
+            else{
+                throw runtime_error("bad number:" + value);
+            }
+        }
 
         //앞 부분 기호(+, -) 판단
         if (value[startPos] == '-') {
@@ -474,7 +539,7 @@ namespace doori {
         bool bZero = true;
         m_IsFloatType = false;
         int nZeroRepeatPos = 0;
-        for (int i = 0; i < sTmpValue.size(); ++i) {
+        for ( int i = 0; i < sTmpValue.size(); ++i) {
             if (sTmpValue[i] == '0' && !m_IsFloatType)
                 nZeroRepeatPos++;
             if (sTmpValue[i] == '.') {
@@ -499,15 +564,14 @@ namespace doori {
                 m_String = sTmpValue;
             }
         }
-
     }
 
     /**
-     * v1 >= v2보다 크면 true 그외 false
-     * @param v1 양의 수
-     * @param v2 양의 수
-     * @return
-     */
+    * v1 >= v2보다 크면 true 그외 false
+    * @param v1 양의 수
+    * @param v2 양의 수
+    * @return
+    */
     auto Bigdecimal::ge(std::string v1, std::string v2) noexcept -> bool {
         bool bStatus = true;
 
@@ -532,11 +596,11 @@ namespace doori {
     }
 
     /**
-     * v1 == v2보다 크면 true 그외 false
-     * @param v1 양의 수
-     * @param v2 양의 수
-     * @return
-     */
+    * v1 == v2보다 크면 true 그외 false
+    * @param v1 양의 수
+    * @param v2 양의 수
+    * @return
+    */
     auto Bigdecimal::eq(std::string v1, std::string v2) noexcept -> bool {
         bool bStatus = true;
 
@@ -560,11 +624,11 @@ namespace doori {
     }
 
     /**
-     * v1 > v2 이면 true 그외 false
-     * @param v1 양의 수
-     * @param v2 양의 수
-     * @return
-     */
+    * v1 > v2 이면 true 그외 false
+    * @param v1 양의 수
+    * @param v2 양의 수
+    * @return
+    */
     auto Bigdecimal::gt(std::string v1, std::string v2) noexcept -> bool {
         if (ge(v1, v2)) {
             if (eq(v1, v2))
@@ -577,15 +641,15 @@ namespace doori {
 
 
     /**
-     * float string 두개를 소수점 길이에 대해서 보전한다.
-     * 1.234, 12.34 이면  1234, 12340
-     * 111.002 111.00002 이면 1110020, 1110002
-     * 111.01, 0.001 이면 111010, 1
-     * @note
-     * @param v1 양의 소수점 문자열, 또는 양의 수 문자열
-     * @param v2 양의 소수점 문자열, 또는 양의 수 문자열
-     * @return
-     */
+    * float string 두개를 소수점 길이에 대해서 보전한다.
+    * 1.234, 12.34 이면  1234, 12340
+    * 111.002 111.00002 이면 1110020, 1110002
+    * 111.01, 0.001 이면 111010, 1
+    * @note
+    * @param v1 양의 소수점 문자열, 또는 양의 수 문자열
+    * @param v2 양의 소수점 문자열, 또는 양의 수 문자열
+    * @return
+    */
     auto Bigdecimal::correctAsIntegerString(const string &v1,
                                             const string &v2) noexcept -> std::pair<std::string, std::string> {
         uint v1AboveLen = 0;
@@ -620,43 +684,43 @@ namespace doori {
     }
 
     /**
-     * float type, >= true 그외 false
-     * @param v1 양의 수
-     * @param v2 양의 수
-     * @return
-     */
+    * float type, >= true 그외 false
+    * @param v1 양의 수
+    * @param v2 양의 수
+    * @return
+    */
     auto Bigdecimal::fge(std::string v1, std::string v2) const noexcept -> bool {
         auto vPair = correctAsIntegerString(v1, v2);
         return ge(vPair.first, vPair.second);
     }
 
     /**
-     * float type, == true 그외 false
-     * @param v1 양의 수
-     * @param v2 양의 수
-     * @return
-     */
+    * float type, == true 그외 false
+    * @param v1 양의 수
+    * @param v2 양의 수
+    * @return
+    */
     auto Bigdecimal::feq(std::string v1, std::string v2) const noexcept -> bool {
         auto vPair = correctAsIntegerString(v1, v2);
         return eq(vPair.first, vPair.second);
     }
 
     /**
-     * float type, > true 그외 false
-     * @param v1 양의 수
-     * @param v2 양의 수
-     * @return
-     */
+    * float type, > true 그외 false
+    * @param v1 양의 수
+    * @param v2 양의 수
+    * @return
+    */
     auto Bigdecimal::fgt(std::string v1, std::string v2) const noexcept -> bool {
         auto vPair = correctAsIntegerString(v1, v2);
         return gt(vPair.first, vPair.second);
     }
 
     /**
-     * 000010 -> 10
-     * @param v1
-     * @return
-     */
+    * 000010 -> 10
+    * @param v1
+    * @return
+    */
     auto Bigdecimal::removePrefixZero(const string &v1) noexcept -> std::string {
         uint startPos = 0;
         for (int i = 0; i < v1.length(); ++i) {
@@ -669,11 +733,11 @@ namespace doori {
     }
 
     /**
-     * 소수부의 길이를 리턴함
-     * @param value
-     * @return
-     * @example 1234.567 -> 소주점은 567이므로 길이 3값을 리턴함
-     */
+    * 소수부의 길이를 리턴함
+    * @param value
+    * @return
+    * @example 1234.567 -> 소주점은 567이므로 길이 3값을 리턴함
+    */
     auto Bigdecimal::getDecimalLength(const string &value) noexcept -> uint {
         uint uZeroPos = 0;
         uint uBelowZeroLen = value.length();
@@ -693,11 +757,11 @@ namespace doori {
     }
 
     /**
-     * v1 문자열에 소수점 길에 문자열 "." :at 넣는다.
-     * @param v1
-     * @param belowZeroLen : 소수점 길이값
-     * @return
-     */
+    * v1 문자열에 소수점 길에 문자열 "." :at 넣는다.
+    * @param v1
+    * @param belowZeroLen : 소수점 길이값
+    * @return
+    */
     auto Bigdecimal::makeUpPoint(const string &v1, uint belowZeroLen) -> std::string {
         string r = v1;
         if (belowZeroLen > 0) {
@@ -713,12 +777,12 @@ namespace doori {
     }
 
     /**
-     * 소수점자리의 있는 0를 삭제 함
-     * 0.10000 -> 0.1
-     * 1000 -> 1000
-     * @param v1
-     * @return
-     */
+    * 소수점자리의 있는 0를 삭제 함
+    * 0.10000 -> 0.1
+    * 1000 -> 1000
+    * @param v1
+    * @return
+    */
     auto Bigdecimal::removeSuffixZero(const string &v1) noexcept -> std::string {
         uint count = 0;
         bool stop = false;
@@ -810,25 +874,27 @@ namespace doori {
                 result = "-" + quotient;
                 break;
         }
+        if(result.empty())
+            result = "0";
         return Bigdecimal{result};
     }
 
     /**
-     * V1 / V2. 몫과 나머지를 구한다.
-     * @note value1값이 항상 value2보다 커야 한다.
-     * @param value1 : 양의 정수 문자열
-     * @param value2 : 양의 정수 문자열
-     * @return tuple<string, string>{quotient, remainder}
-     */
+    * V1 / V2. 몫과 나머지를 구한다.
+    * @note value1값이 항상 value2보다 커야 한다.
+    * @param value1 : 양의 정수 문자열
+    * @param value2 : 양의 정수 문자열
+    * @return tuple<string, string>{quotient, remainder}
+    */
     auto Bigdecimal::findTheRest(std::string v1, std::string v2) noexcept -> std::tuple<std::string, std::string> {
         auto lenV1 = v1.length();
         auto lenV2 = v2.length();
 
         string minusV;
 
-        string subV1 = "";
-        string r2 = "";
-        string quotient = "";
+        string subV1;
+        string r2;
+        string quotient;
         string remainder{"0"};
 
         size_t startP, limitLen;
@@ -846,7 +912,7 @@ namespace doori {
                 minusV = removePrefixZero(minusV);
                 remainder = minusV;
                 //나머지기 0이면
-                if (remainder == "") {
+                if (remainder.empty()) {
                     remainder = "0";
                 }
                 subV1 = minusV;
@@ -861,12 +927,12 @@ namespace doori {
     }
 
     /**
-     * @note v1값이 v2값보다 항상 커야 한다. 성능을 위해서, v1길이는 v2보다 최대 한자리 더 크다
-     * v2 1...9까지 곱하기를 해서, v1를 넘지 않는 값을 리턴
-     * @param value1 : 양의 정수 문자열
-     * @param value2 : 양의 정수 문자열
-     * @return 넘지않는 최대 곱하기 수, 최대곱하기 수의 결과값.
-     */
+    * @note v1값이 v2값보다 항상 커야 한다. 성능을 위해서, v1길이는 v2보다 최대 한자리 더 크다
+    * v2 1...9까지 곱하기를 해서, v1를 넘지 않는 값을 리턴
+    * @param value1 : 양의 정수 문자열
+    * @param value2 : 양의 정수 문자열
+    * @return 넘지않는 최대 곱하기 수, 최대곱하기 수의 결과값.
+    */
     auto Bigdecimal::findMaxLimit(const string &v1, const string &v2) noexcept -> tuple<int, std::string> {
         if (v1.length() > v2.length() + 1)
             abort();
@@ -892,11 +958,11 @@ namespace doori {
     }
 
     /**
-     * 부호비교
-     * @param minusFlag1
-     * @param minusFlag2
-     * @return 부호가 같으면 0, +,- 이면 1,  -,+이면 2
-     */
+    * 부호비교
+    * @param minusFlag1
+    * @param minusFlag2
+    * @return 부호가 같으면 0, +,- 이면 1,  -,+이면 2
+    */
     auto Bigdecimal::compairSign(bool minusFlag1, bool minusFlag2) noexcept -> SIGN {
         if (minusFlag1 && minusFlag2)
             return SIGN::BOTH_MINUS;
@@ -906,6 +972,34 @@ namespace doori {
             return SIGN::ONLY_SECOND_MINUS;
         else
             return SIGN::BOTH_PLUS;
+    }
+
+    auto Bigdecimal::operator*=(const Bigdecimal &rhs) -> Bigdecimal {
+        *this = *this * rhs;
+        return Bigdecimal{*this};
+    }
+
+    auto Bigdecimal::operator+=(const Bigdecimal &rhs) -> Bigdecimal {
+        *this = *this + rhs;
+        return Bigdecimal{*this};
+    }
+
+    auto Bigdecimal::operator<(const Bigdecimal &rhs) const -> bool {
+        return !(*this >= rhs);
+    }
+
+    auto Bigdecimal::operator<=(const Bigdecimal &rhs) const -> bool {
+        return !(*this > rhs);
+    }
+
+    auto Bigdecimal::operator-=(const Bigdecimal &rhs) -> Bigdecimal {
+        *this = *this - rhs;
+        return Bigdecimal{*this};
+    }
+
+    auto Bigdecimal::operator/=(const Bigdecimal &rhs) -> Bigdecimal {
+        *this = *this / rhs;
+        return Bigdecimal{*this};
     }
 
 }//doori end
