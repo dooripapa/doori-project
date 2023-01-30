@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-namespace doori{
+namespace doori::CommunicationMember{
 
     struct Address{
         std::string Ip;
@@ -58,12 +58,6 @@ namespace doori{
          * @param address : const Address&
          */
         auto setAddress(const Address& address) -> void;
-        /**
-         * Addr 객체 도메인을 리턴함.
-         * socket 일 경우, sin_family 형
-         * @return int
-         */
-        auto Domain() const -> int;
         /**
          * Addr 객체의 속성을 리턴함
          * @return struct sockaddr_in

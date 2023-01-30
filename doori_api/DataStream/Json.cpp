@@ -9,7 +9,7 @@
 #include <limits>
 #include "Json.h"
 
-namespace doori{
+namespace doori::DataStream{
 
     auto Json::operator[](const std::string &jsonkey) -> Json_value & {
         for (auto &item : mFactors) {

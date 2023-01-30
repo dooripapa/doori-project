@@ -8,12 +8,7 @@
 
 using namespace std;
 
-namespace doori{
-
-auto Addr::Domain() const -> int
-{
-	return mAddr.sin_family;
-}
+namespace doori::CommunicationMember{
 
 auto Addr::getInetAddr() const -> const struct sockaddr_in&
 {

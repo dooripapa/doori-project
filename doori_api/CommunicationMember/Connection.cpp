@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::CommunicationMember{
 
 auto Connection::release()-> void
 {
@@ -89,22 +89,21 @@ auto Connection::connectTo() -> int
     char	errorStr[1024]={0};
 	int	    iRet = 0;
 
-	if(!mDest.Set())
+	if(!mDest.CanRead())
     {
 	    LOG(ERROR, "not defined Destination, need to() function ");
 	    return -1;
     }
 
-    doori::Addr addr = mDest.Address();
-	if(!mSource.Set()) {
-        mBindSock = socket(addr.Domain(), SOCK_STREAM, 0);
+    doori::CommunicationMember::Addr addr = mDest.Address();
+	if(!mSource.CanRead()) {
+        mBindSock = socket(AF_INET, SOCK_STREAM, 0);
         if(mBindSock < 0 )
         {
-            LOG(ERROR, "Tcp socket fd, fail to open", strerror_r(errno, errorStr, sizeof(errorStr)));
+            LOG(ERROR, "TCP socket fd, fail to open", strerror_r(errno, errorStr, sizeof(errorStr)));
             return -1;
         }
-	} else{
-        doori::Addr source_addr = mSource.Address();
+	} else{ doori::CommunicationMember::Addr source_addr = mSource.Address();
         if (processBind(mBindSock, source_addr) < 0)
         {
             LOG(ERROR, "bind error");
@@ -117,7 +116,7 @@ auto Connection::connectTo() -> int
 	iRet = connect(mBindSock , (struct sockaddr*)&( addr.getInetAddr() ) , sizeof(struct sockaddr_in) );
 	if( iRet < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)) );
+		LOG(ERROR, "TCP socket fd, fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)) );
         close(mBindSock);
         mBindSock = -1;
 		return -1;
@@ -152,7 +151,7 @@ auto Connection::onListening() -> int
 {
 	auto ret=0;
 	char errorStr[1024]={0};
-	doori::Addr addr = mSource.Address();
+	doori::CommunicationMember::Addr addr = mSource.Address();
 
 	ret=processBind(mBindSock, addr);
 	if (ret < 0)
@@ -163,31 +162,31 @@ auto Connection::onListening() -> int
 
 	if(listen(mBindSock, 1 ) < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
+		LOG(ERROR, "TCP socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
 		return -1;
 	}
 	return mBindSock;
 }
 
-int Connection::processBind(int& socketFd, const doori::Addr& addr)
+int Connection::processBind(int& socketFd, const doori::CommunicationMember::Addr& addr)
 {
 	char errorStr[1024]={0};
-	socketFd = socket(addr.Domain(), SOCK_STREAM, 0);
+	socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if( socketFd < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to open");
+		LOG(ERROR, "TCP socket fd, fail to open");
 		return -1;
 	}
 
 	if( setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, (void*)&( addr.getInetAddr() ) , sizeof( struct sockaddr_in )) < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to setsockopt");
+		LOG(ERROR, "TCP socket fd, fail to setsockopt");
 		return -1;
 	}
 
 	if( bind( socketFd, (struct sockaddr*)&( addr.getInetAddr() ), sizeof(struct sockaddr_in) ) < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to bind:", strerror_r(errno, errorStr, sizeof(errorStr)));
+		LOG(ERROR, "TCP socket fd, fail to bind:", strerror_r(errno, errorStr, sizeof(errorStr)));
 		return -1;
 	}
 	return 0;
@@ -195,19 +194,19 @@ int Connection::processBind(int& socketFd, const doori::Addr& addr)
 
 auto Connection::onAccepting() -> int
 {
-    if(!mSource.Set())
+    if(!mSource.CanRead())
     {
         LOG(ERROR, "waitFor, need from()");
         return -1;
     }
 
-	doori::Addr addr = mSource.Address();
+	doori::CommunicationMember::Addr addr = mSource.Address();
 	char errorStr[1024]={0};
 	int	iRet = 0;
 	socklen_t len = sizeof(struct sockaddr_in);
 	if((iRet = accept(mBindSock, (struct sockaddr*)&( addr.getInetAddr() ), &len )) < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
+		LOG(ERROR, "TCP socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
 		return -1;
 	}
 	return iRet;
@@ -216,13 +215,13 @@ auto Connection::onAccepting() -> int
 auto
 Connection::waitFor( ) -> int
 {
-    if(!mSource.Set())
+    if(!mSource.CanRead())
     {
         LOG(ERROR, "waitFor, need from()");
         return -1;
     }
 
-	doori::Addr addr = mSource.Address();
+	doori::CommunicationMember::Addr addr = mSource.Address();
 	char errorStr[1024]={0};
 	auto ret = 0;
 
@@ -235,14 +234,14 @@ Connection::waitFor( ) -> int
 
 	if(listen(mBindSock, 1 ) < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
+		LOG(ERROR, "TCP socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
 		return -1;
 	}
 
 	socklen_t len = sizeof(struct sockaddr_in);
 	if((ret = accept(mBindSock, (struct sockaddr*)&( addr.getInetAddr() ), &len )) < 0 )
 	{
-		LOG(ERROR, "Tcp socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
+		LOG(ERROR, "TCP socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
 		return -1;
 	}
     mConnSock = ret;
@@ -424,5 +423,19 @@ auto Connection::To() noexcept -> Endpoint& {
     return mDest;
 }
 
+    bool Connection::RequestFor(doori::DataStream::IStream data) {
+        return false;
+    }
 
+    bool Connection::WaitFor(DataStream::IStream &data) {
+        return false;
+    }
+
+    void Connection::Release() {
+
+    }
+
+    void Connection::Init() {
+
+    }
 }

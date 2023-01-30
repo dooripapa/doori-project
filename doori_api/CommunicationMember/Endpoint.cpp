@@ -5,40 +5,38 @@
 // Created by doori on 19. 7. 25.
 //
 #include "Endpoint.h"
+#include <cassert>
 
-namespace doori{
+namespace doori::CommunicationMember{
 
 Endpoint::Endpoint() {
-    mSet = STATUS::FALSE;
+    mSet = READ_STATUS::FALSE;
 }
 
-Endpoint::Endpoint(Addr addr) {
-    mAddr = addr;
-    mType = TYPE::TCP;
-    mSet = STATUS::TRUE;
-}
-
-Endpoint::Endpoint(Addr addr, TYPE transport_type) {
-    mAddr = addr;
-    mType = transport_type;
-    mSet = STATUS::TRUE;
-}
-
-auto Endpoint::Transport() noexcept -> TYPE {
+auto Endpoint::Type() noexcept -> TYPE {
     return mType;
 }
 
-auto Endpoint::setAddress(Addr addr) noexcept ->  void{
-    mSet = STATUS::TRUE;
-    mAddr = addr;
-}
-
-auto Endpoint::Address() const noexcept -> const Addr& {
-    return mAddr;
-}
-
-auto Endpoint::Set() noexcept -> STATUS {
+auto Endpoint::CanRead() noexcept -> READ_STATUS {
     return mSet;
 }
 
+    Endpoint::Endpoint(TYPE transportType, DataStream::Json topologiesInfo) {
+        this->mSet = READ_STATUS::TRUE;
+        this->mType = transportType;
+        switch (transportType) {
+            case TYPE::TCP:
+                this->mTopoloiesInfo = topologiesInfo;
+                break;
+            case TYPE::UDP:
+            case TYPE::SHM:
+            case TYPE::MSQ:
+            default:
+                static_assert("Endpoint Type, UDP, SHM, MSQ 기능적 정의하지 못함.");
+        }
+    }
+
+    const DataStream::Json &Endpoint::getMTopoloiesInfo() const {
+        return mTopoloiesInfo;
+    }
 }//namespace doori

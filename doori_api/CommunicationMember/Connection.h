@@ -15,15 +15,16 @@
 #include "Common/Log.h"
 #include "DataStream/Stream.h"
 #include "Addr.h"
-#include "Endpoint.h"
+#include "CommunicationMember/Endpoint.h"
+#include "CommunicationMember/IConnection.h"
 
-namespace doori{
+namespace doori::CommunicationMember{
 
 /**
  * From(endpoint) -----Connection-----> To(endpoint)
  * 형상화된 추상화된 객체로 이해할 것.
  */
-class Connection
+class Connection : IConnection
 {
 public:
     /**
@@ -109,6 +110,16 @@ public:
      * 리소스 정리합니다.
      */
     auto release() -> void;
+
+private:
+    auto RequestFor(doori::DataStream::IStream data) -> bool override;
+
+    auto WaitFor(DataStream::IStream &data) -> bool override;
+
+    auto Release() -> void override;
+
+    auto Init() -> void override;
+
 protected:
 private:
     static int processBind(int& socketFd, const Addr& object);
