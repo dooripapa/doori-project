@@ -40,9 +40,12 @@
    - Runner
    - Application
  
-6. And so on.
-   - Regex
+6. Common Objects
+   - Log
    - Error
+ 
+6. Etc
+   - Regex
    - Bigdecimal
 
 ------------------------------
