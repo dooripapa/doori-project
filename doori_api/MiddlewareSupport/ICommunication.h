@@ -8,12 +8,12 @@
 
 #include <thread>
 #include <condition_variable>
-#include "Endpoint.h"
+#include "CommunicationMember/Endpoint.h"
 #include "Topic.h"
 #include "Protocol.h"
-#include "Connection.h"
-#include "Epoll.h"
-#include "Tree.h"
+#include "CommunicationMember/Connection.h"
+#include "CommunicationMember/Epoll.h"
+#include "DataStructure/Tree.h"
 #include "Topic.h"
 
 namespace doori{

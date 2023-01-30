@@ -12,7 +12,7 @@
 #include <ctime>
 #include <chrono>
 #include "Branch.h"
-#include "Topic.h"
+#include "MiddlewareSupport/Topic.h"
 
 namespace doori{
 

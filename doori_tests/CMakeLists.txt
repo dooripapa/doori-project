@@ -9,15 +9,15 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/lib)
 
 set(TEST_FILES
-	${PROJECT_SOURCE_DIR}/doori_api/Log.h
-	${PROJECT_SOURCE_DIR}/doori_api/Log.hpp
-	${PROJECT_SOURCE_DIR}/doori_api/Log.cpp
-    ${PROJECT_SOURCE_DIR}/doori_api/Json.cpp
-    ${PROJECT_SOURCE_DIR}/doori_api/Json.h
-    ${PROJECT_SOURCE_DIR}/doori_api/Bigdecimal.cpp
-    ${PROJECT_SOURCE_DIR}/doori_api/Bigdecimal.h
+		../doori_api/Common/Log.h
+		../doori_api/Common/Log.hpp
+		../doori_api/Common/Log.cpp
+        ../doori_api/DataStream/Json.cpp
+        ../doori_api/DataStream/Json.h
+        ../doori_api/Etc/Bigdecimal.cpp
+        ../doori_api/Etc/Bigdecimal.h
     test_json.cpp
-    test_bigdecimal.cpp)
+    test_bigdecimal.cpp test_branch.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

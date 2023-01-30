@@ -5,8 +5,8 @@
 // Created by doori on 19. 7. 25.
 //
 #pragma once
-#include "Log.h"
-#include "Data.h"
+#include "Common/Log.h"
+#include "DataStream/Data.h"
 
 class Data;
 

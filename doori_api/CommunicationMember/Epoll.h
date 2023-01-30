@@ -8,7 +8,7 @@
 #include <iostream>
 #include <functional>
 #include "Connection.h"
-#include "Stream.h"
+#include "DataStream/Stream.h"
 #include "EpollEvents.h"
 
 namespace doori{

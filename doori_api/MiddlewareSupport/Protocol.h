@@ -5,9 +5,9 @@
 // Created by doori on 19. 7. 25.
 //
 #pragma	once
-#include "Data.h"
+#include "DataStream/Data.h"
 #include "Topic.h"
-#include "Addr.h"
+#include "CommunicationMember/Addr.h"
 
 
 namespace doori{

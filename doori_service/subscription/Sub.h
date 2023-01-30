@@ -5,8 +5,8 @@
 #pragma once
 
 
-#include <Application.h>
-#include <Subscriber.h>
+#include <ProcessSupport/Application.h>
+#include <MiddlewareSupport/Subscriber.h>
 
 namespace doori{
 

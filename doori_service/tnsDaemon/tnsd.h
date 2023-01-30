@@ -1,13 +1,13 @@
 #pragma once
-#include "Epoll.h"
-#include "Tree.h"
-#include "Addr.h"
-#include "Data.h"
-#include "Connection.h"
-#include "Stream.h"
-#include "Protocol.h"
-#include "Branch.h"
-#include "Application.h"
+#include "CommunicationMember/Epoll.h"
+#include "DataStructure/Tree.h"
+#include "CommunicationMember/Addr.h"
+#include "DataStream/Data.h"
+#include "CommunicationMember/Connection.h"
+#include "DataStream/Stream.h"
+#include "MiddlewareSupport/Protocol.h"
+#include "DataStructure/Branch.h"
+#include "ProcessSupport/Application.h"
 #include <thread>
 #include <unordered_map>
 

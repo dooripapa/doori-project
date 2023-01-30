@@ -5,7 +5,7 @@
 // Created by doori on 19. 7. 25.
 //
 
-#include "Tree.h"
+#include "DataStructure/Tree.h"
 
 namespace doori{
 

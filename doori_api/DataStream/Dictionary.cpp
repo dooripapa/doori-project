@@ -5,8 +5,8 @@
 // Created by doori on 19. 7. 25.
 //
 #include "Dictionary.h"
-#include "Log.h"
-#include "Regex.h"
+#include "Common/Log.h"
+#include "Etc/Regex.h"
 
 namespace doori{
 

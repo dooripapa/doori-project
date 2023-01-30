@@ -12,8 +12,8 @@
 #include <string.h>
 #include <string>
 
-#include "Log.h"
-#include "Stream.h"
+#include "Common/Log.h"
+#include "DataStream/Stream.h"
 #include "Addr.h"
 #include "Endpoint.h"
 

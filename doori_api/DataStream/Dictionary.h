@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "Error.h"
+#include "Common/Error.h"
 
 namespace doori{
 

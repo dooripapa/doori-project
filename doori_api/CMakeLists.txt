@@ -19,58 +19,58 @@ set(DOORI_API_LIBRARY_NAME doori)
 include_directories(SYSTEM .)
 
 set(HEADER_FILES
-        Addr.h
-        Application.h Branch.h
-        Branch.hpp
-        Connection.h
-        Data.h
-        DataSegment.h
-        DataSegment.hpp
-        Dictionary.h
-        Endpoint.h
-        Epoll.h
-        EpollEvents.h
-        Error.h
-        Getopt.h
-        ICommunication.h
-        Log.h
-        Log.hpp
-        Protocol.h
-        Publisher.h
-        Regex.h
-        Runner.h
-        Stream.h
-        Subscriber.h
-        Topic.h
-        Tree.h
-        Tree.hpp
-        Json.h
-		Bigdecimal.h
+		CommunicationMember/Addr.h
+		ProcessSupport/Application.h DataStructure/Branch.h
+		DataStructure/Branch.hpp
+		CommunicationMember/Connection.h
+		DataStream/Data.h
+		DataStream/DataSegment.h
+		DataStream/DataSegment.hpp
+		DataStream/Dictionary.h
+		CommunicationMember/Endpoint.h
+		CommunicationMember/Epoll.h
+		CommunicationMember/EpollEvents.h
+		Common/Error.h
+		ProcessSupport/Getopt.h
+		MiddlewareSupport/ICommunication.h
+		Common/Log.h
+		Common/Log.hpp
+		MiddlewareSupport/Protocol.h
+		MiddlewareSupport/Publisher.h
+		Etc/Regex.h
+		ProcessSupport/Runner.h
+		DataStream/Stream.h
+		MiddlewareSupport/Subscriber.h
+		MiddlewareSupport/Topic.h
+        DataStructure/Tree.h
+		DataStructure/Tree.hpp
+		DataStream/Json.h
+		Etc/Bigdecimal.h
         DooriTest.h)
 
 set(SRC_FILES
-        Addr.cpp
-        Application.cpp
-        Connection.cpp
-        Data.cpp
-        DataSegment.cpp
-        Dictionary.cpp
-        Endpoint.cpp
-        Epoll.cpp
-        EpollEvents.cpp
-        Error.cpp
-        Getopt.cpp
-        ICommunication.cpp
-        Log.cpp
-        Protocol.cpp
-        Publisher.cpp
-        Regex.cpp
-        Runner.cpp
-        Stream.cpp
-        Subscriber.cpp
-        Topic.cpp
-        Json.cpp 
-		Bigdecimal.cpp DooriTest.h)
+		CommunicationMember/Addr.cpp
+		ProcessSupport/Application.cpp
+		CommunicationMember/Connection.cpp
+		DataStream/Data.cpp
+		DataStream/DataSegment.cpp
+		DataStream/Dictionary.cpp
+		CommunicationMember/Endpoint.cpp
+		CommunicationMember/Epoll.cpp
+		CommunicationMember/EpollEvents.cpp
+		Common/Error.cpp
+		ProcessSupport/Getopt.cpp
+		MiddlewareSupport/ICommunication.cpp
+		Common/Log.cpp
+		MiddlewareSupport/Protocol.cpp
+		MiddlewareSupport/Publisher.cpp
+		Etc/Regex.cpp
+		ProcessSupport/Runner.cpp
+		DataStream/Stream.cpp
+		MiddlewareSupport/Subscriber.cpp
+		MiddlewareSupport/Topic.cpp
+		DataStream/Json.cpp
+		Etc/Bigdecimal.cpp DooriTest.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

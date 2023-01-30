@@ -2,10 +2,10 @@
 // Created by jaeseong on 20. 7. 13..
 //
 
-#include "Getopt.h"
-#include "Addr.h"
-#include "Endpoint.h"
-#include "Connection.h"
+#include "ProcessSupport/Getopt.h"
+#include "CommunicationMember/Addr.h"
+#include "CommunicationMember/Endpoint.h"
+#include "CommunicationMember/Connection.h"
 #include <ctime>
 #include <sys/time.h>
 

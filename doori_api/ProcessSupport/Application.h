@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 #include "Getopt.h"
-#include "Dictionary.h"
+#include "DataStream/Dictionary.h"
 
 namespace doori{
 

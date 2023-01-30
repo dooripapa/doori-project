@@ -8,7 +8,7 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
-#include "Topic.h"
+#include "MiddlewareSupport/Topic.h"
 
 namespace doori{
 

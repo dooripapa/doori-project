@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#include <Application.h>
-#include <Publisher.h>
+#include <ProcessSupport/Application.h>
+#include <MiddlewareSupport/Publisher.h>
 
 namespace doori{
 

@@ -7,7 +7,7 @@
 #pragma once
 #include <thread>
 #include "ICommunication.h"
-#include "Log.h"
+#include "Common/Log.h"
 
 namespace doori{
 

@@ -7,7 +7,7 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include "Regex.h"
+#include "Etc/Regex.h"
 
 namespace doori{
 

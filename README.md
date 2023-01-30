@@ -1,40 +1,60 @@
-# doori-project
-> 사랑하는 아들의 태명을 본 따 시작된 프로젝트
+# **doori-project**
+> 사랑하는 아들의 태명(doori)을 본 따 시작된 프로젝트
+------------------------------
 
-## 아키텍처
+## *Software Architecture*
 1. doori-api : 하위레벨의 libraries 집합체
-2. doori-service : doori-api 도구로 만들어진 daemon 프로세스(서비스)
-3. doori-solution : doori-service 기반으로, 사용자에게 편의성을 제공하는 솔루션.
-> 일차적인 목표는, 리녹스 모니터링 솔루션을 목표로 함.
+2. doori-service : doori-api 도구로 재생산된 daemon 타입 서비스
+3. doori-solution : doori-service 기반으로, 특정 목적에 따라 구현된 서비스
+------------------------------
 
-### doori-api
-1. 통신 libraries, 캡슐화 객체들
-> Addr, Endpoint, Connection, Epoll, EpollEvents
+## *doori-api*
+1. Communication Member Objects
+   - Addr
+   - Endpoint
+   - Connection
+   - Epoll
+   - EpollEvents
    
-2. 데이터캡슐화 위한 객체들
-> Data, DataSegment, Stream, Dictionary, Json, Json_value
+2. Data Stream Objects
+   - Data
+   - DataSegment
+   - Stream
+   - Dictionary
+   - Json
+   - Json_value
    
-3. 데이터구조캡슐화 위한 객체들
-> Tree, Branch
+3. Data Structure Objects
+   - Tree
+   - Branch
    
-4. 미들웨어 서비스 캡슐화 위한 객체들
-> Protocol, Topic, ICommunication, ,Publisher, Subscriber
+4. Middleware Support Objects
+   - Protocol
+   - Topic
+   - ICommunication
+   - Publisher
+   - Subscriber
  
-5. 프로세스 캡슐화 객체들
-> Getopt, Runner, Application
+5. Process Support Objects
+   - Getopt
+   - Runner
+   - Application
  
-6. 기타 객체 
-> Regex, Error, Bigdecimal
+6. And so on.
+   - Regex
+   - Error
+   - Bigdecimal
 
-### doori-service
-1. Middleware : tnsd
-> Topic Naming Service Daemon.
-> doori_service 풀더의, pub, sub, tnsd 참고할것.
+------------------------------
 
-2. MemoryDB : tnsdb
-> Token Number Service DB. -----> 설계중.
+## *doori-service*
+1. Middleware : TNSD 
+> **T**opic **N**aming **S**ervice **D**aemon. => TNSD
 
+2. MemoryDB : TNSDB
+> **T**oken **N**umber **S**ervice **DB**. ==> TNSDB
 
-### doori-solution
+------------------------------
+## doori-solution
 1. doori-watcher
 > Linux monitoring application -----> 	https://github.com/GULapp/doori-watcher 
