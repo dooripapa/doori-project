@@ -14,11 +14,10 @@ namespace doori::CommunicationMember {
     class IIPCBuilder {
     public:
         enum class Type {TCP, UDP, SHM, MSQ};
-        virtual Type GetType() = 0;
+        virtual Type GetTopologies() = 0;
         virtual unique_ptr<IConnection> GetConnection() = 0;
-    protected:
-        Endpoint mFrom;
-        Endpoint mTo;
+        virtual void InitFrom() = 0;
+        virtual void InitTo() = 0;
     };
 
 };

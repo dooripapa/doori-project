@@ -13,18 +13,12 @@ namespace doori::CommunicationMember{
 
     }
 
-    string TCP::GetOS() {
-        const string OS{"linux"};
-        return OS;
-    }
-
     TCP::TCP() {
 
     }
 
     auto TCP::Create(IIPCBuilder &builder) -> unique_ptr<IConnection> {
-        builder.Init(mIp)
-        return unique_ptr<IConnection>();
+
     }
 }
 

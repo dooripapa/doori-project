@@ -99,4 +99,22 @@ namespace doori::CommunicationMember {
         }
         return true;
     }
+
+    void TCPBuilder::InitFrom() {
+        auto from = mFrom.getMTopoloiesInfo();
+        auto ip = from["ip"];
+        auto port = from["port"];
+        auto sockAddrIn = TCPBuilder::Init(ip.toString(), port.toString());
+
+        auto socketFd = TCPBuilder::Bind(sockAddrIn);
+    }
+
+    void TCPBuilder::InitTo() {
+        auto from = mTo.getMTopoloiesInfo();
+        auto ip = from["ip"];
+        auto port = from["port"];
+        auto sockAddrIn = TCPBuilder::Init(ip.toString(), port.toString());
+
+        auto socketFd = TCPBuilder::Bind(sockAddrIn);
+    }
 } // doori

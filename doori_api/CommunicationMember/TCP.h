@@ -18,11 +18,8 @@ namespace doori::CommunicationMember {
     public:
         TCP();
         virtual ~TCP();
-        auto GetOS() -> string override;
-
     private:
         auto Create(IIPCBuilder& builder) -> unique_ptr<IConnection> override;
-
     private:
         TCP *mTCP = nullptr;
     };

@@ -16,7 +16,6 @@ namespace doori::CommunicationMember {
 
     class IIPC {
     protected:
-        virtual auto GetOS() -> string = 0;
         virtual auto Create(IIPCBuilder& builder) -> unique_ptr<IConnection> = 0;
     private:
     };
