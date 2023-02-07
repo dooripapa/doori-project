@@ -8,7 +8,6 @@
 #include "string"
 #include "CommunicationMember/Endpoint.h"
 #include "Common/Error.h"
-#include "IConnection.h"
 
 using namespace std;
 
@@ -16,7 +15,7 @@ namespace doori::CommunicationMember {
 
     class IIPC {
     protected:
-        virtual auto Create(IIPCBuilder& builder) -> unique_ptr<IConnection> = 0;
+        virtual auto Create(IIPCBuilder& builder) -> unique_ptr<IIPC> = 0;
     private:
     };
 

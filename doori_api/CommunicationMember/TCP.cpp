@@ -17,8 +17,9 @@ namespace doori::CommunicationMember{
 
     }
 
-    auto TCP::Create(IIPCBuilder &builder) -> unique_ptr<IConnection> {
-
+    auto TCP::Create(IIPCBuilder &builder) -> unique_ptr<IIPC> {
+        auto fromFd = builder.InitFrom();
+        auto toFd = builder.InitTo();
     }
 }
 

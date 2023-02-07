@@ -15,19 +15,16 @@ namespace doori::CommunicationMember {
 
     class TCPBuilder : IIPCBuilder {
     public:
-        Type GetTopologies() override;
 
         TCPBuilder() = delete;
         TCPBuilder(Endpoint From, Endpoint To);
 
     private:
-        void InitFrom() override;
+        int InitFrom() override;
 
-        void InitTo() override;
+        int InitTo() override;
 
     private:
-        unique_ptr<IConnection> GetConnection() override;
-
         static auto Init(string ip, string port) -> struct sockaddr_in;
         static auto Bind(struct sockaddr_in addr) -> int;
         static auto Listen(int socketFd) -> bool;

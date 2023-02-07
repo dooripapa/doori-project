@@ -8,7 +8,6 @@
 
 #include <string>
 #include "CommunicationMember/IIPC.h"
-#include "CommunicationMember/IConnection.h"
 #include "CommunicationMember/Endpoint.h"
 
 using namespace std;
@@ -19,9 +18,7 @@ namespace doori::CommunicationMember {
         TCP();
         virtual ~TCP();
     private:
-        auto Create(IIPCBuilder& builder) -> unique_ptr<IConnection> override;
-    private:
-        TCP *mTCP = nullptr;
+        auto Create(IIPCBuilder& builder) -> unique_ptr<IIPC> override;
     };
 };
 

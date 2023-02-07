@@ -11,15 +11,8 @@
 #include <unistd.h>
 
 namespace doori::CommunicationMember {
-    IIPCBuilder::Type TCPBuilder::GetType() {
-        return Type::TCP;
-    }
 
     TCPBuilder::TCPBuilder(Endpoint From, Endpoint To) : mFrom{From}, mTo{To} {
-    }
-
-    unique_ptr<IConnection> TCPBuilder::GetConnection() {
-        return make_unique<IConnection>( new TCP{m_From.Address().Ip(), m_From.Address().Port(), m_To.Address().Ip(), m_To.Address().Port()} );
     }
 
     /**
@@ -100,21 +93,25 @@ namespace doori::CommunicationMember {
         return true;
     }
 
-    void TCPBuilder::InitFrom() {
+    int TCPBuilder::InitFrom() {
         auto from = mFrom.getMTopoloiesInfo();
         auto ip = from["ip"];
         auto port = from["port"];
         auto sockAddrIn = TCPBuilder::Init(ip.toString(), port.toString());
 
         auto socketFd = TCPBuilder::Bind(sockAddrIn);
+
+        return socketFd;
     }
 
-    void TCPBuilder::InitTo() {
+    int TCPBuilder::InitTo() {
         auto from = mTo.getMTopoloiesInfo();
         auto ip = from["ip"];
         auto port = from["port"];
         auto sockAddrIn = TCPBuilder::Init(ip.toString(), port.toString());
 
         auto socketFd = TCPBuilder::Bind(sockAddrIn);
+
+        return socketFd;
     }
 } // doori

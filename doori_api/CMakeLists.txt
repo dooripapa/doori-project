@@ -70,7 +70,7 @@ set(SRC_FILES
 		MiddlewareSupport/Subscriber.cpp
 		MiddlewareSupport/Topic.cpp
 		DataStream/Json.cpp
-		Etc/Bigdecimal.cpp DooriTest.h CommunicationMember/IIPCBuilder.h CommunicationMember/TCPBuilder.cpp CommunicationMember/TCPBuilder.h CommunicationMember/IConnection.h CommunicationMember/TCP.cpp CommunicationMember/TCP.h DataStream/IStream.h)
+		Etc/Bigdecimal.cpp DooriTest.h CommunicationMember/IIPCBuilder.h CommunicationMember/TCPBuilder.cpp CommunicationMember/TCPBuilder.h CommunicationMember/TCP.cpp CommunicationMember/TCP.h DataStream/IStream.h CommunicationMember/IConnection.h CommunicationMember/TCPConnection.cpp CommunicationMember/TCPConnection.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
