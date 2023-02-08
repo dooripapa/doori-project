@@ -10,9 +10,6 @@
 namespace doori {
     namespace CommunicationMember {
         class IConnection {
-        protected:
-            virtual int WaitFor(DataStream::IStream &iStream) = 0;
-            virtual int SendTo(DataStream::IStream iStream) = 0;
         };
     }
 }

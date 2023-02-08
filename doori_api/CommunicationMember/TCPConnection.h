@@ -15,13 +15,8 @@ namespace doori {
             TCPConnection(int From, int To);
 
         private:
-            int WaitFor(DataStream::IStream &iStream) override;
-
-            int SendTo(DataStream::IStream iStream) override;
-
-        private:
-            int mSourceFd;
-            int mDestFd;
+            int mSourceBindFd;
+            int mDestBindFd;
         };
 
     } // doori
