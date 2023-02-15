@@ -38,7 +38,7 @@ TEST(CommunicationMember, Usage)
 
     auto Connection = tcp.Create( builder );
 
-    Connection.RequestFor(IStream sendStream);
+    Connection.RequestTo(IStream sendStream);
 
     Connection.WaitFor(IStream& recvStream);
 

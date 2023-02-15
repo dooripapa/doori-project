@@ -10,6 +10,8 @@
 namespace doori {
     namespace CommunicationMember {
         class IConnection {
+            virtual void RequestTo(DataStream::IStream sendStream) = 0;
+            virtual void WaitFor(DataStream::IStream& sendStream) = 0;
         };
     }
 }

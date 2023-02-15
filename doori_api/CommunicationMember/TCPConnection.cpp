@@ -9,7 +9,7 @@
 
 namespace doori {
     namespace CommunicationMember {
-        int TCPConnection::WaitFor() {
+        int TCPConnection::WaitFor(DataStream::IStream &sendStream) {
 
             char errorStr[1024]={0};
             auto ret = 0;
@@ -32,12 +32,13 @@ namespace doori {
             return nConnSock;
         }
 
-        int TCPConnection::ConnectTo() {
-
-        }
-
         TCPConnection::TCPConnection(int From, int To) : mSourceBindFd{From}, mDestBindFd{To} {
 
         }
+
+        void TCPConnection::RequestTo(DataStream::IStream sendStream) {
+
+        }
+
     } // doori
 } // CommunicationMember
