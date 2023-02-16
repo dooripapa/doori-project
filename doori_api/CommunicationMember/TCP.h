@@ -18,7 +18,7 @@ namespace doori::CommunicationMember {
         TCP();
         virtual ~TCP();
     private:
-        auto Create(IIPCBuilder& builder) -> unique_ptr<IIPC> override;
+        [[nodiscard]] virtual auto Create(IIPCBuilder& builder) -> const IConnection& override;
     };
 };
 

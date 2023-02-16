@@ -105,9 +105,9 @@ namespace doori::CommunicationMember {
     }
 
     int TCPBuilder::InitTo() {
-        auto from = mTo.getMTopoloiesInfo();
-        auto ip = from["ip"];
-        auto port = from["port"];
+        auto to = mTo.getMTopoloiesInfo();
+        auto ip = to["ip"];
+        auto port = to["port"];
         auto sockAddrIn = TCPBuilder::Init(ip.toString(), port.toString());
 
         auto socketFd = TCPBuilder::Bind(sockAddrIn);

@@ -9,7 +9,7 @@
 
 namespace doori {
     namespace CommunicationMember {
-        int TCPConnection::WaitFor(DataStream::IStream &sendStream) {
+        int TCPConnection::WaitFor() {
 
             char errorStr[1024]={0};
             auto ret = 0;
@@ -36,8 +36,21 @@ namespace doori {
 
         }
 
-        void TCPConnection::RequestTo(DataStream::IStream sendStream) {
+        int TCPConnection::ConnectTo() {
+            int nSocketFd = 0;
+            char errorStr[1024]={0};
+            nSocketFd = socket(AF_INET, SOCK_STREAM, 0);
 
+            iRet = connect(mDestBindFd, (struct sockaddr*)&( addr.getInetAddr() ) , sizeof(struct sockaddr_in) );
+            if( iRet < 0 )
+            {
+                LOG(ERROR, "TCP socket fd, fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)) );
+                close(mBindSock);
+                mBindSock = -1;
+                return -1;
+            }
+            mConnSock = mBindSock;
+            return mConnSock;
         }
 
     } // doori

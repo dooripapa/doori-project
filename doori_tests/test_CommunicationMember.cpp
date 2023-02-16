@@ -38,8 +38,8 @@ TEST(CommunicationMember, Usage)
 
     auto Connection = tcp.Create( builder );
 
-    Connection.RequestTo(IStream sendStream);
+    Connection.ConnectTo();
 
-    Connection.WaitFor(IStream& recvStream);
+    Connection.WaitFor();
 
 }

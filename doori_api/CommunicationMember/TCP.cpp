@@ -6,6 +6,8 @@
 #include <cstring>
 #include "TCP.h"
 #include "IIPCBuilder.h"
+#include "IConnection.h"
+#include "TCPConnection.h"
 
 namespace doori::CommunicationMember{
 
@@ -17,9 +19,13 @@ namespace doori::CommunicationMember{
 
     }
 
-    auto TCP::Create(IIPCBuilder &builder) -> unique_ptr<IIPC> {
+    auto TCP::Create(IIPCBuilder &builder) -> unique_ptr<IConnection> {
+
         auto fromFd = builder.InitFrom();
         auto toFd = builder.InitTo();
+
+        auto r = make_unique<IConnection>(TCPConnection{fromFd, toFd});
+        return r;
     }
 }
 
