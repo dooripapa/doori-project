@@ -24,7 +24,10 @@ namespace doori::CommunicationMember{
         auto fromFd = builder.InitFrom();
         auto toFd = builder.InitTo();
 
-        auto r = make_unique<IConnection>(TCPConnection{fromFd, toFd});
+        auto superPointer = new TCPConnection{fromFd, toFd};
+
+        unique_ptr<IConnection> r = static_cast< unique_ptr<IConnection> >(superPointer);
+
         return r;
     }
 }

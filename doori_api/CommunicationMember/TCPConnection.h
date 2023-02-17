@@ -19,6 +19,10 @@ namespace doori {
 
             int WaitFor() override;
 
+            int Send(int rscFd, const DataStream::IStream &data) override;
+
+            int Recv(int rscFd, DataStream::IStream &data) override;
+
         private:
             int mSourceBindFd;
             int mDestBindFd;

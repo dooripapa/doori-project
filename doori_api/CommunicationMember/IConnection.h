@@ -12,6 +12,8 @@ namespace doori {
         class IConnection {
             virtual int ConnectTo() = 0;
             virtual int WaitFor() = 0;
+            virtual int Send(int rscFd, const DataStream::IStream& data) = 0;
+            virtual int Recv(int rscFd, DataStream::IStream& data) = 0;
         };
     }
 }
