@@ -6,13 +6,14 @@
 #define DOORI_PROJECT_TCPCONNECTION_H
 
 #include "IConnection.h"
+#include "Endpoint.h"
 
 namespace doori {
     namespace CommunicationMember {
 
         class TCPConnection : IConnection {
         public:
-            TCPConnection(int From, int To);
+            TCPConnection(Endpoint From, Endpoint To);
 
         private:
             int ConnectTo() override;
@@ -24,8 +25,18 @@ namespace doori {
             int Recv(int rscFd, DataStream::IStream &data) override;
 
         private:
-            int mSourceBindFd;
-            int mDestBindFd;
+            Endpoint  mFromInfo;
+            Endpoint  mToInfo;
+
+            static void Set_sockaddr_in(sockaddr_in &addr, const string& ip, const string& port);
+
+            /**
+             * Local ip, Local port 입력받아서 재사용(setsockopt) 소켓을 리턴합니다.
+             * @param ip local ip
+             * @param port local port
+             * @return -1 fail. 0 보다 크면 성공, 소켓리턴
+             */
+            [[nodiscard]] static int Bind(const string& ip, const string& port);
         };
 
     } // doori

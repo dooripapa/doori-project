@@ -14,7 +14,7 @@ namespace doori::CommunicationMember{
     class Endpoint {
     public:
         enum class TYPE : unsigned int {
-            TCP, UDP, SHM, MSQ
+            TCP, UDP, SHM, MSQ, NON
         };
         enum READ_STATUS : bool {
             TRUE = true, FALSE = false
@@ -38,12 +38,16 @@ namespace doori::CommunicationMember{
         auto Type() noexcept -> TYPE;
 
         /**
-         * Endpoint 초기화되었는지 상태값 리턴
+         * Endpoint 초기화되었는지 읽을 수 있는 상태 여부
          * @return Endpoint::READ_STATUS
          */
         auto CanRead() noexcept -> READ_STATUS;
 
-        const DataStream::Json &getMTopoloiesInfo() const;
+        /**
+         * 토폴리지 정보를 json 형식으로 리턴
+         * @return doori::json
+         */
+        [[nodiscard]] const DataStream::Json& getTopoloiesInfo() const;
 
     private:
         READ_STATUS mSet;

@@ -12,8 +12,8 @@ namespace doori::CommunicationMember {
 
     class IIPCBuilder {
     public:
-        virtual int InitFrom() = 0;
-        virtual int InitTo() = 0;
+        virtual auto getFrom() -> const Endpoint& = 0;
+        virtual auto getTo() -> const Endpoint& = 0;
     };
 
 };

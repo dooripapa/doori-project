@@ -7,19 +7,18 @@
 #include "Endpoint.h"
 #include <cassert>
 
-namespace doori::CommunicationMember{
+namespace doori::CommunicationMember {
 
-Endpoint::Endpoint() {
-    mSet = READ_STATUS::FALSE;
-}
+    Endpoint::Endpoint() :mSet{READ_STATUS::FALSE}, mType{TYPE::NON} {
+    }
 
-auto Endpoint::Type() noexcept -> TYPE {
-    return mType;
-}
+    auto Endpoint::Type() noexcept -> TYPE {
+        return mType;
+    }
 
-auto Endpoint::CanRead() noexcept -> READ_STATUS {
-    return mSet;
-}
+    auto Endpoint::CanRead() noexcept -> READ_STATUS {
+        return mSet;
+    }
 
     Endpoint::Endpoint(TYPE transportType, DataStream::Json topologiesInfo) {
         this->mSet = READ_STATUS::TRUE;
@@ -36,7 +35,7 @@ auto Endpoint::CanRead() noexcept -> READ_STATUS {
         }
     }
 
-    const DataStream::Json &Endpoint::getMTopoloiesInfo() const {
+    const DataStream::Json &Endpoint::getTopoloiesInfo() const {
         return mTopoloiesInfo;
     }
 }//namespace doori

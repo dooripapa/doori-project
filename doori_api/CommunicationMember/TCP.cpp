@@ -19,16 +19,9 @@ namespace doori::CommunicationMember{
 
     }
 
-    auto TCP::Create(IIPCBuilder &builder) -> unique_ptr<IConnection> {
-
-        auto fromFd = builder.InitFrom();
-        auto toFd = builder.InitTo();
-
-        auto superPointer = new TCPConnection{fromFd, toFd};
-
-        unique_ptr<IConnection> r = static_cast< unique_ptr<IConnection> >(superPointer);
-
-        return r;
+    const IConnection &TCP::Create(IIPCBuilder &builder) {
+        TCPConnection tcpConnection{builder.getFrom(), builder.getTo()};
+        return TCPConnection;
     }
 }
 
