@@ -15,7 +15,7 @@ namespace doori::CommunicationMember {
 
     class IIPC {
     public:
-        virtual auto Create(IIPCBuilder& builder) -> const IConnection& = 0;
+        virtual auto Create(IIPCBuilder& builder) -> IConnection* = 0;
     };
 
 } // doori

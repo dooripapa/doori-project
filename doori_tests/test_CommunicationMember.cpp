@@ -5,8 +5,6 @@
 #include "CommunicationMember/Addr.h"
 #include "CommunicationMember/Connection.h"
 #include "CommunicationMember/Endpoint.h"
-#include "CommunicationMember/Epoll.h"
-#include "CommunicationMember/EpollEvents.h"
 #include "CommunicationMember/TCPBuilder.h"
 #include "DataStream/Json.h"
 #include "CommunicationMember/TCP.h"
@@ -21,7 +19,8 @@ using namespace std;
 
 TEST(CommunicationMember, Usage)
 {
-    unique_ptr<IIPC> tcp= make_unique<TCP>();
+    TCP tcp{};
+    IIPC *iipc = &tcp;
 
     Json bindAddress, destAddress;
 
@@ -36,10 +35,10 @@ TEST(CommunicationMember, Usage)
 
     TCPBuilder builder{From, To};
 
-    auto Connection = tcp.Create( builder );
+    auto iConnection= iipc->Create( builder );
 
-    Connection.ConnectTo();
+    auto requestFd = iConnection->ConnectTo();
 
-    Connection.WaitFor();
+    auto listenFd = iConnection->WaitFor();
 
 }

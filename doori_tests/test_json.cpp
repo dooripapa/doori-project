@@ -8,35 +8,35 @@
 
 TEST(Json_value, ConstructTest)
 {
-    doori::Json_value value{1111};
+    doori::DataStream::Json_value value{1111};
     EXPECT_EQ("1111", value.toString());
 
-    doori::Json_value value1{"const char*"};
+    doori::DataStream::Json_value value1{"const char*"};
     EXPECT_EQ("\"const char*\"", value1.toString());
 
     std::string str{"std::string"};
-    doori::Json_value value2{str};
+    doori::DataStream::Json_value value2{str};
     EXPECT_EQ("\"std::string\"", value2.toString());
 
-    doori::Json_value value3{"const char*"};
+    doori::DataStream::Json_value value3{"const char*"};
     EXPECT_EQ("\"const char*\"", value3.toString());
 
-    doori::Json_value value4{0.1234f};
+    doori::DataStream::Json_value value4{0.1234f};
     EXPECT_EQ("0.1234", value4.toString());
 
-    doori::Json_value value5{doori::Json_value{2222}};
+    doori::DataStream::Json_value value5{doori::DataStream::Json_value{2222}};
     EXPECT_EQ("2222", value5.toString());
 
-    doori::Json_value value6{ value };
+    doori::DataStream::Json_value value6{ value };
     EXPECT_EQ("1111", value6.toString());
 
-    doori::Json_value value7{ true };
+    doori::DataStream::Json_value value7{ true };
     EXPECT_EQ("true", value7.toString());
 }
 
 TEST(Json_value, ArrayTest)
 {
-    doori::Json_value value;
+    doori::DataStream::Json_value value;
     value.append({1111});
     value.append({"name"});
     value.append({0.2f});
@@ -45,7 +45,7 @@ TEST(Json_value, ArrayTest)
     auto result=R"([1111,"name",0.2,true])";
     EXPECT_EQ(result,value.toString() );
 
-    doori::Json json;
+    doori::DataStream::Json json;
     json["1"] = 1234;
     json["2"] = "name";
 
@@ -56,7 +56,7 @@ TEST(Json_value, ArrayTest)
 
 TEST(Json_value, SetTest)
 {
-    doori::Json_value   value;
+    doori::DataStream::Json_value   value;
     value.set(1111);
     EXPECT_EQ("1111", value.toString());
 
@@ -73,7 +73,7 @@ TEST(Json_value, SetTest)
     value.set(0.1234f);
     EXPECT_EQ("0.1234", value.toString());
 
-    value.set(doori::Json_value{2222});
+    value.set(doori::DataStream::Json_value{2222});
     EXPECT_EQ("2222", value.toString());
 
     value.set( value );
@@ -85,7 +85,7 @@ TEST(Json_value, SetTest)
 
 TEST(Json, OperatorTest)
 {
-    doori::Json json, another;
+    doori::DataStream::Json json, another;
     json["key"] = 1234;
     EXPECT_EQ("{\"key\":1234}", json.serialize());
 
@@ -101,30 +101,30 @@ TEST(Json, OperatorTest)
 
 TEST(Json, ComplexTest)
 {
-    doori::Json json, sub_json;
+    doori::DataStream::Json json, sub_json;
 
     std::string literalString=R"({"1":1111})";
-    json.append("1", doori::Json_value(1111));
+    json.append("1", doori::DataStream::Json_value(1111));
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
 
     literalString=R"({"2":"2222"})";
-    json.append("2", doori::Json_value("2222"));
+    json.append("2", doori::DataStream::Json_value("2222"));
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
 
     literalString=R"({"3":0.1})";
-    json.append("3", doori::Json_value(0.1f));
+    json.append("3", doori::DataStream::Json_value(0.1f));
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
 
     literalString=R"({"4":"name"})";
-    json.append("4", doori::Json_value("name"));
+    json.append("4", doori::DataStream::Json_value("name"));
     EXPECT_EQ(literalString, json.serialize());
     json.clear();
 
     literalString=R"({"1":1,"2":{"2":"2"}})";
-    json.append("1", doori::Json_value(1));
+    json.append("1", doori::DataStream::Json_value(1));
     sub_json.append("2","2");
     json["2"]=sub_json;
     EXPECT_EQ(literalString,json.serialize());
@@ -135,7 +135,7 @@ TEST(Json, ParserTest)
 {
     auto literalString=R"({"1"  :  ",:1" , "2":{"2":"2"}})";
     auto literalString2=R"({"1":",:1","2":{"2":"2"}})";
-    doori::Json json;
+    doori::DataStream::Json json;
     json.unserialize(literalString);
 
     EXPECT_EQ(literalString2, json.serialize());

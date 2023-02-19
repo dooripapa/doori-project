@@ -13,13 +13,14 @@
 using namespace std;
 
 namespace doori::CommunicationMember {
-    class TCP : IIPC {
+    class TCP : public IIPC {
     public:
         TCP();
         virtual ~TCP();
 
     private:
-        auto Create(IIPCBuilder &builder) -> const IConnection & override;
+        auto Create(IIPCBuilder &builder) -> IConnection * override;
+
     };
 };
 

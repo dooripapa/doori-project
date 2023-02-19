@@ -19,9 +19,9 @@ namespace doori::CommunicationMember{
 
     }
 
-    const IConnection &TCP::Create(IIPCBuilder &builder) {
-        TCPConnection tcpConnection{builder.getFrom(), builder.getTo()};
-        return TCPConnection;
+    IConnection *TCP::Create(IIPCBuilder &builder) {
+        return new TCPConnection(builder.getFrom(), builder.getTo());
     }
+
 }
 

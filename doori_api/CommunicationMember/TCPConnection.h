@@ -11,7 +11,7 @@
 namespace doori {
     namespace CommunicationMember {
 
-        class TCPConnection : IConnection {
+        class TCPConnection : public IConnection {
         public:
             TCPConnection(Endpoint From, Endpoint To);
 
@@ -28,6 +28,12 @@ namespace doori {
             Endpoint  mFromInfo;
             Endpoint  mToInfo;
 
+            /**
+             * struct sockaddr_in 구조체를 ip, port값으로 배정합니다.
+             * @param addr
+             * @param ip
+             * @param port
+             */
             static void Set_sockaddr_in(sockaddr_in &addr, const string& ip, const string& port);
 
             /**

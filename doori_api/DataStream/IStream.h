@@ -14,7 +14,7 @@ namespace doori::DataStream{
     public:
         virtual auto serialize() -> string = 0;
         virtual auto unserialzie(IStream&) -> bool = 0;
-    }
+    };
 };
 
 #endif //DOORI_PROJECT_ISTREAM_H

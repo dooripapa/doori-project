@@ -13,7 +13,7 @@ using namespace std;
 
 namespace doori::CommunicationMember {
 
-    class TCPBuilder : IIPCBuilder {
+    class TCPBuilder : public IIPCBuilder {
     public:
 
         TCPBuilder() = delete;

@@ -22,14 +22,14 @@ set(HEADER_FILES
 		CommunicationMember/Addr.h
 		ProcessSupport/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
-		CommunicationMember/Connection.h
+#		CommunicationMember/Connection.h
 		DataStream/Data.h
 		DataStream/DataSegment.h
 		DataStream/DataSegment.hpp
 		DataStream/Dictionary.h
 		CommunicationMember/Endpoint.h
-		CommunicationMember/Epoll.h
-		CommunicationMember/EpollEvents.h
+#		CommunicationMember/Epoll.h
+#		CommunicationMember/EpollEvents.h
 		Common/Error.h
 		ProcessSupport/Getopt.h
 		MiddlewareSupport/ICommunication.h
@@ -51,13 +51,13 @@ set(HEADER_FILES
 set(SRC_FILES
 		CommunicationMember/Addr.cpp
 		ProcessSupport/Application.cpp
-		CommunicationMember/Connection.cpp
+#		CommunicationMember/Connection.cpp
 		DataStream/Data.cpp
 		DataStream/DataSegment.cpp
 		DataStream/Dictionary.cpp
 		CommunicationMember/Endpoint.cpp
-		CommunicationMember/Epoll.cpp
-		CommunicationMember/EpollEvents.cpp
+#		CommunicationMember/Epoll.cpp
+#		CommunicationMember/EpollEvents.cpp
 		Common/Error.cpp
 		ProcessSupport/Getopt.cpp
 		MiddlewareSupport/ICommunication.cpp
