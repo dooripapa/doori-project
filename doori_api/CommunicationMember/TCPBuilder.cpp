@@ -14,7 +14,7 @@
 
 namespace doori::CommunicationMember {
 
-    TCPBuilder::TCPBuilder(Endpoint From, Endpoint To) : mFrom{std::move(From)}, mTo{std::move(To)} {
+    TCPBuilder::TCPBuilder(Endpoint From, Endpoint To) : mFrom{From}, mTo{To} {
     }
 
     const Endpoint &TCPBuilder::getFrom() {
@@ -23,5 +23,9 @@ namespace doori::CommunicationMember {
 
     const Endpoint &TCPBuilder::getTo() {
         return mTo;
+    }
+
+    TCPBuilder::~TCPBuilder() {
+
     }
 } // doori

@@ -49,7 +49,7 @@ namespace doori::CommunicationMember {
     }
 
     TCPConnection::TCPConnection(CommunicationMember::Endpoint From, CommunicationMember::Endpoint To)
-    : mFromInfo{std::move(From)}, mToInfo{std::move(To)} {
+    : mFromInfo{From}, mToInfo{To} {
 
     }
 

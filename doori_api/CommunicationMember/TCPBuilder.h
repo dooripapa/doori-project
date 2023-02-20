@@ -17,9 +17,11 @@ namespace doori::CommunicationMember {
     public:
 
         TCPBuilder() = delete;
+
         TCPBuilder(Endpoint From, Endpoint To);
 
-    private:
+        virtual ~TCPBuilder();
+
         auto getFrom() -> const Endpoint & override;
 
         auto getTo() -> const Endpoint & override;

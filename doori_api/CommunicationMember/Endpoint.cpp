@@ -35,7 +35,7 @@ namespace doori::CommunicationMember {
         }
     }
 
-    const DataStream::Json &Endpoint::getTopoloiesInfo() const {
+    DataStream::Json Endpoint::getTopoloiesInfo() const {
         return mTopoloiesInfo;
     }
 }//namespace doori

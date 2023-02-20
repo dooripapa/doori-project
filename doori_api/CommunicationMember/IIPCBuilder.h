@@ -5,6 +5,7 @@
 #pragma once
 
 #include <memory>
+#include "CommunicationMember/Endpoint.h"
 
 using namespace std;
 

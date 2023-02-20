@@ -10,6 +10,7 @@
 namespace doori {
     namespace CommunicationMember {
         class IConnection {
+        public:
             /**
              * 통신을 위해 연결요청합니다. 연결 요청 후, 완료가 되면, 통신수단의 접근자를 리턴합니다.
              * @return 통신 객체

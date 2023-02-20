@@ -13,9 +13,10 @@ namespace doori {
 
         class TCPConnection : public IConnection {
         public:
+            TCPConnection() = delete;
+
             TCPConnection(Endpoint From, Endpoint To);
 
-        private:
             int ConnectTo() override;
 
             int WaitFor() override;

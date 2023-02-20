@@ -47,7 +47,10 @@ namespace doori::CommunicationMember{
          * 토폴리지 정보를 json 형식으로 리턴
          * @return doori::json
          */
-        [[nodiscard]] const DataStream::Json& getTopoloiesInfo() const;
+        [[nodiscard]] DataStream::Json getTopoloiesInfo() const;
+
+
+
 
     private:
         READ_STATUS mSet;

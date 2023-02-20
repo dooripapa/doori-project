@@ -30,6 +30,7 @@ set(HEADER_FILES
 		CommunicationMember/Endpoint.h
 #		CommunicationMember/Epoll.h
 #		CommunicationMember/EpollEvents.h
+		CommunicationMember/TCP.h
 		Common/Error.h
 		ProcessSupport/Getopt.h
 		MiddlewareSupport/ICommunication.h
@@ -45,6 +46,10 @@ set(HEADER_FILES
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
 		DataStream/Json.h
+		CommunicationMember/IIPCBuilder.h
+		CommunicationMember/TCPBuilder.h
+		CommunicationMember/IConnection.h
+		CommunicationMember/TCPConnection.h
 		Etc/Bigdecimal.h
         DooriTest.h)
 
@@ -70,7 +75,12 @@ set(SRC_FILES
 		MiddlewareSupport/Subscriber.cpp
 		MiddlewareSupport/Topic.cpp
 		DataStream/Json.cpp
-		Etc/Bigdecimal.cpp DooriTest.h CommunicationMember/IIPCBuilder.h CommunicationMember/TCPBuilder.cpp CommunicationMember/TCPBuilder.h CommunicationMember/TCP.cpp CommunicationMember/TCP.h DataStream/IStream.h CommunicationMember/IConnection.h CommunicationMember/TCPConnection.cpp CommunicationMember/TCPConnection.h)
+		Etc/Bigdecimal.cpp
+		DooriTest.h
+		CommunicationMember/TCPBuilder.cpp
+		DataStream/IStream.h
+		CommunicationMember/TCP.cpp
+		CommunicationMember/TCPConnection.cpp)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

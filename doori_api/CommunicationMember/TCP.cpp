@@ -2,12 +2,7 @@
 // Created by jaeseong on 23. 1. 31.
 //
 
-#include <memory>
-#include <cstring>
 #include "TCP.h"
-#include "IIPCBuilder.h"
-#include "IConnection.h"
-#include "TCPConnection.h"
 
 namespace doori::CommunicationMember{
 
@@ -19,8 +14,10 @@ namespace doori::CommunicationMember{
 
     }
 
-    IConnection *TCP::Create(IIPCBuilder &builder) {
-        return new TCPConnection(builder.getFrom(), builder.getTo());
+    IConnection *TCP::Create(IIPCBuilder *builder) {
+        auto left = builder->getFrom();
+        auto right = builder->getTo();
+        return new TCPConnection(left, right);
     }
 
 }
