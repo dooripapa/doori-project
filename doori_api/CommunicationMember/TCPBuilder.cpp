@@ -14,7 +14,9 @@
 
 namespace doori::CommunicationMember {
 
-    TCPBuilder::TCPBuilder(Endpoint From, Endpoint To) : mFrom{From}, mTo{To} {
+    TCPBuilder::TCPBuilder(Endpoint From, Endpoint To) {
+        mFrom = From;
+        mTo = To;
     }
 
     const Endpoint &TCPBuilder::getFrom() {

@@ -410,13 +410,13 @@ namespace doori::DataStream{
                 jsonV<<mInt;
                 return jsonV.str();
             case Json_value::STRING:
-                jsonV<<"\"";
+//                jsonV<<"\"";
                 for(auto&i:mStr) {
                     if (i=='"')
                         jsonV<<"\\";
                     jsonV<<i;
                 }
-                jsonV<<"\"";
+//                jsonV<<"\"";
                 return jsonV.str();
             case Json_value::ARRAY:
                 jsonV<<"[";

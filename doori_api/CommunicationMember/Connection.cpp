@@ -10,25 +10,6 @@ using namespace std;
 
 namespace doori::CommunicationMember {
 
-    auto Connection::release() -> void {
-        if (mBindSock != -1) {
-            close(mBindSock);
-            mBindSock = -1;
-        }
-        if (mConnSock != -1) {
-            shutdown(mConnSock, SHUT_RDWR);
-            mConnSock = -1;
-        }
-    }
-
-/**
-*@brief 소켓으로 해당길이까지 데이터 수신
-*@details
-*@date
-*@param
-*@return -1 : unkonwn errorSt
-         -2 : socket closed
-*/
     int Connection::waitDataUtill(int iSocketfd, string &emptyBuff, ssize_t requestedLen) {
         /*
         * malloc은 주어진 크기도 보다 더 크게 잡는다
@@ -76,49 +57,44 @@ namespace doori::CommunicationMember {
         return 0;
     }
 
-    auto Connection::connectTo() -> int {
+    auto Connection::connectTo(struct sockaddr_in destAddrIn, struct sockaddr_in sourceAddrIn) -> int {
         char errorStr[1024] = {0};
         int iRet = 0;
+        int bindSock = -1;
 
         if (!mDest.CanRead()) {
             LOG(ERROR, "not defined Destination, need to() function ");
             return -1;
         }
 
-        doori::CommunicationMember::Addr addr = mDest.Address();
         if (!mSource.CanRead()) {
-            mBindSock = socket(AF_INET, SOCK_STREAM, 0);
-            if (mBindSock < 0) {
+            bindSock = socket(AF_INET, SOCK_STREAM, 0);
+            if (bindSock < 0) {
                 LOG(ERROR, "TCP socket fd, fail to open", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
         } else {
-            doori::CommunicationMember::Addr source_addr = mSource.Address();
-            if (processBind(mBindSock, source_addr) < 0) {
+            bindSock = Bind(sourceAddrIn);
+            if( bindSock < 0 ) {
                 LOG(ERROR, "bind error");
-                close(mBindSock);
-                mBindSock = -1;
                 return -1;
             }
         }
 
-        iRet = connect(mBindSock, (struct sockaddr *) &(addr.getInetAddr()), sizeof(struct sockaddr_in));
+        iRet = connect(bindSock, (struct sockaddr *)&destAddrIn, sizeof(struct sockaddr_in));
         if (iRet < 0) {
             LOG(ERROR, "TCP socket fd, fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)));
-            close(mBindSock);
-            mBindSock = -1;
+            close(bindSock);
             return -1;
         }
-        mConnSock = mBindSock;
-        return mConnSock;
+        return bindSock;
     }
 
-    auto
-    Connection::send(const Stream &stream) -> int {
+    auto Connection::send(int fd, const Stream &stream) -> int {
         auto ret = 0;
-        ret = processSend(mConnSock, stream);
+        ret = processSend(fd, stream);
         if (ret < 0)
-            LOG(ERROR, "send fail : [", mConnSock, "]");
+            LOG(ERROR, "send fail : [", fd, "]");
 
         return ret;
     }
@@ -133,22 +109,20 @@ namespace doori::CommunicationMember {
         return ret;
     }
 
-    auto Connection::onListening() -> int {
-        auto ret = 0;
+    auto Connection::onListening(struct sockaddr_in sockaddrIn) -> int {
         char errorStr[1024] = {0};
-        doori::CommunicationMember::Addr addr = mSource.Address();
 
-        ret = processBind(mBindSock, addr);
-        if (ret < 0) {
+        auto fd = Bind(sockaddrIn);
+        if (fd < 0) {
             LOG(ERROR, "onListening error");
-            return ret;
+            return -1;
         }
 
-        if (listen(mBindSock, 1) < 0) {
+        if (listen(fd, 1) < 0) {
             LOG(ERROR, "TCP socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
             return -1;
         }
-        return mBindSock;
+        return fd;
     }
 
     int Connection::processBind(int &socketFd, const doori::CommunicationMember::Addr &addr) {
@@ -172,61 +146,69 @@ namespace doori::CommunicationMember {
         return 0;
     }
 
-    auto Connection::onAccepting() -> int {
-        if (!mSource.CanRead()) {
-            LOG(ERROR, "waitFor, need from()");
+    int Connection::Bind(struct sockaddr_in &addrIn) {
+        int fd = -1;
+        char errorStr[1024] = {0};
+        fd = socket(AF_INET, SOCK_STREAM, 0);
+        if (fd < 0) {
+            LOG(ERROR, "TCP socket fd, fail to open");
             return -1;
         }
 
-        doori::CommunicationMember::Addr addr = mSource.Address();
+        if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &addrIn, sizeof(struct sockaddr_in)) <
+            0) {
+            LOG(ERROR, "TCP socket fd, fail to setsockopt");
+            return -1;
+        }
+
+        if (bind(fd, (struct sockaddr *) &addrIn, sizeof(struct sockaddr_in)) < 0) {
+            LOG(ERROR, "TCP socket fd, fail to bind:", strerror_r(errno, errorStr, sizeof(errorStr)));
+            return -1;
+        }
+        return fd;
+    }
+
+    auto Connection::onAccepting(int fd, struct sockaddr_in sockAddrIn) -> int {
         char errorStr[1024] = {0};
-        int iRet = 0;
+        int accpetFd= 0;
         socklen_t len = sizeof(struct sockaddr_in);
-        if ((iRet = accept(mBindSock, (struct sockaddr *) &(addr.getInetAddr()), &len)) < 0) {
+        if ((accpetFd = accept(fd, (struct sockaddr *) &sockAddrIn, &len)) < 0) {
             LOG(ERROR, "TCP socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
             return -1;
         }
-        return iRet;
+        return accpetFd;
     }
 
-    auto
-    Connection::waitFor() -> int {
-        if (!mSource.CanRead()) {
-            LOG(ERROR, "waitFor, need from()");
-            return -1;
-        }
-
-        doori::CommunicationMember::Addr addr = mSource.Address();
+    auto Connection::waitFor(struct sockaddr_in sockaddrIn) -> int {
         char errorStr[1024] = {0};
-        auto ret = 0;
 
-        ret = processBind(mBindSock, addr);
-        if (ret < 0) {
+        auto fd = Bind(sockaddrIn);
+        if (fd < 0) {
             LOG(ERROR, "waitFor, binding error");
             return -1;
         }
 
-        if (listen(mBindSock, 1) < 0) {
+        if (listen(fd, 1) < 0) {
             LOG(ERROR, "TCP socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
             return -1;
         }
 
         socklen_t len = sizeof(struct sockaddr_in);
-        if ((ret = accept(mBindSock, (struct sockaddr *) &(addr.getInetAddr()), &len)) < 0) {
+        auto acceptFd= 0;
+        if ((acceptFd = accept(fd, (struct sockaddr *) &sockaddrIn, &len)) < 0) {
             LOG(ERROR, "TCP socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
             return -1;
         }
-        mConnSock = ret;
-        return mConnSock;
+        return acceptFd;
     }
 
-///@see STX context start (0x02)\
-        ETX context end (0x03)\
-        STX LLLLLEEEEEEEE $|...doori_data...|$ ETX \
-           123456789|123456789|123456789|
-    auto Connection::recv(Stream &container) -> int {
+    ///@see STX context start (0x02)\
+    ETX context end (0x03)\
+    STX LLLLLEEEEEEEE $|...doori_data...|$ ETX \
+       123456789|123456789|123456789|
+    auto Connection::recv(int fd, Stream &container) -> int {
         auto ret = 0;
-        ret = processRecv(mConnSock, container);
+        ret = processRecv(fd, container);
         if (ret < 0)
             LOG(ERROR, "recv");
 
@@ -243,14 +225,14 @@ namespace doori::CommunicationMember {
     }
 
     auto
-    Connection::reply(const Stream &contents, Stream &response_contents) -> int {
+    Connection::reply(int fd, const Stream &contents, Stream &response_contents) -> int {
         auto ret = 0;
-        ret = processSend(mConnSock, contents);
+        ret = processSend(fd, contents);
         if (ret < 0) {
             LOG(ERROR, "fail to send");
             return -1;
         }
-        ret = processRecv(mConnSock, response_contents);
+        ret = processRecv(fd, response_contents);
         if (ret < 0) {
             LOG(ERROR, "fail to recv");
             return -1;
@@ -309,10 +291,48 @@ namespace doori::CommunicationMember {
         return 0;
     }
 
-///@see STX context start (0x02) \
-        ETX context end (0x03) \
-        STX LLLLLEEEEEEEE $|...doori_data...|$ ETX \
-           123456789|123456789|123456789|
+    int Connection::Send(int fd, byte data[], ssize_t dataLen) {
+        char errorStr[1024] = {0};
+        ssize_t len = 0;
+
+        ssize_t requestLen = dataLen;
+        if (requestLen == 0) {
+            LOG(ERROR, "Contents length for Sending is zero");
+            return -1;
+        }
+        ssize_t sendLen = requestLen;
+
+        char *pcDataPos = (char *) malloc(dataLen + 1);
+        if (!pcDataPos) {
+            LOG(FATAL, "malloc error");
+            return -2;
+        }
+
+        memcpy(pcDataPos, data, requestLen);
+        *(pcDataPos + requestLen) = 0x00;
+
+        while ((len += write(fd, pcDataPos, sendLen)) < requestLen) {
+            if (len == -1) {
+                LOG(ERROR, "send door_stream to Destination, fail to write()",
+                    strerror_r(errno, errorStr, sizeof(errorStr)));
+                if (pcDataPos)
+                    free(pcDataPos);
+                return -2;
+            }
+            pcDataPos += len;
+            sendLen -= len;
+            if (!sendLen)
+                break;
+        }
+        if (pcDataPos)
+            free(pcDataPos);
+        return 0;
+    }
+
+    ///@see STX context start (0x02) \
+            ETX context end (0x03) \
+            STX LLLLLEEEEEEEE $|...doori_data...|$ ETX \
+            123456789|123456789|123456789|
     int Connection::processRecv(int connected_socketFd, Stream &recv_buffer) {
         int iRet = 0;
         //헤더의 길이를 읽는다
