@@ -16,17 +16,17 @@ namespace doori {
             return sock;
         }
 
-        int TcpApi::SetReuseOpt(int fd,std::string ip, std::string port) {
+        int TcpApi::SetReuseOpt(int fd, std::string ip, std::string port) {
 
             ::sockaddr_in sockaddrIn;
             memset(&sockaddrIn, 0x00, sizeof(::sockaddr_in));
 
-            uint16_t    u16Temp = 0;
-            u16Temp = atoi( port.c_str() );
+            uint16_t u16Temp = 0;
+            u16Temp = atoi(port.c_str());
 
             sockaddrIn.sin_family = AF_INET;
             sockaddrIn.sin_port = htons(u16Temp);
-            sockaddrIn.sin_addr.s_addr = ip.empty()?INADDR_ANY: inet_addr( ip.c_str() );
+            sockaddrIn.sin_addr.s_addr = ip.empty() ? INADDR_ANY : inet_addr(ip.c_str());
 
             if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn, sizeof(::sockaddr_in)) <
                 0) {
@@ -41,12 +41,12 @@ namespace doori {
             ::sockaddr_in sockaddrIn;
             memset(&sockaddrIn, 0x00, sizeof(::sockaddr_in));
 
-            uint16_t    u16Temp = 0;
-            u16Temp = atoi( port.c_str() );
+            uint16_t u16Temp = 0;
+            u16Temp = atoi(port.c_str());
 
             sockaddrIn.sin_family = AF_INET;
             sockaddrIn.sin_port = htons(u16Temp);
-            sockaddrIn.sin_addr.s_addr = ip.empty()?INADDR_ANY: inet_addr( ip.c_str() );
+            sockaddrIn.sin_addr.s_addr = ip.empty() ? INADDR_ANY : inet_addr(ip.c_str());
 
             if (bind(fd, (struct sockaddr *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
                 LOG(ERROR, "TCP socket fd, fail to bind:", strerror_r(errno, errorStr, sizeof(errorStr)));
@@ -77,6 +77,33 @@ namespace doori {
                 return -1;
             }
             return acptFd;
+        }
+
+        int TcpApi::Connect(int fd, string ip, string port) {
+            char errorStr[1024] = {0};
+
+            if (ip.empty() || port.empty()) {
+                LOG(FATAL, "ip, port value is empty.");
+                std::exit(-1);
+            }
+
+            ::sockaddr_in sockaddrIn;
+            memset(&sockaddrIn, 0x00, sizeof(::sockaddr_in));
+
+            uint16_t u16Temp = 0;
+            u16Temp = atoi(port.c_str());
+
+            sockaddrIn.sin_family = AF_INET;
+            sockaddrIn.sin_port = htons(u16Temp);
+            sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
+
+            auto iRet = connect(fd, (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
+            if (iRet < 0) {
+                LOG(ERROR, "TCP socket fd, fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)));
+                close(fd);
+                return -1;
+            }
+            return fd;
         }
     } // doori
 } // CommunicationMember

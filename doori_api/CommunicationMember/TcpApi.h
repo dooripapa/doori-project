@@ -65,6 +65,15 @@ namespace doori {
              * @return
              */
             static int Accept(int fd);
+
+            /**
+             * 원격지 접속을 요청합니다.
+             * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
+             * @param ip 원격지 IP
+             * @param port 원격지 PORT
+             * @return
+             */
+            static int Connect(int fd, string ip, string port);
         };
 
     } // doori

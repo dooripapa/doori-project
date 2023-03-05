@@ -48,8 +48,8 @@ set(HEADER_FILES
 		DataStream/Json.h
 		CommunicationMember/IIPCBuilder.h
 		CommunicationMember/TCPBuilder.h
-		CommunicationMember/IConnection.h
-		CommunicationMember/TCPConnection.h
+        CommunicationMember/ITopology.h
+		CommunicationMember/TCPTopology.h
 		Etc/Bigdecimal.h
         DooriTest.h)
 
@@ -80,7 +80,7 @@ set(SRC_FILES
 		CommunicationMember/TCPBuilder.cpp
 		DataStream/IStream.h
 		CommunicationMember/TCP.cpp
-		CommunicationMember/TCPConnection.cpp CommunicationMember/TcpApi.cpp CommunicationMember/TcpApi.h)
+		CommunicationMember/TCPTopology.cpp CommunicationMember/TcpApi.cpp CommunicationMember/TcpApi.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

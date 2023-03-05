@@ -11,10 +11,17 @@ using namespace std;
 
 namespace doori::CommunicationMember {
 
+    enum TOPOLOGY_TYPE {
+        SERVER,
+        CLIENT
+    };
+
     class IIPCBuilder {
     public:
-        virtual auto getFrom() -> const Endpoint& = 0;
-        virtual auto getTo() -> const Endpoint& = 0;
+        virtual int BindFrom() = 0;
+        virtual int BindTo() = 0;
+        virtual int GetListenRsc() = 0;
+        virtual int EstablishTopologies() = 0;
     };
 
 };

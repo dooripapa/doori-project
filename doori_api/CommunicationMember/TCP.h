@@ -9,8 +9,8 @@
 #include <string>
 #include "CommunicationMember/IIPC.h"
 #include "CommunicationMember/Endpoint.h"
-#include "CommunicationMember/IConnection.h"
-#include "CommunicationMember/TCPConnection.h"
+#include "CommunicationMember/ITopology.h"
+#include "CommunicationMember/TCPTopology.h"
 
 using namespace std;
 
@@ -20,9 +20,13 @@ namespace doori::CommunicationMember {
         TCP();
         virtual ~TCP();
 
-        virtual auto Create(IIPCBuilder *builder) -> IConnection * override;
+        int Create(IIPCBuilder *builder) override;
 
+        ITopology *GetIPC() noexcept override;
+    private:
+        int mConnection;
     };
+
 };
 
 

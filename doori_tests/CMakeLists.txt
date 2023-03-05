@@ -16,10 +16,12 @@ set(TEST_FILES
 		../doori_api/CommunicationMember/Endpoint.cpp
 		../doori_api/CommunicationMember/TCP.h
 		../doori_api/CommunicationMember/TCP.cpp
-		../doori_api/CommunicationMember/TCPConnection.h
-		../doori_api/CommunicationMember/TCPConnection.cpp
+        ../doori_api/CommunicationMember/TCPTopology.h
+        ../doori_api/CommunicationMember/TCPTopology.cpp
 		../doori_api/CommunicationMember/TCPBuilder.h
 		../doori_api/CommunicationMember/TCPBuilder.cpp
+		../doori_api/CommunicationMember/TcpApi.cpp
+		../doori_api/CommunicationMember/TcpApi.h
         ../doori_api/DataStream/Json.cpp
         ../doori_api/DataStream/Json.h
         ../doori_api/Etc/Bigdecimal.cpp

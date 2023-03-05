@@ -29,17 +29,13 @@ TEST(CommunicationMember, Usage)
     Endpoint From{Endpoint::TYPE::TCP, bindAddress};
     Endpoint To{Endpoint::TYPE::TCP, destAddress};
 
-//    TCPBuilder builder{From, To};
+    auto tcpBuilder = new TCPBuilder(TOPOLOGY_TYPE::SERVER, "", "8888");
 
-    auto tcpBuilder = new TCPBuilder(From, To);
+    try {
+        iipc->Create(tcpBuilder);
+    }catch (std::exception e) {
+        cout << e.what() << endl;
+    }
 
-    auto iConnection= iipc->Create( tcpBuilder );
-
-    auto requestFd = iConnection->ConnectTo();
-
-    doori::LOG(INFO, "CONNECT FD:[", requestFd, "]");
-
-    auto listenFd = iConnection->WaitFor();
-
-    doori::LOG(INFO, "Listen FD:[", listenFd, "]");
+    auto conn = iipc->GetIPC();
 }
