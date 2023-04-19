@@ -13,6 +13,9 @@ namespace doori {
 
         class TCPTopology : public ITopology {
         public:
+            enum {
+                HEADER_LEN = 10
+            };
             TCPTopology() = delete;
 
             virtual ~TCPTopology();

@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include <memory>
 #include "CommunicationMember/IIPC.h"
 #include "CommunicationMember/Endpoint.h"
 #include "CommunicationMember/ITopology.h"
@@ -20,9 +21,9 @@ namespace doori::CommunicationMember {
         TCP();
         virtual ~TCP();
 
-        int Create(IIPCBuilder *builder) override;
+        int Create(unique_ptr<IIPCBuilder> builder) override;
 
-        ITopology *GetIPC() noexcept override;
+        unique_ptr<ITopology> GetIPC() noexcept override;
     private:
         int mConnection;
     };

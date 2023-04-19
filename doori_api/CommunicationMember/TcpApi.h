@@ -74,6 +74,24 @@ namespace doori {
              * @return
              */
             static int Connect(int fd, string ip, string port);
+
+            /**
+             * 데이터를 송신합다니.
+             * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
+             * @param data 데이터
+             * @param dataLen 데이터길이
+             * @return
+             */
+            static int Send(int fd, unsigned char *data, uint8_t dataLen);
+
+            /**
+             * 데이터를 수신합니다.
+             * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
+             * @param dataContainer 데이터를 저장할 변수
+             * @param dataLen  데이터 수신 후 수신이 완료 되기 위한 데이터 길이
+             * @return
+             */
+            static int Recv(int fd, char *dataContainer, std::uint8_t dataLen);
         };
 
     } // doori

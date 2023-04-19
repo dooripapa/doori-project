@@ -12,7 +12,9 @@ using namespace std;
 namespace doori::DataStream{
     class IStream {
     public:
-        virtual auto serialize() -> string = 0;
+        virtual auto getHeaderSize() const -> std::uint8_t = 0 ;
+        virtual auto getTotalSize() const -> std::uint8_t = 0 ;
+        virtual auto serialize() const-> std::string = 0;
         virtual auto unserialzie(IStream&) -> bool = 0;
     };
 };

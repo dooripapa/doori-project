@@ -14,7 +14,7 @@ namespace doori::CommunicationMember{
 
     }
 
-    int TCP::Create(IIPCBuilder *builder) {
+    int TCP::Create( unique_ptr<IIPCBuilder> builder) {
         auto from = builder->BindFrom();
         if( from == -1 )
         {
@@ -39,8 +39,8 @@ namespace doori::CommunicationMember{
         return mConnection;
     }
 
-    ITopology *TCP::GetIPC() noexcept {
-        return new TCPTopology{mConnection};
+    unique_ptr<ITopology> TCP::GetIPC() noexcept {
+        return std::make_unique<TCPTopology>(mConnection);
     }
 
 }

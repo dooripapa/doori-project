@@ -18,8 +18,8 @@ namespace doori::CommunicationMember {
 
     class IIPC {
     public:
-        virtual int Create(IIPCBuilder *) = 0;
-        virtual ITopology* GetIPC() noexcept = 0;
+        virtual int Create( unique_ptr<IIPCBuilder> ) = 0;
+        virtual unique_ptr<doori::CommunicationMember::ITopology> GetIPC() noexcept = 0;
     };
 
 } // doori

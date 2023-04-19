@@ -7,10 +7,11 @@
 #pragma once
 #include "Common/Log.h"
 #include "DataStream/Data.h"
+#include "IStream.h"
 
 class Data;
 
-namespace doori{
+namespace doori::DataStream{
 
 enum class doori_stream_enc_type : unsigned int{
 	UNKNOWN = 0,
@@ -19,10 +20,9 @@ enum class doori_stream_enc_type : unsigned int{
 };
 
 /**
- * @todo wchar_t 적용하여, utf8 호환이 되도록해야 한다.
  * @todo Json객체를 이 객체로 태워서, 송신규격 스트림으로 만드는 기능 추가해야 함
  */
-class Stream
+class Stream : public IStream
 {
 public:
 	Stream();
@@ -38,6 +38,15 @@ public:
 	auto setString(std::string& encordType, std::string& body) -> int;
 	auto init(const Data& dooridata) -> void;
 	auto getString() const-> std::string;
+
+    auto getHeaderSize() const -> std::uint8_t override;
+
+    auto getTotalSize() const -> std::uint8_t override;
+
+    auto serialize() const -> std::string override;
+
+    auto unserialzie(IStream &stream) -> bool override;
+
 protected:
 private:
 	auto copyFrom(const Stream& rhs) -> void;

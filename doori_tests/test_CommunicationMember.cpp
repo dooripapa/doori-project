@@ -16,7 +16,7 @@ using namespace std;
 
 TEST(CommunicationMember, Usage)
 {
-    IIPC *iipc = new TCP();
+    std::unique_ptr<IIPC> iipc = std::make_unique<TCP>();
 
     Json bindAddress, destAddress;
 
@@ -29,13 +29,15 @@ TEST(CommunicationMember, Usage)
     Endpoint From{Endpoint::TYPE::TCP, bindAddress};
     Endpoint To{Endpoint::TYPE::TCP, destAddress};
 
-    auto tcpBuilder = new TCPBuilder(TOPOLOGY_TYPE::SERVER, "", "8888");
+    std::unique_ptr<IIPCBuilder> builder = std::make_unique<TCPBuilder>(TOPOLOGY_TYPE::SERVER, "", "8888");
 
     try {
-        iipc->Create(tcpBuilder);
+        iipc->Create( std::move(builder) );
     }catch (std::exception e) {
         cout << e.what() << endl;
     }
 
     auto conn = iipc->GetIPC();
+
+    conn->Send()
 }
