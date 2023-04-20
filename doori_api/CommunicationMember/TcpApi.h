@@ -82,7 +82,7 @@ namespace doori {
              * @param dataLen 데이터길이
              * @return
              */
-            static int Send(int fd, unsigned char *data, uint8_t dataLen);
+            static int Send(int fd, char *data, uint8_t dataLen);
 
             /**
              * 데이터를 수신합니다.

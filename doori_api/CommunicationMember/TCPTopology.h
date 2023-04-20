@@ -31,14 +31,15 @@ namespace doori {
              * @param data
              * @return 0 : Success, -1 : Fail
              */
-            int Send(const DataStream::IStream &data) override;
+            int Send(const std::string &data) override;
 
             /**
              * 원격지으로 온 데이터를 수신합니다.
              * @param data
              * @return 0 : Success, -1 : Fail
              */
-            int Recv(DataStream::IStream &data) override;
+            int Recv(std::string &data, std::uint8_t tilSize) override;
+
         private:
             int mDataPassage;
         };

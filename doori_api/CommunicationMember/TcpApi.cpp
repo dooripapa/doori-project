@@ -107,17 +107,18 @@ namespace doori {
             return fd;
         }
 
-        int TcpApi::Send(int fd, unsigned char *data, uint8_t dataLen) {
+        int TcpApi::Send(int fd, char *data, uint8_t dataLen) {
             char errorStr[1024] = {0};
 
             int nRet = 0;
             errno = 0;
             nRet = send(fd, data, dataLen, 0);
-            if(nRet != 0)
+            if(nRet == -1)
             {
                 LOG(ERROR, "TCP send(), fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
+            LOG(DEBUG, "complete to send data! size[", nRet, "]");
             return 0;
         }
 
@@ -127,11 +128,14 @@ namespace doori {
             int nRet = 0;
             errno = 0;
             nRet = recv(fd, dataContainer, dataLen, MSG_WAITALL);
-            if(nRet != 0)
+            if(nRet == -1)
             {
                 LOG(ERROR, "TCP recv(), fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
+            printf("%s\n", dataContainer);
+            LOG(DEBUG, "recv data! size[", nRet, "]");
+
             return 0;
         }
     } // doori

@@ -2,12 +2,10 @@
 // Created by jaeseong on 23. 2. 2.
 //
 #include <gtest/gtest.h>
-#include "CommunicationMember/Connection.h"
 #include "CommunicationMember/Endpoint.h"
 #include "CommunicationMember/TCPBuilder.h"
 #include "DataStream/Json.h"
 #include "CommunicationMember/TCP.h"
-#include "DataStream/IStream.h"
 #include "DataStream/Json.h"
 
 using namespace doori::CommunicationMember;
@@ -39,5 +37,11 @@ TEST(CommunicationMember, Usage)
 
     auto conn = iipc->GetIPC();
 
-    conn->Send()
+    string container;
+    conn->Recv(container, 10);
+
+    cout<< "Recv:" << container << endl;
+
+    std::string dataStream{"Hello doori-world"};
+    conn->Send(dataStream );
 }

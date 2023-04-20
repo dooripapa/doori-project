@@ -7,7 +7,6 @@
 #pragma once
 #include "Common/Log.h"
 #include "DataStream/Data.h"
-#include "IStream.h"
 
 class Data;
 
@@ -22,7 +21,7 @@ enum class doori_stream_enc_type : unsigned int{
 /**
  * @todo Json객체를 이 객체로 태워서, 송신규격 스트림으로 만드는 기능 추가해야 함
  */
-class Stream : public IStream
+class Stream
 {
 public:
 	Stream();
@@ -38,15 +37,6 @@ public:
 	auto setString(std::string& encordType, std::string& body) -> int;
 	auto init(const Data& dooridata) -> void;
 	auto getString() const-> std::string;
-
-    auto getHeaderSize() const -> std::uint8_t override;
-
-    auto getTotalSize() const -> std::uint8_t override;
-
-    auto serialize() const -> std::string override;
-
-    auto unserialzie(IStream &stream) -> bool override;
-
 protected:
 private:
 	auto copyFrom(const Stream& rhs) -> void;
