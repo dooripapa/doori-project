@@ -15,7 +15,7 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::Common{
     using std::chrono::system_clock;
 
     class Log
@@ -71,16 +71,16 @@ namespace doori{
 
 #include "Log.hpp"
 
-#define DEBUG	doori::Log::LEVEL::D
-#define INFO	doori::Log::LEVEL::I
-#define WARN	doori::Log::LEVEL::W
-#define ERROR	doori::Log::LEVEL::E
-#define FATAL	doori::Log::LEVEL::F
+#define DEBUG	doori::Common::Log::LEVEL::D
+#define INFO	doori::Common::Log::LEVEL::I
+#define WARN	doori::Common::Log::LEVEL::W
+#define ERROR	doori::Common::Log::LEVEL::E
+#define FATAL	doori::Common::Log::LEVEL::F
 
-#define LOG_CREATE(PATH, LEVEL) Log::logging().setLogEnv(PATH, LEVEL);
-#define LOG(LEVEL, ...) Log::logging().writeLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define LOG_CREATE(PATH, LEVEL) doori::Common::Log::logging().setLogEnv(PATH, LEVEL);
+#define LOG(LEVEL, ...) doori::Common::Log::logging().writeLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifdef TRACKING
-	#define TRACE doori::Log::logging().writeLog(DEBUG, __FILE__, __PRETTY_FUNCTION__, __LINE__,"TRACKING");
+	#define TRACE doori::Common::Log::logging().writeLog(DEBUG, __FILE__, __PRETTY_FUNCTION__, __LINE__,"TRACKING");
 #endif
 

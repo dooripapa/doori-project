@@ -133,7 +133,7 @@ namespace doori {
                 LOG(ERROR, "TCP recv(), fail to connect:", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
-            printf("%s\n", dataContainer);
+            LOG(DEBUG, dataContainer);
             LOG(DEBUG, "recv data! size[", nRet, "]");
 
             return 0;
