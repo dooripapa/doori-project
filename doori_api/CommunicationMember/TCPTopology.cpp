@@ -19,7 +19,7 @@ namespace doori::CommunicationMember {
 
         int nMsgLen = data.size();
 
-        int nRet = TcpApi::Send(mDataPassage, const_cast<char*>(data.c_str()), nMsgLen);
+        int nRet = TcpApi::Send(mDataPassage, data.c_str(), nMsgLen);
         if (nRet != 0)
         {
             LOG(ERROR, "TcpApi::Send() error");

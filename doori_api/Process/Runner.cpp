@@ -6,7 +6,7 @@
 //
 #include "Runner.h"
 
-namespace doori{
+namespace doori::Process{
 
 Runner::Runner(Application &&app) : mApp(app.clone()) {
 }
@@ -50,19 +50,19 @@ auto Runner::displayLogInfo() noexcept -> void {
     string logLevelStr;
     switch( mApp->LogLevel() )
     {
-        case Log::LEVEL::D:
+        case Common::Log::LEVEL::D:
             logLevelStr="DEBUG";
             break;
-        case Log::LEVEL::E:
+        case Common::Log::LEVEL::E:
             logLevelStr="ERROR";
             break;
-        case Log::LEVEL::F:
+        case Common::Log::LEVEL::F:
             logLevelStr="FAIL";
             break;
-        case Log::LEVEL::I:
+        case Common::Log::LEVEL::I:
             logLevelStr="INFO";
             break;
-        case Log::LEVEL::W:
+        case Common::Log::LEVEL::W:
             logLevelStr="WARN";
             break;
     }

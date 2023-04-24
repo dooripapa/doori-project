@@ -8,9 +8,14 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::CommunicationMember{
 
-    auto Epoll::init( Connection conn ) -> int
+    Epoll::Epoll(const std::function<int(int)>& foreHeadDelegation, const std::function<int(int, string&)>& rearwardDelegation ) {
+        mEventDelegateMethod = rearwardDelegation;
+        mForeheadSectionProcedure = foreHeadDelegation;
+    }
+
+    auto Epoll::Init(int fd) -> int
     {
         mEpoll_fd = epoll_create1(0);
         if( mEpoll_fd == -1 )
@@ -19,8 +24,7 @@ namespace doori{
             return -1;
         }
 
-        mEpollRootConnection = conn;
-        mListen_socket = mEpollRootConnection.onListening();
+        mListen_socket = doori::CommunicationMember::TcpApi::Listen(fd, 10);
         if (mListen_socket == -1)
         {
             LOG(ERROR, "fail to make listening socket" );
@@ -38,16 +42,16 @@ namespace doori{
         return 0;
     }
 
-    auto Epoll::isListener( int socket_fd ) const -> bool
+    auto Epoll::EqualListner( int socket_fd ) const -> bool
     {
         return(mListen_socket==socket_fd);
     }
 
-    auto Epoll::addWatcherAsConn() -> int
+    auto Epoll::AddWatcherAsConn() -> int
     {
         struct epoll_event ev{};
         int conn_sock;
-        conn_sock = mEpollRootConnection.onAccepting();
+        conn_sock = CommunicationMember::TcpApi::Accept(mListen_socket);
         LOG(INFO, "Accepted FD[", conn_sock,"]");
         if (conn_sock == -1)
         {
@@ -55,6 +59,9 @@ namespace doori{
             return -1;
         }
         ev.events = EPOLLIN;
+
+        // Timeout 설정함
+        conn_sock = CommunicationMember::TcpApi::SetTimeoutOpt(conn_sock, 10);
         ev.data.fd = conn_sock;
         if (epoll_ctl(mEpoll_fd, EPOLL_CTL_ADD, conn_sock, &ev) == -1)
         {
@@ -67,7 +74,7 @@ namespace doori{
         return conn_sock;
     }
 
-    auto Epoll::addWatcher( int socket_fd ) -> int
+    auto Epoll::AddWatcher( int socket_fd ) -> int
     {
         struct epoll_event ev{};
         ev.events = EPOLLIN;
@@ -81,7 +88,7 @@ namespace doori{
         return 0;
     }
 
-    auto Epoll::addUniqueWatcher(int socket_fd, WATCHER::TYPE type, const function<int(int, Stream&)> &delegation) -> int
+    auto Epoll::AddUniqueWatcher(int socket_fd, WATCHER::TYPE type, const std::function<int(int, string &)> &delegation) -> int
     {
         struct epoll_event ev{};
         ev.events = EPOLLIN;
@@ -95,106 +102,149 @@ namespace doori{
         return 0;
     }
 
-    [[noreturn]] auto Epoll::runningEventDelegateMethod() ->int
+    [[noreturn]] auto Epoll::RunningEventDelegateMethod() ->int
     {
         LOG(INFO, "==================================");
         LOG(INFO, "running Method for Event Delegate!");
         while (true)
         {
-            if (waitForEvents(mEventContainer, 1000*10))
+            if (WaitForEvents(mEventContainer, 1000*10))
                 LOG(DEBUG, "Event!");
             else
                 LOG(DEBUG, "timeout!");
 
             for(const auto& it : mEventContainer)
             {
-                if ( isListener(it.getFd()))
+                if (EqualListner(it.getFd()) )
                 {
                     LOG(INFO, "Add watcher FD : [", it.getFd(), "]");
-                    addWatcherAsConn();
+                    AddWatcherAsConn();
                 }
                 else
                 {
                     LOG(DEBUG, "Evented FD : [", it.getFd(), "]" );
-                    executeTask( it.getFd() );
+                    ExecuteTask( it.getFd() );
                 }
             }
         }
     }
 
-    auto Epoll::moveEventContainer(EpollEvents&& event_container ) noexcept ->void
+    auto Epoll::MoveEventContainer(EpollEvents&& event_container ) noexcept ->void
     {
         mEventContainer = std::move(event_container);
     }
 
-    auto Epoll::waitForEvents(EpollEvents& eventContainer, const int& timeout ) const -> int
+    auto Epoll::WaitForEvents(EpollEvents& event_container, const int& timeout ) const -> int
     {
         char	errorStr[1024]={0};
-        int Cnt = epoll_wait(mEpoll_fd, eventContainer.get(), eventContainer.getSize(), timeout);
+        int Cnt = epoll_wait(mEpoll_fd, event_container.get(), event_container.getSize(), timeout);
         if ( Cnt == -1 )
         {
             LOG(ERROR, "Wait error[",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
             throw new system_error();
         }
-        eventContainer.setInvokedEventCnt(Cnt);
+        event_container.setInvokedEventCnt(Cnt);
         return Cnt;
     }
 
-    auto Epoll::executeTask( int socket_fd, const std::function<int(int socket_fd, Stream& stream)>& callback_function ) -> int
+    auto Epoll::ExecuteTask(int socket_fd, const std::function<int(int socket_fd, string& stream)>& delegation ) -> int
     {
         int iRet = 0;
-        Stream buffer;
-        iRet = Connection::recvFrom( socket_fd, buffer );
-        if (iRet < 0 )
+        int iReadLen = 0;
+
+        string buffer;
+        iReadLen = mForeheadSectionProcedure(socket_fd);
+        if(iReadLen ==  -1)
         {
-            if (iRet == -2)
-            {
-                if ( (iRet=epoll_ctl(mEpoll_fd, EPOLL_CTL_DEL, socket_fd, nullptr)) == -1)
-                    LOG(ERROR, "fail to deregister socket_fd to epoll instance" );
-                mConnectedSocketList.erase(socket_fd);
-                close(socket_fd);
-            }
-            else
-                LOG(INFO, "Connection recvFrom error");
-            return iRet;
+            LOG(ERROR, "Header Section procedure error");
+            return iReadLen;
         }
-        iRet = callback_function(socket_fd, buffer );
+        LOG(DEBUG, "Body Section Data Size[", iReadLen, "]");
+
+        std::unique_ptr<char[]> dataContainer = std::make_unique<char []>(iReadLen+1);  // 1 is null size
+        memset(dataContainer.get(), 0x00, iReadLen + 1);
+
+        errno = 0;
+        iRet = CommunicationMember::TcpApi::Recv(socket_fd, dataContainer.get(), iReadLen);
+        if( iRet < 0 ) {
+            LOG(ERROR, "TcpApi::Recv error, cause[", ::strerror(errno), "]");
+            return -1;
+        }
+
+        if( iRet == 0 ) {
+            LOG(ERROR, "TcpApi::Recv error, closed by opposite side");
+
+            if ( (iRet=epoll_ctl(mEpoll_fd, EPOLL_CTL_DEL, socket_fd, nullptr)) == -1)
+                LOG(ERROR, "fail to deregister socket_fd to epoll instance" );
+
+            mConnectedSocketList.erase(socket_fd);
+            close(socket_fd);
+
+            return -2;
+        }
+        else {
+            buffer = dataContainer.get();
+            iRet = delegation(socket_fd, buffer );
+        }
+
         return iRet;
     }
 
     ///@return -2 Connection Lost
-    auto Epoll::executeTask( int socket_fd ) -> int
+    auto Epoll::ExecuteTask(int socket_fd) -> int
     {
         int iRet = 0;
-        Stream buffer;
-        iRet = Connection::recvFrom( socket_fd, buffer );
-        if (iRet < 0 )
+        int iReadLen = 0;
+
+        string buffer;
+        iReadLen = mForeheadSectionProcedure(socket_fd);
+        if(iReadLen ==  -1)
         {
-            if (iRet == -2)
-            {
-                if ( (iRet=epoll_ctl(mEpoll_fd, EPOLL_CTL_DEL, socket_fd, nullptr)) == -1)
-                    LOG(ERROR, "fail to deregister socket_fd to epoll instance" );
-                mConnectedSocketList.erase(socket_fd);
-                close(socket_fd);
-            }
-            else
-                LOG(INFO, "Connection recvFrom error");
-            return iRet;
+            LOG(ERROR, "Header Section procedure error");
+            return iReadLen;
         }
-        iRet = mConnectedSocketList[socket_fd].second.operator()(socket_fd, buffer);
+        LOG(DEBUG, "Body Section Data Size[", iReadLen, "]");
+
+        std::unique_ptr<char[]> dataContainer = std::make_unique<char []>(iReadLen+1);  // 1 is null size
+        memset(dataContainer.get(), 0x00, iReadLen + 1);
+
+        errno = 0;
+        iRet = CommunicationMember::TcpApi::Recv(socket_fd, dataContainer.get(), iReadLen);
+        if( iRet < 0 ) {
+            LOG(ERROR, "TcpApi::Recv error, cause[", ::strerror(errno), "]");
+            return -1;
+        }
+
+        if( iRet == 0 ) {
+            LOG(ERROR, "TcpApi::Recv error, closed by opposite side");
+
+            if ( (iRet=epoll_ctl(mEpoll_fd, EPOLL_CTL_DEL, socket_fd, nullptr)) == -1)
+                LOG(ERROR, "fail to deregister socket_fd to epoll instance" );
+
+            mConnectedSocketList.erase(socket_fd);
+            close(socket_fd);
+
+            return -2;
+        }
+        else {
+
+            buffer = dataContainer.get();
+
+            iRet = mConnectedSocketList[socket_fd].second.operator()(socket_fd, buffer);
+        }
         return iRet;
     }
 
-    auto Epoll::getListener() noexcept -> Connection & {
+    auto Epoll::GetListener() noexcept -> int {
         return mEpollRootConnection;
     }
 
-    auto Epoll::sendWatchers(Stream stream) noexcept -> bool {
+    auto Epoll::SendWatchers(string stream) noexcept -> bool {
         auto bRet=true;
         for(const auto& i:mConnectedSocketList)
         {
             if( i.second.first != WATCHER::TYPE::RECEIVER )
-                if( Connection::sendTo(i.first, stream) < 0 ) {
+                if( doori::CommunicationMember::TcpApi::Send(i.first,  stream.c_str(), stream.size() ) < 0 ) {
                     LOG(ERROR, "faile to send stream, FD : ", i.first);
                     bRet = false;
                 }
@@ -208,17 +258,16 @@ namespace doori{
             close(i.first);
     }
 
-    Epoll::Epoll(const std::function<int(int, Stream &)> &delegation) {
-        mEventDelegateMethod = delegation;
-    }
-
     auto Epoll::moveFrom(Epoll &&rhs) noexcept -> void {
         mConnectedSocketList = std::move(rhs.mConnectedSocketList);
         mEventContainer      = std::move(rhs.mEventContainer     );
         mEpollRootConnection = std::move(rhs.mEpollRootConnection);
+        mForeheadSectionProcedure = std::move(rhs.mForeheadSectionProcedure);
         mEventDelegateMethod = std::move(rhs.mEventDelegateMethod);
-        mEpoll_fd            = rhs.mEpoll_fd;rhs.mEpoll_fd=0;
-        mListen_socket       = rhs.mListen_socket;rhs.mListen_socket=0;
+        mEpoll_fd            = rhs.mEpoll_fd;
+        rhs.mEpoll_fd        = 0;
+        mListen_socket       = rhs.mListen_socket;
+        rhs.mListen_socket   = 0;
     }
 
     auto Epoll::operator=(Epoll &&rhs) noexcept -> Epoll & {

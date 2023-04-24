@@ -8,7 +8,7 @@
 #include<memory>
 #include <sys/epoll.h>
 
-namespace doori{
+namespace doori::CommunicationMember{
 
 class event_iterator:public std::iterator<std::input_iterator_tag,struct epoll_event>
 {

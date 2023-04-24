@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::CommunicationMember{
 
 auto
 EpollEvents::operator=(EpollEvents&& rhs)

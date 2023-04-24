@@ -16,7 +16,7 @@
 #include "DataStructure/Tree.h"
 #include "Topic.h"
 
-namespace doori{
+namespace doori::TnsdDistrict{
 
 class ICommunication
 {
@@ -33,7 +33,7 @@ public:
      * 생성자 함수
      * @param delegation : std::function<int(int, Stream &)> 데이터수신 처리를 위임할 함수
      */
-    explicit ICommunication(std::function<int(int, Stream &)> delegation);
+    explicit ICommunication(std::function<int(int, string&)> delegation);
     /**
      * 이동생성자 함수
      * @param rhs
@@ -115,20 +115,20 @@ protected:
      * @param stream Stream
      * @return -1 : fail
      */
-    auto processingTnsdData(int sock, Stream& stream) noexcept -> int;
+    auto processingTnsdData(int sock, string& stream) noexcept -> int;
     /**
      * epoll로 연결되어 있는 섹션에 역으로 데이터를 전체 송신
      * @param stream
      * @return bool true 전체송신 성공, false 하나라도 실패
      */
-    auto sendStreamToMultisessions(const Stream& stream) noexcept -> bool;
+    auto sendStreamToMultisessions(const string& stream) noexcept -> bool;
 private:
     enum{ RETRY_MAX=20, TNSD_ALIVE_INTERVAL=10 };
     int                         mTnsdSocket;
     Protocol::TREE              mMyPubSubType;
     doori::Connection           mTnsdConnection;
     doori::Epoll                mMultiSessions;
-    Topic                 mICommTopic;
+    Topic                       mICommTopic;
     std::vector<std::thread>    mBackgroundFuncs;
 };
 

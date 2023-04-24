@@ -2,6 +2,7 @@
 // Created by jaeseong on 23. 3. 1.
 //
 
+#include <fcntl.h>
 #include "TcpApi.h"
 
 namespace doori {
@@ -107,7 +108,7 @@ namespace doori {
             return fd;
         }
 
-        int TcpApi::Send(int fd, char *data, uint8_t dataLen) {
+        int TcpApi::Send(int fd, const char *data, uint8_t dataLen) {
             char errorStr[1024] = {0};
 
             int nRet = 0;
@@ -136,6 +137,26 @@ namespace doori {
             LOG(DEBUG, dataContainer);
             LOG(DEBUG, "recv data! size[", nRet, "]");
 
+            return 0;
+        }
+
+        int TcpApi::SetTimeoutOpt(int fd, std::uint8_t timeout) {
+            /*
+              소켓 설정을 논블로킹으로 셋팅함
+              그래야, recv()함수에서 Timeout를 설정할 수 있음
+            */
+            int flags = fcntl(fd, F_GETFL, 0);  // 소켓의 플래그 값을 가져옴
+
+            fcntl(fd, F_SETFL, flags | O_NONBLOCK);  // 소켓의 플래그 값을 변경하여 넌블로킹 모드로 설정
+
+            struct timeval tv;
+            tv.tv_sec  = timeout;
+            tv.tv_usec = 0;
+
+            if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *) &tv, sizeof(struct timeval)) < 0) {
+                LOG(ERROR, "TCP socket fd, fail to setsockopt");
+                return -1;
+            }
             return 0;
         }
     } // doori

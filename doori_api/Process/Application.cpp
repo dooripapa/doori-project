@@ -7,7 +7,7 @@
 #include "Application.h"
 #include "Common/Log.h"
 
-namespace doori{
+namespace doori::Process{
 
 const string Application::DEFAULT_LOG_NAME="a.out.log";
 const string Application::DEFAULT_LOG_PATH="/tmp/";
@@ -29,8 +29,8 @@ auto Application::Daemonize() noexcept -> bool {
 auto Application::LogFile() noexcept -> std::string {
     return DEFAULT_LOG_PATH+DEFAULT_LOG_NAME;
 }
-auto Application::LogLevel() noexcept -> Log::LEVEL{
-    return Log::LEVEL::D;
+auto Application::LogLevel() noexcept -> Common::Log::LEVEL{
+    return Common::Log::LEVEL::D;
 }
 
 auto Application::Terminate() noexcept -> int {

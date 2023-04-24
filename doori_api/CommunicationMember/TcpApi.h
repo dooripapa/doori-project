@@ -38,6 +38,15 @@ namespace doori {
             static int SetReuseOpt(int fd,std::string ip, std::string port);
 
             /**
+             * recv()함수에 Timeout 를 설정하기위해서 사전에 호출되어야 하는 함수
+             * 소켓을 재설정함. SOL_SCOCKET, SO_RCVTIMEO를 설정함.
+             * @param fd  소켓 FD
+             * @param timeout  Timeout값(second)
+             * @return 재설정되고 나서, 리턴되는 소켓 FD, -1이면 error
+             */
+            static int SetTimeoutOpt(int fd, std::uint8_t timeout);
+
+            /**
              * IP, PORT정보를 이용하여 바인딩처리함
              * @note 이 함수가 호출되기전 Socket()호출로 반환된 소켓FD 필요함
              * @param fd 소켓 FD
@@ -82,14 +91,14 @@ namespace doori {
              * @param dataLen 데이터길이
              * @return
              */
-            static int Send(int fd, char *data, uint8_t dataLen);
+            static int Send(int fd, const char *data, uint8_t dataLen);
 
             /**
              * 데이터를 수신합니다.
              * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
              * @param dataContainer 데이터를 저장할 변수
              * @param dataLen  데이터 수신 후 수신이 완료 되기 위한 데이터 길이
-             * @return
+             * @return  -1 error, 0이면 session 종료, 0 보다 크면, 실제로 수신된 데이터 사이즈
              */
             static int Recv(int fd, char *dataContainer, std::uint8_t dataLen);
         };

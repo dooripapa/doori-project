@@ -37,7 +37,7 @@ auto Sub::operator()() noexcept -> int {
 
     Topic topic;
     topic.set(mSubDic.Value(Dictionary::TOKEN_INFO::MY_TOPIC));
-    if(!subscriber.init(tnsdConnection,topic, Protocol::TREE::SUB))
+    if(!subscriber.Init(tnsdConnection, topic, Protocol::TREE::SUB))
     {
         LOG(ERROR, "failed to connect to Tnsd");
         return -1;

@@ -20,7 +20,7 @@ include_directories(SYSTEM .)
 
 set(HEADER_FILES
 		CommunicationMember/Addr.h
-		ProcessSupport/Application.h DataStructure/Branch.h
+		Process/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
 #		CommunicationMember/Connection.h
 		DataStream/Data.h
@@ -28,21 +28,21 @@ set(HEADER_FILES
 		DataStream/DataSegment.hpp
 		DataStream/Dictionary.h
 		CommunicationMember/Endpoint.h
-#		CommunicationMember/Epoll.h
-#		CommunicationMember/EpollEvents.h
+		CommunicationMember/Epoll.h
+		CommunicationMember/EpollEvents.h
 		CommunicationMember/TCP.h
 		Common/Error.h
-		ProcessSupport/Getopt.h
-		MiddlewareSupport/ICommunication.h
+		Process/Getopt.h
+		TnsdDistrict/ICommunication.h
 		Common/Log.h
 		Common/Log.hpp
-		MiddlewareSupport/Protocol.h
-		MiddlewareSupport/Publisher.h
+		TnsdDistrict/Protocol.h
+		TnsdDistrict/Publisher.h
 		Etc/Regex.h
-		ProcessSupport/Runner.h
+		Process/Runner.h
 		DataStream/Stream.h
-		MiddlewareSupport/Subscriber.h
-		MiddlewareSupport/Topic.h
+		TnsdDistrict/Subscriber.h
+		TnsdDistrict/Topic.h
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
 		DataStream/Json.h
@@ -55,30 +55,29 @@ set(HEADER_FILES
 
 set(SRC_FILES
 		CommunicationMember/Addr.cpp
-		ProcessSupport/Application.cpp
+		Process/Application.cpp
 #		CommunicationMember/Connection.cpp
 		DataStream/Data.cpp
 		DataStream/DataSegment.cpp
 		DataStream/Dictionary.cpp
 		CommunicationMember/Endpoint.cpp
-#		CommunicationMember/Epoll.cpp
-#		CommunicationMember/EpollEvents.cpp
+		CommunicationMember/Epoll.cpp
+		CommunicationMember/EpollEvents.cpp
 		Common/Error.cpp
-		ProcessSupport/Getopt.cpp
-		MiddlewareSupport/ICommunication.cpp
+		Process/Getopt.cpp
+		TnsdDistrict/ICommunication.cpp
 		Common/Log.cpp
-		MiddlewareSupport/Protocol.cpp
-		MiddlewareSupport/Publisher.cpp
+		TnsdDistrict/Protocol.cpp
+		TnsdDistrict/Publisher.cpp
 		Etc/Regex.cpp
-		ProcessSupport/Runner.cpp
+		Process/Runner.cpp
 		DataStream/Stream.cpp
-		MiddlewareSupport/Subscriber.cpp
-		MiddlewareSupport/Topic.cpp
+		TnsdDistrict/Subscriber.cpp
+		TnsdDistrict/Topic.cpp
 		DataStream/Json.cpp
 		Etc/Bigdecimal.cpp
 		DooriTest.h
 		CommunicationMember/TCPBuilder.cpp
-		DataStream/IStream.h
 		CommunicationMember/TCP.cpp
 		CommunicationMember/TCPTopology.cpp CommunicationMember/TcpApi.cpp CommunicationMember/TcpApi.h)
 

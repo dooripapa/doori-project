@@ -6,7 +6,7 @@
 //
 #include "ICommunication.h"
 
-namespace doori{
+namespace doori::TnsdDistrict{
 
 auto ICommunication::init(doori::Connection forTnsd , Topic topic, Protocol::TREE myType) noexcept -> bool{
     auto retryCnt = 0;
@@ -39,7 +39,7 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
     Protocol sendProtcol, recvProtocol;
     sendProtcol.asSender();
     recvProtocol.asResponser();
-    sendProtcol.asNotify(mMyPubSubType,mICommTopic, mMultiSessions.getListener().From().Address() );
+    sendProtcol.asNotify(mMyPubSubType,mICommTopic, mMultiSessions.GetListener().From().Address() );
 
     if(!sendProtocolToTnsd(sendProtcol, recvProtocol))
     {
@@ -55,10 +55,10 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
     //
     // Tnsd 와 정상적으로 통신이 된다면, Tnsd 데이터를 처리할 콜백함수를 등록한다.
     // 단, doori::WATCHER TYPE은 ONLY RECEIVER 으로 수신만 처리한다.
-    // sendWatchers() 함수 호출시 Tnsd쪽으로 데이터가 안 가도록 하기 doori::WATCHER 타입설정.
+    // SendWatchers() 함수 호출시 Tnsd쪽으로 데이터가 안 가도록 하기 doori::WATCHER 타입설정.
     //
     std::function<int(int,Stream&)> processTnsdData(std::bind(&ICommunication::processingTnsdData , this, std::placeholders::_1 , std::placeholders::_2));
-    mMultiSessions.addUniqueWatcher(mTnsdSocket, doori::WATCHER::TYPE::RECEIVER, processTnsdData) ;
+    mMultiSessions.AddUniqueWatcher(mTnsdSocket, doori::WATCHER::TYPE::RECEIVER, processTnsdData) ;
 
     return true;
 }
@@ -66,13 +66,13 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
 auto ICommunication::processingMultisessions(doori::Connection forSub) noexcept -> bool {
 
     EpollEvents eventContainer;
-    if(mMultiSessions.init(forSub)<0)
+    if(mMultiSessions.Init(forSub) < 0)
     {
-        LOG(ERROR, "failed to init Multi-Session");
+        LOG(ERROR, "failed to Init Multi-Session");
         return false;
     }
     eventContainer.setSize(10);
-    mMultiSessions.moveEventContainer(std::move(eventContainer));
+    mMultiSessions.MoveEventContainer(std::move(eventContainer));
 
     mBackgroundFuncs.push_back( std::thread( &doori::Epoll::runningEventDelegateMethod, &mMultiSessions) );
     return true;
@@ -113,7 +113,7 @@ auto ICommunication::sendProtocolToTnsd(Protocol &sendProtocol) noexcept -> bool
 auto ICommunication::sendAliveProtocolToTnsd(Topic topic) noexcept -> bool {
     Protocol sendProtcol;
     sendProtcol.asSender();
-    sendProtcol.asAlive(mMyPubSubType, topic, mMultiSessions.getListener().From().Address() );
+    sendProtcol.asAlive(mMyPubSubType, topic, mMultiSessions.GetListener().From().Address() );
 
     if(!sendProtocolToTnsd(sendProtcol))
     {
@@ -182,7 +182,7 @@ auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
                     conn.setTo( doori::Endpoint({(*ipIter).getValueToString(), (*portIter).getValueToString()}) );
                     auto socketFd = conn.connectTo();
                     if ( socketFd > 0 )
-                        mMultiSessions.addWatcher(socketFd);
+                        mMultiSessions.AddWatcher(socketFd);
                     else
                         LOG(FATAL, "fail to connect To Publisher ip:", (*ipIter).getValueToString(), ":",(*portIter).getValueToString());
                     break;
@@ -196,7 +196,7 @@ auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
 ICommunication::~ICommunication() {
     LOG(INFO, "Connection doRelease.");
     mTnsdConnection.release();
-    mMultiSessions.getListener().release();
+    mMultiSessions.GetListener().release();
 }
 
 ///@brief
@@ -214,7 +214,7 @@ auto ICommunication::processingTnsdData(int sock, Stream& stream) noexcept -> in
 
     if (protocol.fromData(data)<0)
     {
-        LOG(ERROR, "protocol init error");
+        LOG(ERROR, "protocol Init error");
         return -1;
     }
 
@@ -255,7 +255,7 @@ auto ICommunication::processingAliveService() noexcept -> bool {
     }
 }
 
-ICommunication::ICommunication(std::function<int(int, Stream &)> delegation) : mMultiSessions(delegation)
+ICommunication::ICommunication(std::function<int(int, string&)> delegation) : mMultiSessions(delegation)
 {
 }
 
@@ -281,8 +281,8 @@ auto ICommunication::operator=(ICommunication &&rhs) noexcept -> ICommunication 
     return *this;
 }
 
-auto ICommunication::sendStreamToMultisessions(const Stream &stream) noexcept -> bool {
-    return mMultiSessions.sendWatchers(stream);
+auto ICommunication::sendStreamToMultisessions(const string &stream) noexcept -> bool {
+    return mMultiSessions.SendWatchers(stream);
 }
 
 }//namespace doori

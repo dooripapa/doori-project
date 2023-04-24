@@ -24,7 +24,7 @@ auto Tnsd::operator()() noexcept -> int
     std::function<int(int,Stream&)> processMessageInstance(std::bind(&Tnsd::processMessage, this, std::placeholders::_1, std::placeholders::_2));
 
     Epoll epoll(processMessageInstance);
-    if (epoll.init(conn)==-1)
+    if (epoll.Init(conn) == -1)
     {
         LOG(ERROR, "Epoll initConnection error");
         return -1;
@@ -32,24 +32,24 @@ auto Tnsd::operator()() noexcept -> int
 
     while (true)
     {
-        if (epoll.waitForEvents(eventContainer, 1000*10))
+        if (epoll.WaitForEvents(eventContainer, 1000 * 10))
             LOG(DEBUG, "Event!");
         else
             LOG(DEBUG, "tnsd, timeout");
 
         for(auto it=eventContainer.cbegin();it!=eventContainer.cend();++it)
         {
-            if ( epoll.isListener((*it).getFd()))
+            if (epoll.EqualListner((*it).getFd()))
             {
                 LOG(INFO, "from listener socket, add watcher");
-                epoll.addWatcherAsConn();
+                epoll.AddWatcherAsConn();
             }
             else
             {
                 LOG(INFO, "another socket action: ", (*it).getFd() );
                 // Tnsd::processMessage private member function이여서, instance없이
                 // 바로 사용 불가능하다. instance 작업후 사용하도록 변경함
-                auto iRet = epoll.executeTask( (*it).getFd() );
+                auto iRet = epoll.ExecuteTask((*it).getFd());
 
                 if( iRet == -2 ) //(*it).getFd() connection lost!
                     for(auto& i:mMangedMetaAddresses)
@@ -81,7 +81,7 @@ auto Tnsd::processMessage(int socket, Stream& stream) -> int
     
     if (protocol.fromData(data)<0)
     {
-        LOG(ERROR, "protocol init error");
+        LOG(ERROR, "protocol Init error");
         return -1;
     }
 
@@ -117,7 +117,7 @@ auto Tnsd::processMessage(int socket, Stream& stream) -> int
         protocol.MsgCode() = Protocol::STATUS_CODE::OK;
     }
 
-    responseStream.init( protocol.toData() );
+    responseStream.Init(protocol.toData());
     LOG(DEBUG, "Socket FD: ", socket, ", Answer Comment[", responseStream.toByteStream(), "]" );
     if (Connection::sendTo(socket, responseStream) < 0 ) {
         LOG(ERROR, "sendTo fail");
@@ -364,7 +364,7 @@ auto Tnsd::change_Processing(const Topic &topic) -> void{
                 auto sockFd = got->second;
                 protocol.asSender();
                 protocol.asChange( Protocol::TREE::PUB, depTopic );
-                responseStream.init( protocol.toData() );
+                responseStream.Init(protocol.toData());
                 LOG(DEBUG, "Subscriber[", sockFd,"]","<<-- ::" , responseStream.toByteStream(), "]" );
                 if (Connection::sendTo(sockFd, responseStream) < 0 ) {
                     LOG(ERROR, "fail to send CHANGE protocol fd[", sockFd, "]");

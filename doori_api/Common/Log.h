@@ -69,7 +69,7 @@ namespace doori::Common{
     };
 }//namespace doori
 
-#include "Log.hpp"
+#include "Common/Log.hpp"
 
 #define DEBUG	doori::Common::Log::LEVEL::D
 #define INFO	doori::Common::Log::LEVEL::I

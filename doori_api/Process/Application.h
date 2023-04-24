@@ -12,7 +12,7 @@
 #include "Getopt.h"
 #include "DataStream/Dictionary.h"
 
-namespace doori{
+namespace doori::Process{
 
 /**
  * doori api를 통해서, 어플리케이션을 만들때는 이 클래스를 상속받아서 엄격하게 인터페이스를 구현해야 한다.
@@ -58,7 +58,7 @@ public:
      * 정의하지 않으면, LOG::D(ebug) 리턴함
      * @return LOG::LEVEL
      */
-    virtual auto LogLevel() noexcept -> Log::LEVEL = 0;
+    virtual auto LogLevel() noexcept -> Common::Log::LEVEL = 0;
     /**
      * 상속받은 객체는 자신이 종료할때, 해당 행위를 재정의 해야 한다.
      * ex) 시스템 resource 해제 등.
