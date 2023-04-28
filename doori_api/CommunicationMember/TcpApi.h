@@ -101,6 +101,27 @@ namespace doori {
              * @return  -1 error, 0이면 session 종료, 0 보다 크면, 실제로 수신된 데이터 사이즈
              */
             static int Recv(int fd, char *dataContainer, std::uint8_t dataLen);
+
+            /**
+             * 주어진 ip, port정보를 이용하여, 접속요청 바로 시도 합니다.
+             * 내부적으로 SetTimeoutOpt 자동으로 셋팅합니다.
+             * @param ip destination ip
+             * @param port  destination port
+             * @param timeout SetTimeoutOpt 값
+             * @return -1 이면 fail, 0보다 이상이면 socket fd값
+             */
+            static int RequestConnection(string ip, string port, std::uint8_t timeout);
+
+            /**
+             * 이미 Established 소켓으로 부터 데이터를 주고 받습니다.
+             * @param socketFd  Establised socket
+             * @param data  송신데이터
+             * @param dataLen  송신데이터 길이
+             * @param recvData 수신데이터
+             * @param tilDataSize 수신데이터 완전한 데이터 사이즈
+             * @return -1 이면 fail, 0> 이면 수신데이터 총 사이즈
+             */
+            static int Reply(int socketFd, const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize);
         };
 
     } // doori

@@ -144,7 +144,7 @@ auto Tnsd::notify_processing(Protocol& protocol, int socketfd ) -> int
     switch(protocol.TreeAccess())
     {
         case Protocol::TREE::PUB:
-            if(!m_PubTree.attachLeaf(topic, leaf )) {
+            if(!m_PubTree.AttachLeaf(topic, leaf)) {
                 LOG(WARN, "Pub's Tree, Duplicated Leaf");
                 protocol.MsgComment() = "duplicated Leaf";
             } else
@@ -155,7 +155,7 @@ auto Tnsd::notify_processing(Protocol& protocol, int socketfd ) -> int
             change_Processing(topic);
             break;
         case Protocol::TREE::SUB:
-            if(!m_SubTree.attachLeaf(topic, leaf )) {
+            if(!m_SubTree.AttachLeaf(topic, leaf)) {
                 LOG(WARN, "Sub's Tree, Duplicated Leaf");
                 protocol.MsgComment() = "duplicated Leaf";
             } else{
@@ -181,7 +181,7 @@ auto Tnsd::alive_processing(Protocol& protocol) -> int
     switch(treeType)
     {
         case Protocol::TREE::PUB:
-            for(auto leaf: m_PubTree.getBranch(protocol.TopicAccess()).getLeaves())
+            for(auto leaf: m_PubTree.getBranch(protocol.TopicAccess()).GetLeaves())
             {
                 if(leaf == addr) {
                     iRet = 0;
@@ -190,7 +190,7 @@ auto Tnsd::alive_processing(Protocol& protocol) -> int
             }
             break;
         case Protocol::TREE::SUB:
-            for(auto leaf: m_SubTree.getBranch(protocol.TopicAccess()).getLeaves())
+            for(auto leaf: m_SubTree.getBranch(protocol.TopicAccess()).GetLeaves())
             {
                 if(leaf == addr) {
                     iRet = 0;
@@ -225,8 +225,8 @@ auto Tnsd::list_processing(Protocol& protocol) -> int
         case Protocol::TREE::PUB:
             {
                 auto& findPubBranch = m_PubTree.getBranch(topic);
-                ArrSumCnt = findPubBranch.getLeaves().size();
-                for(auto it=findPubBranch.getLeaves().cbegin();it!=findPubBranch.getLeaves().cend();++it)
+                ArrSumCnt = findPubBranch.GetLeaves().size();
+                for(auto it= findPubBranch.GetLeaves().cbegin(); it != findPubBranch.GetLeaves().cend(); ++it)
                 {
                     ip = (*it).Ip();
                     port = (*it).Port();
@@ -238,8 +238,8 @@ auto Tnsd::list_processing(Protocol& protocol) -> int
         case Protocol::TREE::SUB:
             {
                 auto& findSubBranch = m_SubTree.getBranch(topic);
-                ArrSumCnt = findSubBranch.getLeaves().size();
-                for(auto it=findSubBranch.getLeaves().cbegin();it!=findSubBranch.getLeaves().cend();++it)
+                ArrSumCnt = findSubBranch.GetLeaves().size();
+                for(auto it= findSubBranch.GetLeaves().cbegin(); it != findSubBranch.GetLeaves().cend(); ++it)
                 {
                     ip = (*it).Ip();
                     port = (*it).Port();
@@ -282,11 +282,11 @@ auto Tnsd::walkTree() noexcept -> void
 ///@brief debugging
 auto Tnsd::walkBranches(Branch< Addr>& branch) noexcept -> void
 {
-    LOG(DEBUG, "TopicAccess ---- : ", branch.getName());
-    for(auto& m:branch.getLinkBranches())
+    LOG(DEBUG, "TopicAccess ---- : ", branch.GetName());
+    for(auto& m: branch.GetLinkBranches())
     {
         walkBranches(m);
-        for(auto& i : m.getLeaves())
+        for(auto& i : m.GetLeaves())
         {
             LOG(DEBUG, i.Ip(), " : ", i.Port() );
         }
@@ -347,7 +347,7 @@ auto Tnsd::change_Processing(const Topic &topic) -> void{
         depTopic.set(strTopic);
         auto branch = m_SubTree.getBranch( depTopic );
 
-        for( const Addr& leaf : branch.getLeaves() ) {
+        for( const Addr& leaf : branch.GetLeaves() ) {
             // 이렇게 operator[] 호출되면, insert가 되면서, element 초기화되면서, 0을 리턴.
             //auto sockfd = mMangedMetaAddresses[leaf.Ip()+":"+leaf.Port()];
 

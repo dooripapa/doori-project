@@ -31,13 +31,13 @@ Branch<T>::Branch(const std::string& topic_name) noexcept {
 }
 
 template <typename T>
-constexpr auto Branch<T>::getLeaves() noexcept -> const std::vector<T>&
+constexpr auto Branch<T>::GetLeaves() noexcept -> const std::vector<T>&
 {
     return mLeaves;
 }
 
 template <typename T>
-constexpr auto Branch<T>::isThereLeaf(const T& t) noexcept -> bool
+constexpr auto Branch<T>::IsThereLeaf(const T& t) noexcept -> bool
 {
     auto lambda=
             [=](T member)
@@ -48,31 +48,31 @@ constexpr auto Branch<T>::isThereLeaf(const T& t) noexcept -> bool
 }
 
 template <typename T>
-constexpr auto Branch<T>::setName(const string& topic) noexcept -> void
+constexpr auto Branch<T>::SetName(const std::string &topic) noexcept -> void
 {
     mName = topic;
 }
 
 template <typename T>
-auto Branch<T>::getName() const noexcept -> const string&
+auto Branch<T>::GetName() const noexcept -> const string&
 {
     return mName;
 }
 
 template <typename T>
-auto Branch<T>::getLinkBranches() noexcept -> std::vector<Branch<T>>&
+auto Branch<T>::GetLinkBranches() noexcept -> std::vector<Branch<T>>&
 {
     return mLinkBranches;
 }
 
 template <typename T>
-constexpr auto Branch<T>::attachLeaf(const T& t) noexcept -> void
+constexpr auto Branch<T>::AttachLeaf(const T& t) noexcept -> void
 {
     mLeaves.push_back(t);
 }
 
 template <typename T>
-constexpr auto Branch<T>::attachLeaf(T&& t) noexcept -> void
+constexpr auto Branch<T>::AttachLeaf(T&& t) noexcept -> void
 {
     mLeaves.push_back(std::move(t));
 }
@@ -105,12 +105,12 @@ constexpr auto Branch<T>::operator==(const Branch<T> &rhs) const noexcept -> boo
 }
 
 template <typename T>
-constexpr auto Branch<T>::findLinkBranches(const std::string& topic_name, typename vector<Branch<T>>::iterator& iter) noexcept -> bool
+constexpr auto Branch<T>::FindLinkBranches(const std::string& topic_name, typename vector<Branch<T>>::iterator& iter) noexcept -> bool
 {
     auto lambda=
             [=](const Branch<T>& branch)
             {
-                return (branch.getName() == topic_name);
+                return (branch.GetName() == topic_name);
             };
 
     iter = find_if(mLinkBranches.begin(), mLinkBranches.end(), lambda);
@@ -119,12 +119,12 @@ constexpr auto Branch<T>::findLinkBranches(const std::string& topic_name, typena
 
 
 template <typename T>
-constexpr auto Branch<T>::findLinkBranches(const std::string& topic_name) noexcept -> bool
+constexpr auto Branch<T>::FindLinkBranches(const std::string& topic_name) noexcept -> bool
 {
     auto lambda=
             [=](const Branch<T>& branch)
             {
-                return (branch.getName() == topic_name);
+                return (branch.GetName() == topic_name);
             };
 
     auto iter = find_if(mLinkBranches.begin(), mLinkBranches.end(), lambda);
@@ -132,10 +132,10 @@ constexpr auto Branch<T>::findLinkBranches(const std::string& topic_name) noexce
 }
 
 template <typename T>
-constexpr auto Branch<T>::link(const Branch<T>& branch) noexcept -> bool
+constexpr auto Branch<T>::Link(const Branch &branch) noexcept -> bool
 {
     //link할 나뭇가지의 속성(TopicAccess) 동일한 나뭇가지 존재여부 확인
-    if ( !findLinkBranches(branch.getName()) )
+    if ( !FindLinkBranches(branch.GetName()) )
     {
         mLinkBranches.push_back(branch);
         return true;
@@ -144,9 +144,9 @@ constexpr auto Branch<T>::link(const Branch<T>& branch) noexcept -> bool
 }
 
 template <typename T>
-constexpr auto Branch<T>::link(Branch<T>&& branch) noexcept -> bool
+constexpr auto Branch<T>::Link(Branch &&branch) noexcept -> bool
 {
-    if ( !findLinkBranches(branch.getName()) )
+    if ( !FindLinkBranches(branch.GetName()) )
     {
         mLinkBranches.push_back(move(branch));
         return true;
@@ -169,7 +169,7 @@ auto Branch<T>::copyFrom(Branch<T>&& rhs) noexcept -> void
 }
 
 template<typename T>
-constexpr auto Branch<T>::dropLeaf(const T& t) noexcept -> bool {
+constexpr auto Branch<T>::DropLeaf(const T& t) noexcept -> bool {
     auto lambda=
             [=](T member)
             {

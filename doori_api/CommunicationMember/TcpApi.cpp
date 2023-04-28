@@ -159,5 +159,49 @@ namespace doori {
             }
             return 0;
         }
+
+        int TcpApi::RequestConnection(string ip, string port, std::uint8_t timeout) {
+            char errorStr[1024] = {0};
+
+            int fd = Socket();
+            if (fd == -1)
+            {
+                LOG(ERROR, "RequestConnection error, at Socket()");
+                return -1;
+            }
+
+            if(SetTimeoutOpt(fd, timeout) == -1)
+            {
+                LOG(ERROR, "RequestConnection error, at SetTimeoutOpt()");
+                return -1;
+            }
+
+            if(Connect(fd, ip, port) == -1)
+            {
+                LOG(ERROR, "RequestConnection error, at Connect()");
+                return -1;
+            }
+            return fd;
+        }
+
+        int TcpApi::Reply(int socketFd, const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize) {
+            int iRcvDataLen = 0;
+
+            if( Send(socketFd, data, dataLen)== -1)
+            {
+                LOG(ERROR, "Reply error, at Send()");
+                return -1;
+            }
+
+            iRcvDataLen =Recv(socketFd, recvData, tilDataSize);
+            if( iRcvDataLen == -1)
+            {
+                LOG(ERROR, "Reply error, at Send()");
+                return -1;
+            }
+
+            return iRcvDataLen;
+        }
+
     } // doori
 } // CommunicationMember

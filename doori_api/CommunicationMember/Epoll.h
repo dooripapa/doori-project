@@ -111,9 +111,8 @@ public:
      */
     auto ExecuteTask( int socket_fd ) -> int;
     /**
-     * Epoll 등록된 Connection 리턴함
-     * @note 리턴값이 Connection 참조값이므로, 외부에서 조작시, Epoll 성질도 변경된다.
-     * @return Connection 참조값
+     * Epoll 등록된 socket fd 리턴함
+     * @return socket fd
      */
     auto GetListener() noexcept -> int;
     /**

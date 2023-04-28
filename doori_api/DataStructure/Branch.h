@@ -8,7 +8,6 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
-#include "MiddlewareSupport/Topic.h"
 
 namespace doori{
 
@@ -39,71 +38,71 @@ public:
      * @param branch : vector<Branch<T>>::iterator& 찾았을 경우, 나뭇가지 참조할 수 있는 값.
      * @return bool : 성공 실패
      */
-    constexpr auto findLinkBranches(const std::string& branchName, typename vector<Branch<T>>::iterator& branch) noexcept -> bool;
+    constexpr auto FindLinkBranches(const std::string& branchName, typename vector<Branch<T>>::iterator& branch) noexcept -> bool;
     /**
      * 자신의 나뭇가지에 연결된 나뭇가지를 찾습니다.
      * @param branchName : const std::string& 찾고자 하는 나뭇가지 이름
      * @return bool : 성공 실패
      */
-    constexpr auto findLinkBranches(const std::string& branchName) noexcept -> bool;
+    constexpr auto FindLinkBranches(const std::string& branchName) noexcept -> bool;
     /**
      * 자신의 나뭇가지의 unique 이름을 명시.
      * @param name 나뭇가지 unique 이름
      * @return void
      */
-    constexpr auto setName(const std::string& name) noexcept -> void;
+    constexpr auto SetName(const std::string& name) noexcept -> void;
     /**
      * 자신의 나뭇가지의 이름을 리턴함
      * @return const std::string& 자신의 나뭇가지 이름
      */
-    auto getName() const noexcept -> const std::string&;
+    auto GetName() const noexcept -> const std::string&;
     /**
      * 자신의 나뭇가지에 또 다른 나뭇가지가 연결되어 있다면, 참조값을 리턴함
      * @todo 참조값 리턴으로, 캡슐화 붕괴. 방안고려해야 함.
      * @return std::vector<Branch<T>>& 연결된 나뭇가지 리스트
      */
-    auto getLinkBranches() noexcept -> std::vector<Branch<T>>&;
+    auto GetLinkBranches() noexcept -> std::vector<Branch<T>>&;
     /**
-     * 자신의 나뭇가지에 나뭇가지를 붙입니다.(link)
+     * 자신의 나뭇가지에 나뭇가지를 붙입니다.(Link)
      * 동일한 나뭇가지가 있다면 실패합니다.
      * @param branch : const Branch& 나뭇가지
      * @return bool : 성공, 실패
      */
-    constexpr auto link(const Branch& branch) noexcept -> bool;
+    constexpr auto Link(const Branch& branch) noexcept -> bool;
     /**
-     * 자신의 나뭇가지에 나뭇가지를 붙입니다.(link)
+     * 자신의 나뭇가지에 나뭇가지를 붙입니다.(Link)
      * 동일한 나뭇가지가 있다면 실패합니다.
      * @param branch : Branch&& 나뭇가지
      * @return bool : 성공, 실패
      */
-    constexpr auto link(Branch&&) noexcept -> bool;
+    constexpr auto Link(Branch&&) noexcept -> bool;
     /**
      * 자신의 나뭇가지에 잎 리스트를 리턴합니다.
      * @return const std::vector<T>& 잎의 리스트 참조할 수 있는 값
      */
-    constexpr auto getLeaves() noexcept -> const std::vector<T>&;
+    constexpr auto GetLeaves() noexcept -> const std::vector<T>&;
     /**
      * 자신의 나뭇가지에 동일한 잎이 존재하는지 여부
      * @todo T가 operator== 없다면, 컴파일 시점에 명확한 오류 출력.
      * @return bool : ture 존재, false 없음
      */
-    constexpr auto isThereLeaf(const T&) noexcept -> bool;
+    constexpr auto IsThereLeaf(const T&) noexcept -> bool;
     /**
      * 자신의 나뭇가지에 해당 잎을 제거합니다.
      * @return bool : true 제거 성공, false 제거 실패
      */
-    constexpr auto dropLeaf(const T&) noexcept -> bool;
+    constexpr auto DropLeaf(const T&) noexcept -> bool;
     /**
      * 자신의 나뭇가지에 해당 잎을 붙입니다. 복사연산자
-     * @todo 중복된 잎은 처리 불가능하도록. 가능하도록 할 경우, dropLeaf 함수도 이에 맞게 수정되어야 함.
+     * @todo 중복된 잎은 처리 불가능하도록. 가능하도록 할 경우, DropLeaf 함수도 이에 맞게 수정되어야 함.
      * @return
      */
-    constexpr auto attachLeaf(const T&) noexcept -> void;
+    constexpr auto AttachLeaf(const T&) noexcept -> void;
     /**
      * 자신의 나뭇가지에 해당 잎을 붙입니다. 이동연산자
      * @return
      */
-    constexpr auto attachLeaf(T&&) noexcept -> void;
+    constexpr auto AttachLeaf(T&&) noexcept -> void;
     /**
      * 복사대입연산자
      * @param rhs : const Branch&

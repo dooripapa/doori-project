@@ -51,7 +51,7 @@ auto Tree<T>::findRootBranches(const string& topic_name_segment, typename vector
              mRootBranches.begin()
             ,mRootBranches.end()
             ,[=](const Branch<T>& branch){
-                return (branch.getName()==topic_name_segment);
+                return (branch.GetName() == topic_name_segment);
             }
     );
     auto ret=!(it==mRootBranches.end()); //찾으면 true, or false
@@ -66,7 +66,7 @@ auto Tree<T>::findRootBranches(const string& topic_name_segment) -> bool
              mRootBranches.begin()
             ,mRootBranches.end()
             ,[=](const Branch<T>& branch){
-                return (branch.getName() == topic_name_segment);
+                return (branch.GetName() == topic_name_segment);
             }
     );
     return !(it==mRootBranches.end()); //찾으면 true, or false
@@ -87,27 +87,27 @@ auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT m
                 findRootBranches( topic.getTopicName(i) ,iter );
             }
         } else{
-            ret = (*iter).findLinkBranches( topic.getTopicName(i), linkIter );
+            ret = (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
             if(!ret) {
                 Branch<T> aBranch(topic.getTopicName(i));
-                (*iter).getLinkBranches().push_back(aBranch);
-                (*iter).findLinkBranches( topic.getTopicName(i), linkIter );
+                (*iter).GetLinkBranches().push_back(aBranch);
+                (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
             }
             iter=linkIter;
         }
     }
     //해당 Branch에서 Linked Branches로부터 해당 중복된 branch가 있는지 확인함
-    ret = (*iter).findLinkBranches(branch.getName(), linkIter);
+    ret = (*iter).FindLinkBranches(branch.GetName(), linkIter);
     if( ret ) {
         if (mode==INSERT::CHECK)
             return false;
         else {
-            (*iter).getLinkBranches().erase(linkIter);
-            (*iter).getLinkBranches().push_back(branch);
+            (*iter).GetLinkBranches().erase(linkIter);
+            (*iter).GetLinkBranches().push_back(branch);
         }
     }
     else
-        (*iter).getLinkBranches().push_back(branch);
+        (*iter).GetLinkBranches().push_back(branch);
 
     return true;
 }
@@ -124,7 +124,7 @@ auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
         if(i==0)
             ret=findRootBranches( topic.getTopicName(i), iter );
         else
-            ret=(*iter).findLinkBranches( topic.getTopicName(i), linkIter );
+            ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
 
         if(ret) {
             if(0<i && i<depthMax-1)
@@ -135,7 +135,7 @@ auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
             break;
     }
     if(i==topic.getDepthSize() && ret){
-        (*iter).getLinkBranches().erase( linkIter );
+        (*iter).GetLinkBranches().erase(linkIter );
         LOG(INFO, "remove Branch TopicAccess:", topic.getTopicName());
         return true;
     }
@@ -159,12 +159,12 @@ auto Tree<T>::getBranch(const Topic& topic) -> Branch<T>&
                 continue;
             }
         } else{
-            ret=(*iter).findLinkBranches( topic.getTopicName(i), linkIter );
+            ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
             //없으면 새로 branch 추가
             if(!ret) {
                 Branch<T> aBranch(topic.getTopicName(i));
-                (*iter).getLinkBranches().push_back(aBranch);
-                (*iter).findLinkBranches(topic.getTopicName(i), linkIter);
+                (*iter).GetLinkBranches().push_back(aBranch);
+                (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
             }
             iter=linkIter;
         }
@@ -179,10 +179,10 @@ auto Tree<T>::attachLeaf(const Topic& topic, T leaf) -> bool
     //이렇게 해야, var 변수의 변경은, 값의 변경이 아닌, 참조의 값의 변환이 된다.
     auto& var = getBranch(topic);
 
-    if(!var.isThereLeaf(leaf))
+    if(!var.IsThereLeaf(leaf))
         return false;
 
-    var.attachLeaf(leaf);
+    var.AttachLeaf(leaf);
     return true;
 }
 
@@ -195,6 +195,7 @@ auto Tree<T>::operator=(const Tree<T>& rhs) noexcept -> Tree<T>&
     copyFrom( rhs);
     return *this;
 }
+
 template <typename T>
 auto Tree<T>::operator=(Tree<T>&& rhs) noexcept -> Tree<T>&
 {

@@ -15,6 +15,8 @@
 #include "CommunicationMember/Epoll.h"
 #include "DataStructure/Tree.h"
 #include "Topic.h"
+#include "CommunicationMember/TcpApi.h"
+
 
 namespace doori::TnsdDistrict{
 
@@ -45,14 +47,15 @@ public:
     virtual ~ICommunication();
     /**
      * 초기화함수
-     * @param forTnsd Connection 객체, Tnsd의 정보를 담고 있는 객체
+     * @param ip tnsd 접속 ip
+     * @param port tnsd 접속 port
      * @param topic Topic객체, Tnsd에 받고자 하는 메시지형
      * @param myType Tnsd에 연결할때, 자신이 Pub인지 Sub인지 결정하는 타입
      * @warning 에러체크는 필수.
      * @note 이 함수가 호출되면, Tnsd 접속하기전까지. Hang이 걸린다.
      * @return bool true 성공, false 실패
      */
-    auto init(Connection forTnsd, Topic topic, Protocol::TREE myType) noexcept -> bool;
+    auto Init(string ip, string port, Topic topic, Protocol::TREE myType) noexcept -> bool;
 
     /**
      * 관심이 있는 topic을 Tnsd에 Notify 한다.
@@ -108,7 +111,7 @@ protected:
      * @param forSub Connection 객체
      * @return bool true 성공, false 실패
      */
-    auto processingMultisessions(Connection forSub) noexcept -> bool;
+    auto processingMultisessions(int socket) noexcept -> bool;
     /**
      * 여기서 TNSD로 부터 들어온 데이터를 처리한다. list, change, alive 프로토콜 처리
      * @param sock 소켓
@@ -124,12 +127,12 @@ protected:
     auto sendStreamToMultisessions(const string& stream) noexcept -> bool;
 private:
     enum{ RETRY_MAX=20, TNSD_ALIVE_INTERVAL=10 };
-    int                         mTnsdSocket;
-    Protocol::TREE              mMyPubSubType;
-    doori::Connection           mTnsdConnection;
-    doori::Epoll                mMultiSessions;
-    Topic                       mICommTopic;
-    std::vector<std::thread>    mBackgroundFuncs;
+    int                                 mTnsdSocket;
+    Protocol::TREE                      mMyPubSubType;
+    CommunicationMember::Connection     mTnsdConnection;
+    CommunicationMember::Epoll          mMultiSessions;
+    Topic                               mICommTopic;
+    std::vector<std::thread>            mBackgroundFuncs;
 };
 
 }

@@ -27,7 +27,7 @@ set(TEST_FILES
         ../doori_api/Etc/Bigdecimal.cpp
         ../doori_api/Etc/Bigdecimal.h
     test_json.cpp
-    test_bigdecimal.cpp test_branch.cpp test_CommunicationMember.cpp ../doori_api/CommunicationMember/IIPC.h)
+    test_bigdecimal.cpp test_branch.cpp test_CommunicationMember.cpp ../doori_api/CommunicationMember/IIPC.h test_protocol.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

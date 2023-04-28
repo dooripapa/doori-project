@@ -8,15 +8,14 @@
 
 namespace doori::TnsdDistrict{
 
-auto ICommunication::init(doori::Connection forTnsd , Topic topic, Protocol::TREE myType) noexcept -> bool{
+auto ICommunication::Init(string ip, string port, Topic topic, Protocol::TREE myType) noexcept -> bool{
     auto retryCnt = 0;
     mICommTopic = topic;
     LOG(INFO, "Tnsd Communication TopicAccess : ", mICommTopic.getTopicName());
-    mTnsdConnection = std::move(forTnsd);
+
     do{
-        if( (mTnsdSocket = mTnsdConnection.connectTo())<0) {
-            LOG(ERROR, "failed to connect to Tnsd", mTnsdConnection.To().Address().Ip(), ":",
-                mTnsdConnection.To().Address().Port());
+        if( (mTnsdSocket = CommunicationMember::TcpApi::RequestConnection(ip, port, 10))<0) {
+            LOG(ERROR, "failed to connect to Tnsd", ip, ":", port);
             std::this_thread::sleep_for(std::chrono::seconds(5));
             if( ++retryCnt > RETRY_MAX ) {
                 LOG(ERROR,"To retry is for Tnsd is limited.");
@@ -48,7 +47,7 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
     }
 
     if(recvProtocol.MsgCode() == Protocol::STATUS_CODE::ERR ){
-        LOG(INFO, "FAIL Message : ", recvProtocol.MsgComment() );
+        LOG(INFO, "FAIL Message : "," recvProtocol.MsgComment()");
         return  false;
     }
 
@@ -57,16 +56,16 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
     // 단, doori::WATCHER TYPE은 ONLY RECEIVER 으로 수신만 처리한다.
     // SendWatchers() 함수 호출시 Tnsd쪽으로 데이터가 안 가도록 하기 doori::WATCHER 타입설정.
     //
-    std::function<int(int,Stream&)> processTnsdData(std::bind(&ICommunication::processingTnsdData , this, std::placeholders::_1 , std::placeholders::_2));
-    mMultiSessions.AddUniqueWatcher(mTnsdSocket, doori::WATCHER::TYPE::RECEIVER, processTnsdData) ;
+    std::function<int(int,string&)> processTnsdData(std::bind(&ICommunication::processingTnsdData , this, std::placeholders::_1 , std::placeholders::_2));
+    mMultiSessions.AddUniqueWatcher(mTnsdSocket, CommunicationMember::WATCHER::TYPE::RECEIVER, processTnsdData) ;
 
     return true;
 }
 
-auto ICommunication::processingMultisessions(doori::Connection forSub) noexcept -> bool {
+auto ICommunication::processingMultisessions(int socket) noexcept -> bool {
 
-    EpollEvents eventContainer;
-    if(mMultiSessions.Init(forSub) < 0)
+    CommunicationMember::EpollEvents eventContainer;
+    if(mMultiSessions.Init(socket) < 0)
     {
         LOG(ERROR, "failed to Init Multi-Session");
         return false;
@@ -74,7 +73,7 @@ auto ICommunication::processingMultisessions(doori::Connection forSub) noexcept 
     eventContainer.setSize(10);
     mMultiSessions.MoveEventContainer(std::move(eventContainer));
 
-    mBackgroundFuncs.push_back( std::thread( &doori::Epoll::runningEventDelegateMethod, &mMultiSessions) );
+    mBackgroundFuncs.push_back( std::thread( &CommunicationMember::Epoll::RunningEventDelegateMethod, &mMultiSessions) );
     return true;
 }
 
