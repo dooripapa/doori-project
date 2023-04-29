@@ -6,13 +6,13 @@
 //
 #pragma	once
 #include "DataStream/Data.h"
-#include "Topic.h"
+#include "TnsdDistrict/Topic.h"
 #include "CommunicationMember/Addr.h"
 
 
-namespace doori{
+namespace doori::TnsdDistrict{
 
-class Protocol
+class Protocol_backup
 {
 public:
     enum class TREE{ PUB, SUB, NaN };
@@ -92,7 +92,7 @@ private:
 
 
 template <typename T>
-auto Protocol::convertToStr(const T &t) noexcept -> string {
+auto Protocol_backup::convertToStr(const T &t) noexcept -> string {
     string  typeStr;
     if (is_same<TREE, T>::value)
     {

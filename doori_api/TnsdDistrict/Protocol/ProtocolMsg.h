@@ -1,11 +1,11 @@
 //
 // Created by jaeseong on 23. 4. 28.
 //
-#ifndef DOORI_PROJECT_IPROTOCOLMSG_H
-#define DOORI_PROJECT_IPROTOCOLMSG_H
+#ifndef DOORI_PROJECT_PROTOCOLMSG_H
+#define DOORI_PROJECT_PROTOCOLMSG_H
 
 #include <unordered_map>
-#include "IProtocol.h"
+#include "TnsdDistrict/Protocol/Protocol.h"
 
 namespace doori::TnsdDistrict::Protocol
 {
@@ -22,9 +22,9 @@ namespace doori::TnsdDistrict::Protocol
         ,SUB
     };
 
-    class IProtocolMsg {
+    class ProtocolMsg {
     public:
-        IProtocolMsg()
+        ProtocolMsg()
         {
             MSG[MSG_TYPE::OK] = std::string("O.K.");
             MSG[MSG_TYPE::INTERNAL_ERROR] = std::string("INTERNAL_ERROR");
@@ -42,4 +42,4 @@ namespace doori::TnsdDistrict::Protocol
     };
 } ;
 
-#endif //DOORI_PROJECT_IPROTOCOLMSG_H
+#endif //DOORI_PROJECT_PROTOCOLMSG_H

@@ -4,24 +4,26 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#include "Protocol.h"
+#include "Protocol_backup.h"
+#include "TnsdDistrict/Protocol/Protocol.h"
 
-namespace doori{
 
-const string Protocol::FATAL_ERR_MSG="fatal error";
-const string Protocol::OK_MSG="O.K.";
-const string Protocol::UNKOWN_MSG="NaN";
-const string Protocol::NOTIFY_MSG="notify";
-const string Protocol::LIST_MSG="list";
-const string Protocol::CHANGE_MSG="change";
-const string Protocol::REPORT_MSG="report";
-const string Protocol::ALIVE_MSG="alive";
-const string Protocol::PUB_MSG="pub";
-const string Protocol::SUB_MSG="sub";
+namespace doori::TnsdDistrict{
+
+const string Protocol_backup::FATAL_ERR_MSG="fatal error";
+const string Protocol_backup::OK_MSG="O.K.";
+const string Protocol_backup::UNKOWN_MSG="NaN";
+const string Protocol_backup::NOTIFY_MSG="notify";
+const string Protocol_backup::LIST_MSG="list";
+const string Protocol_backup::CHANGE_MSG="change";
+const string Protocol_backup::REPORT_MSG="report";
+const string Protocol_backup::ALIVE_MSG="alive";
+const string Protocol_backup::PUB_MSG="pub";
+const string Protocol_backup::SUB_MSG="sub";
 
 ///@brief doori_data 값을 받아, doori_protocol 초기화
 ///@todo -1xxx fid값을, vector 전환해야 됨
-auto Protocol::fromData(const Data &data) noexcept -> bool {
+auto Protocol_backup::fromData(const Data &data) noexcept -> bool {
     bool bRet=true;
 
     Topic topic;
@@ -79,7 +81,7 @@ auto Protocol::fromData(const Data &data) noexcept -> bool {
 ///@brief Message Type별로 구성되는 메시지내용이 각각 다르다. \
 ///       응답용 protocol, 송신용 protocol 메시지내용은 구별된다.
 ///@return doori_data& 멤버객체를 리턴함
-auto Protocol::toData() noexcept -> Data & {
+auto Protocol_backup::toData() noexcept -> Data & {
 
     int idx= static_cast<int>(SEQ::ARR_START);
     mProtocolData.clear();
@@ -142,27 +144,27 @@ auto Protocol::toData() noexcept -> Data & {
     return mProtocolData;
 }
 
-auto Protocol::MsgType() noexcept -> TYPE& {
+auto Protocol_backup::MsgType() noexcept -> TYPE& {
     return m9;
 }
 
 ///@brief list protocol 호출후에, 송신받았던 총 배열의 수를 리턴함
-auto Protocol::ArraySum() noexcept -> int& {
+auto Protocol_backup::ArraySum() noexcept -> int& {
     return m999;
 }
-auto Protocol::TreeAccess() noexcept -> TREE& {
+auto Protocol_backup::TreeAccess() noexcept -> TREE& {
     return m1;
 }
-auto Protocol::ReportComment() noexcept -> string& {
+auto Protocol_backup::ReportComment() noexcept -> string& {
     return m5;
 }
-auto Protocol::TopicAccess() noexcept -> Topic & {
+auto Protocol_backup::TopicAccess() noexcept -> Topic & {
     return m2;
 }
 
 
 auto
-Protocol::convertToStr(TYPE type) noexcept -> string
+Protocol_backup::convertToStr(TYPE type) noexcept -> string
 {
     switch(type)
     {
@@ -182,7 +184,7 @@ Protocol::convertToStr(TYPE type) noexcept -> string
 }
 
 auto
-Protocol::convertToStr(TREE type) noexcept -> string
+Protocol_backup::convertToStr(TREE type) noexcept -> string
 {
     string  typeStr;
     switch(type)
@@ -201,7 +203,7 @@ Protocol::convertToStr(TREE type) noexcept -> string
 
 
 auto
-Protocol::asNotify(TREE type, const Topic& topic, const doori::Addr& addr) noexcept
+Protocol_backup::asNotify(TREE type, const Topic& topic, const doori::Addr& addr) noexcept
 -> void
 {
     mProtocolData.clear();
@@ -213,7 +215,7 @@ Protocol::asNotify(TREE type, const Topic& topic, const doori::Addr& addr) noexc
 }
 
 auto
-Protocol::asAlive(TREE type, const Topic& topic, doori::Addr addr) noexcept
+Protocol_backup::asAlive(TREE type, const Topic& topic, doori::Addr addr) noexcept
 -> void
 {
     mProtocolData.clear();
@@ -225,7 +227,7 @@ Protocol::asAlive(TREE type, const Topic& topic, doori::Addr addr) noexcept
 }
 
 auto
-Protocol::asReport(TREE type, const Topic& topic) noexcept
+Protocol_backup::asReport(TREE type, const Topic& topic) noexcept
 -> void   
 {
     mProtocolData.clear();
@@ -235,7 +237,7 @@ Protocol::asReport(TREE type, const Topic& topic) noexcept
 }
 
 auto
-Protocol::asList(TREE type, const Topic& topic) noexcept -> void
+Protocol_backup::asList(TREE type, const Topic& topic) noexcept -> void
 {
     mProtocolData.clear();
     m9 = TYPE::LIST;
@@ -244,7 +246,7 @@ Protocol::asList(TREE type, const Topic& topic) noexcept -> void
 }
 
 auto
-Protocol::asChange(TREE type, const Topic& topic) noexcept -> void
+Protocol_backup::asChange(TREE type, const Topic& topic) noexcept -> void
 {
     mProtocolData.clear();
     m9 = TYPE::CHANGE;
@@ -258,7 +260,7 @@ Protocol::asChange(TREE type, const Topic& topic) noexcept -> void
         이 함수를 호출할때마다, sequence 추가(적재된다.)
 */
 auto
-Protocol::appendSession(std::string ip, std::string port) noexcept -> void {
+Protocol_backup::appendSession(std::string ip, std::string port) noexcept -> void {
     m999=0;
     pair<string,string> aPair{ip, port};
     m1xxxList.push_back(aPair);
@@ -271,12 +273,12 @@ Protocol::appendSession(std::string ip, std::string port) noexcept -> void {
         함수 appendLIST 완료후, 이 함수로 완료한다.
 */
 auto
-Protocol::completeSession()  noexcept -> void {
+Protocol_backup::completeSession()  noexcept -> void {
     m999 = m1xxxList.size();
 }
 
 auto
-Protocol::convertMessageToType(const string& messageType) noexcept -> TYPE
+Protocol_backup::convertMessageToType(const string& messageType) noexcept -> TYPE
 {
     if (messageType == NOTIFY_MSG){
         return TYPE::NOTIFY;
@@ -297,7 +299,7 @@ Protocol::convertMessageToType(const string& messageType) noexcept -> TYPE
         return TYPE::NaN;
 }
 
-auto Protocol::convertTreeAccessToType(const string& treeAccessType) noexcept -> TREE
+auto Protocol_backup::convertTreeAccessToType(const string& treeAccessType) noexcept -> TREE
 {
     if (treeAccessType == PUB_MSG){
         return TREE::PUB;
@@ -309,31 +311,31 @@ auto Protocol::convertTreeAccessToType(const string& treeAccessType) noexcept ->
         return TREE::NaN;
 }
 
-auto Protocol::Ip() noexcept -> string & {
+auto Protocol_backup::Ip() noexcept -> string & {
     return m3;
 }
 
-auto Protocol::Port() noexcept -> string & {
+auto Protocol_backup::Port() noexcept -> string & {
     return m4;
 }
 
-auto Protocol::asSender() noexcept -> void {
+auto Protocol_backup::asSender() noexcept -> void {
     mFlowType=FLOW::SEND;
 }
 
-auto Protocol::asResponser() noexcept -> void {
+auto Protocol_backup::asResponser() noexcept -> void {
     mFlowType=FLOW::RESPONSE;
 }
 
-auto Protocol::MsgCode() noexcept -> STATUS_CODE& {
+auto Protocol_backup::MsgCode() noexcept -> STATUS_CODE& {
     return m6;
 }
 
-auto Protocol::MsgComment() noexcept -> string & {
+auto Protocol_backup::MsgComment() noexcept -> string & {
     return m7;
 }
 
-auto Protocol::convertStatusCodeToType(const string& statusCode) noexcept -> STATUS_CODE
+auto Protocol_backup::convertStatusCodeToType(const string& statusCode) noexcept -> STATUS_CODE
 {
     if (statusCode == "0"){
         return STATUS_CODE::OK;

@@ -8,7 +8,7 @@
 
 namespace doori::TnsdDistrict{
 
-auto ICommunication::Init(string ip, string port, Topic topic, Protocol::TREE myType) noexcept -> bool{
+auto ICommunication::Init(string ip, string port, Topic topic, Protocol_backup::TREE myType) noexcept -> bool{
     auto retryCnt = 0;
     mICommTopic = topic;
     LOG(INFO, "Tnsd Communication TopicAccess : ", mICommTopic.getTopicName());
@@ -35,7 +35,7 @@ auto ICommunication::Init(string ip, string port, Topic topic, Protocol::TREE my
 }
 
 auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
-    Protocol sendProtcol, recvProtocol;
+    Protocol_backup sendProtcol, recvProtocol;
     sendProtcol.asSender();
     recvProtocol.asResponser();
     sendProtcol.asNotify(mMyPubSubType,mICommTopic, mMultiSessions.GetListener().From().Address() );
@@ -46,7 +46,7 @@ auto ICommunication::sendNotifyProtocolToTnsd() noexcept -> bool{
         return false;
     }
 
-    if(recvProtocol.MsgCode() == Protocol::STATUS_CODE::ERR ){
+    if(recvProtocol.MsgCode() == Protocol_backup::STATUS_CODE::ERR ){
         LOG(INFO, "FAIL Message : "," recvProtocol.MsgComment()");
         return  false;
     }
@@ -77,7 +77,7 @@ auto ICommunication::processingMultisessions(int socket) noexcept -> bool {
     return true;
 }
 
-auto ICommunication::sendProtocolToTnsd(Protocol &sendProtocol, Protocol &responseProtocol) noexcept -> bool{
+auto ICommunication::sendProtocolToTnsd(Protocol_backup &sendProtocol, Protocol_backup &responseProtocol) noexcept -> bool{
     Stream sendStream, recvStream;
     Data   answerData;
 
@@ -94,7 +94,7 @@ auto ICommunication::sendProtocolToTnsd(Protocol &sendProtocol, Protocol &respon
 }
 
 ///@brief TNSD에 protocol객체를 보낸다
-auto ICommunication::sendProtocolToTnsd(Protocol &sendProtocol) noexcept -> bool{
+auto ICommunication::sendProtocolToTnsd(Protocol_backup &sendProtocol) noexcept -> bool{
     Stream sendStream;
     Data   answerData;
 
@@ -110,7 +110,7 @@ auto ICommunication::sendProtocolToTnsd(Protocol &sendProtocol) noexcept -> bool
 ///@brief TNSD에게 살아 있음을 계속적으로 알린다.
 ///@todo 상태정보 동기화 작업.
 auto ICommunication::sendAliveProtocolToTnsd(Topic topic) noexcept -> bool {
-    Protocol sendProtcol;
+    Protocol_backup sendProtcol;
     sendProtcol.asSender();
     sendProtcol.asAlive(mMyPubSubType, topic, mMultiSessions.GetListener().From().Address() );
 
@@ -123,7 +123,7 @@ auto ICommunication::sendAliveProtocolToTnsd(Topic topic) noexcept -> bool {
 }
 
 auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
-    Protocol sendProtcol, recvProtocol;
+    Protocol_backup sendProtcol, recvProtocol;
     sendProtcol.asSender();
     recvProtocol.asResponser();
 
@@ -133,11 +133,11 @@ auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
     ////////////////////////////////////
     switch(mMyPubSubType)
     {
-        case Protocol::TREE::PUB:
-            sendProtcol.asList(Protocol::TREE::SUB ,mICommTopic);
+        case Protocol_backup::TREE::PUB:
+            sendProtcol.asList(Protocol_backup::TREE::SUB , mICommTopic);
             break;
-        case Protocol::TREE::SUB:
-            sendProtcol.asList(Protocol::TREE::PUB ,mICommTopic );
+        case Protocol_backup::TREE::SUB:
+            sendProtcol.asList(Protocol_backup::TREE::PUB , mICommTopic );
             break;
         default:
             LOG(FATAL, "My (PUB|SUB) not defined");
@@ -150,7 +150,7 @@ auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
         return false;
     }
 
-    if(recvProtocol.MsgCode() == Protocol::STATUS_CODE::ERR )
+    if(recvProtocol.MsgCode() == Protocol_backup::STATUS_CODE::ERR )
     {
         LOG(INFO, "FAIL Message : ", recvProtocol.MsgComment() );
     }
@@ -167,17 +167,17 @@ auto ICommunication::sendListProtocolToTnsd() noexcept -> bool {
             addrData.clear();
             addrData.fromString( (*it).getValueToString() );
 
-            auto ipIter = addrData.find_if_Fid(static_cast<int>(Protocol::SEQ::IP));
-            auto portIter = addrData.find_if_Fid(ipIter, static_cast<int>(Protocol::SEQ::PORT));
+            auto ipIter = addrData.find_if_Fid(static_cast<int>(Protocol_backup::SEQ::IP));
+            auto portIter = addrData.find_if_Fid(ipIter, static_cast<int>(Protocol_backup::SEQ::PORT));
 
             LOG(DEBUG, "ip : ", (*ipIter).getValueToString(), ", port : ", (*portIter).getValueToString());
 
             switch(mMyPubSubType)
             {
-                case Protocol::TREE::PUB:
+                case Protocol_backup::TREE::PUB:
                     //Nothing to do.
                     break;
-                case Protocol::TREE::SUB:
+                case Protocol_backup::TREE::SUB:
                     conn.setTo( doori::Endpoint({(*ipIter).getValueToString(), (*portIter).getValueToString()}) );
                     auto socketFd = conn.connectTo();
                     if ( socketFd > 0 )
@@ -202,7 +202,7 @@ ICommunication::~ICommunication() {
 auto ICommunication::processingTnsdData(int sock, Stream& stream) noexcept -> int{
     auto ret = 0;
     Data data;
-    Protocol protocol;
+    Protocol_backup protocol;
 
     LOG(INFO, "Tnsd -->> ::", stream.toByteStream() );
     if ( data.fromString( stream.getString() ) == -1 )
@@ -219,27 +219,27 @@ auto ICommunication::processingTnsdData(int sock, Stream& stream) noexcept -> in
 
     switch(protocol.MsgType())
     {
-        case Protocol::TYPE::NOTIFY:
-            LOG(DEBUG, Protocol::NOTIFY_MSG);
+        case Protocol_backup::TYPE::NOTIFY:
+            LOG(DEBUG, Protocol_backup::NOTIFY_MSG);
             break;
-        case Protocol::TYPE::CHANGE:
-            LOG(DEBUG, Protocol::CHANGE_MSG);
-            if(mMyPubSubType == Protocol::TREE::SUB)
+        case Protocol_backup::TYPE::CHANGE:
+            LOG(DEBUG, Protocol_backup::CHANGE_MSG);
+            if(mMyPubSubType == Protocol_backup::TREE::SUB)
                 if(!sendListProtocolToTnsd())
                     ret = -1;
             break;
-        case Protocol::TYPE::ALIVE:
-            LOG(DEBUG, Protocol::ALIVE_MSG);
+        case Protocol_backup::TYPE::ALIVE:
+            LOG(DEBUG, Protocol_backup::ALIVE_MSG);
             break;
-        case Protocol::TYPE::REPORT:
-            LOG(DEBUG, Protocol::REPORT_MSG);
+        case Protocol_backup::TYPE::REPORT:
+            LOG(DEBUG, Protocol_backup::REPORT_MSG);
             break;
-        case Protocol::TYPE::LIST:
-            LOG(DEBUG, Protocol::LIST_MSG);
+        case Protocol_backup::TYPE::LIST:
+            LOG(DEBUG, Protocol_backup::LIST_MSG);
             break;
         default:
             ret = -1;
-            LOG(ERROR, Protocol::UNKOWN_MSG);
+            LOG(ERROR, Protocol_backup::UNKOWN_MSG);
     }
     return ret;
 }

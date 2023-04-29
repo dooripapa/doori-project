@@ -150,7 +150,7 @@ auto Tnsd::notify_processing(Protocol& protocol, int socketfd ) -> int
             } else
                 protocol.MsgComment() = "register leaf";
 
-            /* CHANGE Protocol Sending Subscribers is interesting that topic.*/
+            /* CHANGE Protocol_backup Sending Subscribers is interesting that topic.*/
             LOG(DEBUG, "CHANGE protocol send");
             change_Processing(topic);
             break;

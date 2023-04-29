@@ -10,7 +10,7 @@
 #include <condition_variable>
 #include "CommunicationMember/Endpoint.h"
 #include "Topic.h"
-#include "Protocol.h"
+#include "../../backup/Protocol.h"
 #include "CommunicationMember/Connection.h"
 #include "CommunicationMember/Epoll.h"
 #include "DataStructure/Tree.h"
@@ -55,7 +55,7 @@ public:
      * @note 이 함수가 호출되면, Tnsd 접속하기전까지. Hang이 걸린다.
      * @return bool true 성공, false 실패
      */
-    auto Init(string ip, string port, Topic topic, Protocol::TREE myType) noexcept -> bool;
+    auto Init(string ip, string port, Topic topic, Protocol_backup::TREE myType) noexcept -> bool;
 
     /**
      * 관심이 있는 topic을 Tnsd에 Notify 한다.
@@ -84,17 +84,17 @@ public:
 protected:
      /**
       * 프로토콜의 보내면, 해당하는 프로토콜의 응답을 받는다.
-      * @param sendProtocol : Protocol& 보낼 프로토콜메시지
-      * @param responseProtocol : Protocol& 받을 프로토콜메시지 컨테이너
+      * @param sendProtocol : Protocol_backup& 보낼 프로토콜메시지
+      * @param responseProtocol : Protocol_backup& 받을 프로토콜메시지 컨테이너
       * @return bool true 성공, false 실패
       */
-    auto sendProtocolToTnsd(Protocol &sendProtocol, Protocol &responseProtocol) noexcept -> bool;
+    auto sendProtocolToTnsd(Protocol_backup &sendProtocol, Protocol_backup &responseProtocol) noexcept -> bool;
     /**
      * Tnsd 프로토콜메시지를 보낸다.
-     * @param sendProtocol Protocol&
+     * @param sendProtocol Protocol_backup&
      * @return bool true 성공, false 실패
      */
-    auto sendProtocolToTnsd(Protocol& sendProtocol) noexcept -> bool;
+    auto sendProtocolToTnsd(Protocol_backup& sendProtocol) noexcept -> bool;
     /**
      * Tnsd에게 alive protocol메시지를 보낸다
      * @param topic Topic객체
@@ -128,7 +128,7 @@ protected:
 private:
     enum{ RETRY_MAX=20, TNSD_ALIVE_INTERVAL=10 };
     int                                 mTnsdSocket;
-    Protocol::TREE                      mMyPubSubType;
+    Protocol_backup::TREE                      mMyPubSubType;
     CommunicationMember::Connection     mTnsdConnection;
     CommunicationMember::Epoll          mMultiSessions;
     Topic                               mICommTopic;

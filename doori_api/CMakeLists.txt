@@ -36,7 +36,7 @@ set(HEADER_FILES
 		TnsdDistrict/ICommunication.h
 		Common/Log.h
 		Common/Log.hpp
-		TnsdDistrict/Protocol.h
+		../backup/Protocol_backup.h
 		TnsdDistrict/Publisher.h
 		Etc/Regex.h
 		Process/Runner.h
@@ -67,7 +67,7 @@ set(SRC_FILES
 		Process/Getopt.cpp
 		TnsdDistrict/ICommunication.cpp
 		Common/Log.cpp
-		TnsdDistrict/Protocol.cpp
+		../backup/Protocol.cpp
 		TnsdDistrict/Publisher.cpp
 		Etc/Regex.cpp
 		Process/Runner.cpp
@@ -79,7 +79,7 @@ set(SRC_FILES
 		DooriTest.h
 		CommunicationMember/TCPBuilder.cpp
 		CommunicationMember/TCP.cpp
-		CommunicationMember/TCPTopology.cpp CommunicationMember/TcpApi.cpp CommunicationMember/TcpApi.h TnsdDistrict/Protocol/IProtocol.h TnsdDistrict/Protocol/IProtocolState.h TnsdDistrict/Protocol/IProtocolHeader.h TnsdDistrict/Protocol/IProtocolMsg.h)
+		CommunicationMember/TCPTopology.cpp CommunicationMember/TcpApi.cpp CommunicationMember/TcpApi.h TnsdDistrict/Protocol/Protocol.h TnsdDistrict/Protocol/ProtocolHeader.h TnsdDistrict/Protocol/ProtocolMsg.h TnsdDistrict/Protocol/Protocol.cpp TnsdDistrict/Handler/ProtocolState.cpp TnsdDistrict/Handler/ProtocolState.h TnsdDistrict/Handler/IProtocolState.cpp TnsdDistrict/Handler/IProtocolState.h TnsdDistrict/Protocol/ProtocolHeader.c)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
