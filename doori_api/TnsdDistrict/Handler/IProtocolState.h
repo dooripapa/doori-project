@@ -6,6 +6,7 @@
 #define DOORI_PROJECT_IPROTOCOLSTATE_H
 
 #include "TnsdDistrict/Protocol/Protocol.h"
+#include "Common/Log.h"
 
 namespace doori {
     namespace TnsdDistrict {
