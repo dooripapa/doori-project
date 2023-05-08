@@ -29,7 +29,7 @@
    - Branch
    
 4. Middleware Support Objects
-   - Protocol
+   - Handler
    - Topic
    - ICommunication
    - Publisher

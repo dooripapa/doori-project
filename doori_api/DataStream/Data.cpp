@@ -156,7 +156,7 @@ auto Data::find_if_Fid(vector<DataSegment>::iterator startIterator, int fid) -> 
 			);
 }
 
-///@brief doori_data -> $| FID,TYPE=VALUE |$  형식의 문자열로 변환
+///@brief doori_data -> $| FID,mMsgName=VALUE |$  형식의 문자열로 변환
 auto Data::toString() const -> string
 {
 	string sTemp;

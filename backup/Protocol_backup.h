@@ -10,7 +10,7 @@
 #include "CommunicationMember/Addr.h"
 
 
-namespace doori::TnsdDistrict{
+namespace doori::TnsDaemon{
 
 class Protocol_backup
 {

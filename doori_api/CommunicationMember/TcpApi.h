@@ -21,7 +21,7 @@ namespace doori {
         class TcpApi {
         public:
             /**
-             * DOMAIN(AF_INET), TYPE(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
+             * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
              * @return 소켓 FD
              */
             static int Socket();

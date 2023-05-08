@@ -6,7 +6,7 @@
 //
 #include "ICommunication.h"
 
-namespace doori::TnsdDistrict{
+namespace doori::TnsDaemon{
 
 auto ICommunication::Init(string ip, string port, Topic topic, Protocol_backup::TREE myType) noexcept -> bool{
     auto retryCnt = 0;

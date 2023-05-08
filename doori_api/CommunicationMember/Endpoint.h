@@ -33,7 +33,7 @@ namespace doori::CommunicationMember{
 
         /**
          * Endpoint객체의 통신유형.(IPC type)
-         * @return TYPE : Endpoint::TYPE
+         * @return mMsgName : Endpoint::mMsgName
          */
         auto Type() noexcept -> TYPE;
 

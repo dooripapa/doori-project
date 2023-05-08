@@ -68,7 +68,7 @@ public:
      * 인자값(file descriptor)을 Epoll에 등록, 해당 인자값에 이벤트가 발생되면 감지된다.
      * 이후, 이벤트가 발생되면, 등록한 delegation에서 처리하도록 함
      * @param socket_fd : file descriptor
-     * @param type : WATCHER::TYPE
+     * @param type : WATCHER::mMsgName
      * @param delegation : 첫번째 아규먼트 file descriptor 전용 이벤트 처리위임자
      * @return int : -1 실패, 0 성공
      */

@@ -10,7 +10,6 @@
 #include <condition_variable>
 #include "CommunicationMember/Endpoint.h"
 #include "Topic.h"
-#include "../../backup/Protocol.h"
 #include "CommunicationMember/Connection.h"
 #include "CommunicationMember/Epoll.h"
 #include "DataStructure/Tree.h"
@@ -18,7 +17,7 @@
 #include "CommunicationMember/TcpApi.h"
 
 
-namespace doori::TnsdDistrict{
+namespace doori::TnsDaemon{
 
 class ICommunication
 {
