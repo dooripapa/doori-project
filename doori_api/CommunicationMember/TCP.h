@@ -21,7 +21,7 @@ namespace doori::CommunicationMember {
         TCP();
         virtual ~TCP();
 
-        int Create(unique_ptr<IIPCBuilder> builder) override;
+        int Create(IIPCBuilder& builder) override;
 
         unique_ptr<ITopology> GetIPC() noexcept override;
     private:

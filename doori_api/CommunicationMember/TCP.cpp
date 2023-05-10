@@ -14,15 +14,15 @@ namespace doori::CommunicationMember{
 
     }
 
-    int TCP::Create( unique_ptr<IIPCBuilder> builder) {
-        auto from = builder->BindFrom();
+    int TCP::Create( IIPCBuilder& builder) {
+        auto from = builder.BindFrom();
         if( from == -1 )
         {
             LOG(ERROR, "Binding error, From endpoint");
             return -1;
         }
 
-        auto to = builder->BindTo();
+        auto to = builder.BindTo();
         if( to == -1 )
         {
             LOG(ERROR, "Binding error, To endpoint");
@@ -30,7 +30,7 @@ namespace doori::CommunicationMember{
         }
 
         try {
-            mConnection = builder->EstablishTopologies();
+            mConnection = builder.EstablishTopologies();
         }catch (exception e) {
             LOG(ERROR, "Establish Topologies,call exit()", ":", e.what());
             std::exit(-1);

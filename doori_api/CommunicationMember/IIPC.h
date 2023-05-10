@@ -18,7 +18,7 @@ namespace doori::CommunicationMember {
 
     class IIPC {
     public:
-        virtual int Create( unique_ptr<IIPCBuilder> ) = 0;
+        virtual int Create( IIPCBuilder& builder ) = 0;
         virtual unique_ptr<doori::CommunicationMember::ITopology> GetIPC() noexcept = 0;
     };
 

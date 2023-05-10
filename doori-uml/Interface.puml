@@ -1,0 +1,157 @@
+@startuml
+' - private, # protected, + public
+'클래스 위 아래 간격을 고정
+skinparam ranksep 100
+'클래스 좌우 간격을 고정
+skinparam nodesep 100
+'화살표 방향이 수직 수평으로 표시됨
+skinparam linetype ortho
+'그래프로 표시되는 글자는 설치되어 있는 D2Coding 폰트로 지정함
+skinparam defaultFontName D2Coding
+'https://plantuml.com/class-diagram
+
+Interface Application{
+#IInterface CreateInterface()
+#IIPC CreateIPC()
+#IDictionary CreateDictionary()
+}
+
+Interface IInterface{
+#string GetHederPacket()
+#string GetFooterPacket()
+}
+
+class Tnsd{
++CreateInterface()
+}
+
+class TnsdInterface{
+}
+
+
+enum TnsdTokenId{
+    VERSION,
+    TNSD_IP,
+    TNSD_PORT,
+    BINDING_IP_FOR_TNSD,
+    BINDING_PORT_FOR_TNSD,
+    BINDING_IP_FOR_MULTISESSION,
+    BINDING_PORT_FOR_MULTISESSION,
+    LOG_NAME,
+    LOG_PATH,
+    LOG_LEVEL,
+    MY_TOPIC,
+    END
+}
+
+interface IDictionary{
+#string GetId(Token id)
+}
+
+class TnsdDictionary{
+}
+
+
+
+class TcpApi{
++{static} int Socket();
++{static} int SetReuseOpt();
++{static} int SetTimeoutOpt();
++{static} int Bind();
++{static} int Listen();
++{static} int Accept();
++{static} int Connect();
++{static} int Send();
++{static} int Recv();
++{static} int RequestConnection();
++{static} int Reply();
+}
+
+interface IIPC{
++int Create(IIPCBuilder& builder)
++ITopology* GetIPC()
+}
+
+class TCP{
+int Create(IIPCBuilder& builder) override
+unique_ptr<ITopology> GetIPC() noexcept override
+..
+-int mConnection
+}
+
+
+enum TOPOLOGY_TYPE {
+SERVER,
+CLIENT
+}
+
+interface IIPCBuilder{
+int BindFrom()
+int BindTo()
+int GetListenRsc()
+int EstablishTopologies()
+}
+
+class TCPBuilder{
++int BindFrom() override;
++int BindTo() override;
++int EstablishTopologies() override;
++int GetListenRsc() override;
+..
++TCPBuilder(TOPOLOGY_TYPE type, string ip, string port);
++TCPBuilder(string destination_ip, string destination_port, string source_ip, string source_port);
+--
+-string mDestIp;
+-string mDestPort;
+-string mSourceIp;
+-string mSourcePort;
+-int mListenFd;
+-int mSourceFd;
+-TOPOLOGY_TYPE mType;
+-const int kBackLog=10;
+}
+
+interface ITopology{
+int Send(const string &data)
+int Recv(string &data, uint8_t tilSize)
+}
+
+class TCPTopology{
+int Send(const string &data) override
+int Recv(string &data, uint8_t tilSize) override
+..
+--
+-int mDataPassage
+}
+
+class Epoll{
+}
+
+class EpollEvents{
+}
+
+EpollEvents <-- Epoll
+
+
+
+IDictionary <|-- TnsdDictionary
+
+
+Application <|-- Tnsd
+IInterface <|-- TnsdInterface
+IInterface <--o Application
+TnsdInterface <--o Tnsd
+
+IIPCBuilder <|-- TCPBuilder
+ITopology <|-- TCPTopology
+
+IIPC <|-- TCP
+IIPCBuilder <-o IIPC
+TCPBuilder <- TCP : 의존 <
+TCPTopology <.. TCP : 생성 <
+
+
+
+
+
+@enduml

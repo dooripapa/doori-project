@@ -10,7 +10,7 @@
 
 namespace doori::CommunicationMember{
 
-class event_iterator:public std::iterator<std::input_iterator_tag,struct epoll_event>
+class event_iterator : public std::iterator< std::input_iterator_tag, struct epoll_event >
 {
 public:
 	event_iterator():p(nullptr){}

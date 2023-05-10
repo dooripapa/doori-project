@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include "Etc/Bigdecimal.h"
 #include <iostream>
-#include "DooriTest.h"
 
 using namespace std;
 using namespace doori;
