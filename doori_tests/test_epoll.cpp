@@ -6,14 +6,12 @@
 #include <thread>
 #include "Common/Log.h"
 #include "CommunicationMember/TcpApi.h"
-#include "CommunicationMember/Epoll.h"
-#include "CommunicationMember/EpollEvents.h"
 
 using namespace std;
 using namespace doori::Common;
 using namespace doori::CommunicationMember;
 
-auto ProcessMessage(int socket, string& stream) -> int
+auto ProcessMessage(int socket) -> int
 {
     int iReadLen = 0;
 
@@ -22,28 +20,41 @@ auto ProcessMessage(int socket, string& stream) -> int
 
     TcpApi::Recv(socket, dataContainer.get(), iReadLen);
 
-    stream = dataContainer.get()
+    string stream;
+    stream = dataContainer.get();
     LOG( DEBUG, "####### [", stream, "] #######");
 
     return 0;
 }
 
 void RunClient() {
+    sleep(2);
+
     LOG( DEBUG, "RunClient ");
+
+    int sock = TcpApi::Socket();
+    TcpApi::Connect(sock, "127.0.0.1", "8888");
+
+    const char *p = "lee";
+    TcpApi::Send(sock, p, 3);
 }
 
 TEST(CommunicationMember, Usage)
 {
-    EpollEvents events;
-    events.setSize(100);
 
-    Epoll epoll(ProcessMessage);
+    int socket = TcpApi::Socket();
+
+    TcpApi::Bind(socket, "127.0.0.1", "8888");
+
+    int epollFd = TcpApi::CreateEpoll(socket, 100, ProcessMessage);
 
     /* 클라이언트 접속 프로그램 기동,
      * 단, 2초뒤에 기동됨.기동하자마자,
      * 바로, 접속시도를 막기위해서*/
     std::thread t(RunClient);
 
-    /* 클라이언트 종료대기 */
+    TcpApi::RunningEpoll(epollFd, socket, 10, 10);
+
     t.join();
+
 }

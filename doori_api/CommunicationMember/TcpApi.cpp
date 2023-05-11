@@ -3,6 +3,7 @@
 //
 
 #include <fcntl.h>
+#include <functional>
 #include "TcpApi.h"
 
 namespace doori {
@@ -201,6 +202,126 @@ namespace doori {
             }
 
             return iRcvDataLen;
+        }
+
+        int TcpApi::CreateEpoll(int socketFd, int backlogNum, std::function<int(int)> delegation ) {
+
+            int iEpollFd = -1;
+            int iListenSocket = -1;
+
+            iEpollFd = epoll_create1(0);
+            if( iEpollFd == -1 )
+            {
+                LOG(ERROR, "Create error" );
+                return -1;
+            }
+
+            iListenSocket = doori::CommunicationMember::TcpApi::Listen(socketFd, backlogNum);
+            if (iListenSocket == -1)
+            {
+                LOG(ERROR, "fail to make listening socket" );
+                return -1;
+            }
+
+            //람다함수를 함수포인터로 변경함.
+            //이 람다함수로 소켓을 등록하는 함수를 대신함.
+            auto lambda = [=](){
+
+                struct epoll_event ev{};
+                int conn_sock;
+                conn_sock = CommunicationMember::TcpApi::Accept(iListenSocket);
+                LOG(INFO, "Accepted FD[", conn_sock,"]");
+                if (conn_sock == -1) {
+                    LOG(ERROR, "fail to accept socket.");
+                    return -1;
+                }
+
+                // Timeout 설정함
+                conn_sock = CommunicationMember::TcpApi::SetTimeoutOpt(conn_sock, 10);
+
+                ev.events = EPOLLIN;
+                ev.data.fd = conn_sock;
+                auto function = reinterpret_cast< int(*)(int) >( delegation.target< int(int) >() );
+                ev.data.ptr = (void*)function;
+                if (epoll_ctl(iEpollFd, EPOLL_CTL_ADD, conn_sock, &ev) == -1)
+                {
+                    LOG(ERROR, "epoll, fail to EPOLL_CTL_ADD");
+                    return -1;
+                }
+                return conn_sock;
+            }; // 람다 끝
+
+            std::function< int() > funcWapper = lambda;
+
+            //Listen소켓으로 연결요청이 오면, 소켓을 epoll에 등록하는 함수를 호출하도록 사전에 저장
+            void *pRegisterFunc = reinterpret_cast< void* >( funcWapper.target< int() >() );
+
+            struct epoll_event ev{};
+            memset(&ev, 0x00, sizeof(struct epoll_event) );
+
+            ev.events = EPOLLIN;
+            ev.data.ptr = pRegisterFunc;
+            ev.data.fd = iListenSocket;
+            if ( epoll_ctl(iEpollFd, EPOLL_CTL_ADD, iListenSocket, &ev) == -1)
+            {
+                LOG(ERROR, "fail to register listening socket to epoll list" );
+                return -1;
+            }
+
+            return 0;
+        }
+
+        auto TcpApi::RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout) -> void {
+
+            char	errorStr[1024]={0};
+
+            LOG(INFO, "==================================");
+            LOG(INFO, "running Method for Event Delegate!");
+
+            auto pEvents = make_unique<struct epoll_event[]>(backlogEventNum);
+            if( pEvents == nullptr ) {
+                LOG(ERROR, "malloc error[",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
+                throw new system_error();
+            }
+
+            while (true)
+            {
+                int nCnt = epoll_wait(epollFd, pEvents.get(), backlogEventNum, timeout);
+                if (nCnt == -1 ) {
+
+                    LOG(ERROR, "Wait error[",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
+                    throw new system_error();
+
+                } else {
+
+                    LOG(DEBUG, "timeout!");
+
+                }
+
+                for(int i=0; i<nCnt; i++) {
+
+                    if( pEvents[i].data.fd == listenSocket ) {
+
+                        std::function<int()> function = reinterpret_cast< int(*)() >( pEvents[i].data.ptr );
+
+                        if( -1 == function() ) {
+                            LOG(ERROR, "Epoll add socket to failure [",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
+                            throw new system_error();
+                        }
+                    }
+                    else {
+
+                        std::function<int(int)> function = reinterpret_cast< int(*)(int) >( pEvents[i].data.ptr );
+
+                        if( -1 == function(pEvents[i].data.fd) ) {
+                            LOG(ERROR, "fail to process Data [",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
+                        }
+
+                    }
+                }
+            }
+
+
         }
 
     } // doori

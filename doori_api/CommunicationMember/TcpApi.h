@@ -11,6 +11,7 @@
 #include <bits/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/epoll.h>
 
 namespace doori {
     namespace CommunicationMember {
@@ -122,6 +123,25 @@ namespace doori {
              * @return -1 이면 fail, 0> 이면 수신데이터 총 사이즈
              */
             static int Reply(int socketFd, const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize);
+
+            /**
+             * Epoll 생성합니다.
+             * @note socketFd는 넘겨주기전에 바인딩된 상태이어야 한다.
+             * @param socketFd  listen용으로 사용하기 위한 소켓
+             * @param backlogNum  backlogNum 접속 요청이 들어올 경우, 최대 대기 배열 수
+             * @param delegation 데이터를 수신시, 처리한다. 첫번째 인자는 수신fd, 두번째 인자는 수신데이터
+             * @return 생성된 EpollFd를 리턴합니다.
+             */
+            static int CreateEpoll(int socketFd, int backlogNum, std::function<int(int)> delegation);
+
+             /**
+              * Epoll loop back형식으로 처리한다. Epoll의 연결요청이 아닌 데이터수신 이벤트는 delegation함수로 처리한다.
+              * @param epollFd 초기화가 완료된 epoll fd
+              * @param backlogEventNum  epoll event가 발생시, 최대 대기 이벤트 수
+              * @param timeout  epoll event가 타임아웃 값.
+              * @return
+              */
+            [[noreturn]] static void RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout ) ;
         };
 
     } // doori
