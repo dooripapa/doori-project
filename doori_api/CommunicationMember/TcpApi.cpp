@@ -8,7 +8,7 @@
 
 namespace doori {
     namespace CommunicationMember {
-        int TcpApi::Socket() {
+        int TcpApi::CreateSocket() {
             char errorStr[1024] = {0};
             auto sock = socket(AF_INET, SOCK_STREAM, 0);
             if (sock < 0) {
@@ -59,7 +59,7 @@ namespace doori {
 
         int TcpApi::Listen(int fd, int backlogNum) {
             char errorStr[1024] = {0};
-            if (listen(fd, backlogNum) < 0) {
+            if (listen(fd, backlogNum) != 0) {
                 LOG(ERROR, "TCP socket fd, fail to listen:", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
@@ -74,7 +74,7 @@ namespace doori {
 
             socklen_t len = sizeof(::sockaddr_in);
             // sockaddrIn 변수는 접속한 클라이언트 주소 저장용도로 사용가능하다.
-            if ((acptFd = accept(fd, (struct sockaddr *) &sockaddrIn, &len)) < 0) {
+            if ((acptFd = accept(fd, (struct sockaddr *) &sockaddrIn, &len)) != 0) {
                 LOG(ERROR, "TCP socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
@@ -164,10 +164,10 @@ namespace doori {
         int TcpApi::RequestConnection(string ip, string port, std::uint8_t timeout) {
             char errorStr[1024] = {0};
 
-            int fd = Socket();
+            int fd = CreateSocket();
             if (fd == -1)
             {
-                LOG(ERROR, "RequestConnection error, at Socket()");
+                LOG(ERROR, "RequestConnection error, at CreateSocket()");
                 return -1;
             }
 
@@ -228,6 +228,8 @@ namespace doori {
             auto lambda = [=](){
 
                 struct epoll_event ev{};
+                memset(&ev, 0x00, sizeof(struct epoll_event));
+
                 int conn_sock;
                 conn_sock = CommunicationMember::TcpApi::Accept(iListenSocket);
                 LOG(INFO, "Accepted FD[", conn_sock,"]");
@@ -256,11 +258,10 @@ namespace doori {
             //Listen소켓으로 연결요청이 오면, 소켓을 epoll에 등록하는 함수를 호출하도록 사전에 저장
             void *pRegisterFunc = reinterpret_cast< void* >( funcWapper.target< int() >() );
 
-            struct epoll_event ev{};
-            memset(&ev, 0x00, sizeof(struct epoll_event) );
+            struct epoll_event ev;
 
-            ev.events = EPOLLIN;
-            ev.data.ptr = pRegisterFunc;
+            ev.events = EPOLLIN ;
+//            ev.data.ptr = pRegisterFunc;
             ev.data.fd = iListenSocket;
             if ( epoll_ctl(iEpollFd, EPOLL_CTL_ADD, iListenSocket, &ev) == -1)
             {
@@ -268,7 +269,7 @@ namespace doori {
                 return -1;
             }
 
-            return 0;
+            return iEpollFd;
         }
 
         auto TcpApi::RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout) -> void {
@@ -286,6 +287,7 @@ namespace doori {
 
             while (true)
             {
+                errno = 0;
                 int nCnt = epoll_wait(epollFd, pEvents.get(), backlogEventNum, timeout);
                 if (nCnt == -1 ) {
 

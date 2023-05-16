@@ -20,9 +20,9 @@ namespace doori::CommunicationMember {
         auto sock = -1;
         string err = "";
 
-        sock = TcpApi::Socket();
+        sock = TcpApi::CreateSocket();
         if (sock < 0)
-            throw std::runtime_error("TcpApi::Socket()");
+            throw std::runtime_error("TcpApi::CreateSocket()");
 
         switch (mType) {
             case CLIENT:
@@ -54,9 +54,9 @@ namespace doori::CommunicationMember {
         auto sock = -1;
         string err = "";
 
-        sock = TcpApi::Socket();
+        sock = TcpApi::CreateSocket();
         if (sock < 0)
-            throw std::runtime_error("TcpApi::Socket()");
+            throw std::runtime_error("TcpApi::CreateSocket()");
 
         switch (mType) {
             case CLIENT:

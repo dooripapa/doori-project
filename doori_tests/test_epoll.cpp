@@ -28,20 +28,19 @@ auto ProcessMessage(int socket) -> int
 }
 
 static void RunClient() {
-    sleep(2);
+    sleep(5);
     LOG( DEBUG, "RunClient ");
 
-    int sock = TcpApi::Socket();
+    int sock = TcpApi::CreateSocket();
     TcpApi::Connect(sock, "127.0.0.1", "8888");
 
     const char *p = "lee";
     TcpApi::Send(sock, p, 3);
 }
 
-TEST(Epoll, Usage)
-{
+TEST(Epoll, Usage) {
 
-    int socket = TcpApi::Socket();
+    int socket = TcpApi::CreateSocket();
 
     TcpApi::Bind(socket, "127.0.0.1", "8888");
 
