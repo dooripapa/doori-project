@@ -27,9 +27,8 @@ auto ProcessMessage(int socket) -> int
     return 0;
 }
 
-void RunClient() {
+static void RunClient() {
     sleep(2);
-
     LOG( DEBUG, "RunClient ");
 
     int sock = TcpApi::Socket();
@@ -39,21 +38,23 @@ void RunClient() {
     TcpApi::Send(sock, p, 3);
 }
 
-TEST(CommunicationMember, Usage)
+TEST(Epoll, Usage)
 {
 
     int socket = TcpApi::Socket();
 
     TcpApi::Bind(socket, "127.0.0.1", "8888");
 
-    int epollFd = TcpApi::CreateEpoll(socket, 100, ProcessMessage);
+    int epollFd = TcpApi::CreateEpoll(socket, 1, ProcessMessage);
+
+    LOG(DEBUG, "epollFd:", epollFd);
 
     /* 클라이언트 접속 프로그램 기동,
      * 단, 2초뒤에 기동됨.기동하자마자,
      * 바로, 접속시도를 막기위해서*/
     std::thread t(RunClient);
 
-    TcpApi::RunningEpoll(epollFd, socket, 10, 10);
+    TcpApi::RunningEpoll(epollFd, socket, 1, 10);
 
     t.join();
 
