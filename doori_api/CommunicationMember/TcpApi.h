@@ -33,7 +33,7 @@ namespace doori {
          * TcpApi이 함수는 static 기질을 가지면 안된다.
          */
         class TcpApi {
-        protected:
+        public:
             /**
              * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
              * @return 소켓 FD
@@ -145,7 +145,7 @@ namespace doori {
              * @param delegation 데이터를 수신시, 처리한다. 첫번째 인자는 수신fd, 두번째 인자는 수신데이터
              * @return 생성된 EpollFd를 리턴합니다.
              */
-            static int CreateEpoll(int socketFd, int backlogNum, std::function<int(int)> delegation);
+            static int CreateEpoll(int socketFd, int backlogNum);
 
              /**
               * Epoll loop back형식으로 처리한다. Epoll의 연결요청이 아닌 데이터수신 이벤트는 delegation함수로 처리한다.
@@ -154,7 +154,10 @@ namespace doori {
               * @param timeout  epoll event가 타임아웃 값.
               * @return
               */
-            [[noreturn]] static void RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout ) ;
+            [[noreturn]] static void RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout ,int(*delegation)(int)  ) ;
+
+        private:
+            static int AddAsEpollList( int epollFd, int listenSocket, int(*delegation)(int) );
         };
 
     } // doori

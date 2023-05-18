@@ -74,7 +74,7 @@ namespace doori {
 
             socklen_t len = sizeof(::sockaddr_in);
             // sockaddrIn 변수는 접속한 클라이언트 주소 저장용도로 사용가능하다.
-            if ((acptFd = accept(fd, (struct sockaddr *) &sockaddrIn, &len)) != 0) {
+            if ((acptFd = accept(fd, (struct sockaddr *) &sockaddrIn, &len)) == -1) {
                 LOG(ERROR, "TCP socket fd, fail to accept:", strerror_r(errno, errorStr, sizeof(errorStr)));
                 return -1;
             }
@@ -204,7 +204,7 @@ namespace doori {
             return iRcvDataLen;
         }
 
-        int TcpApi::CreateEpoll(int socketFd, int backlogNum, std::function<int(int)> delegation ) {
+        int TcpApi::CreateEpoll(int socketFd, int backlogNum ) {
 
             int iEpollFd = -1;
             int iListenSocket = -1;
@@ -222,46 +222,12 @@ namespace doori {
                 LOG(ERROR, "fail to make listening socket" );
                 return -1;
             }
+            LOG(INFO, "Socket[", socketFd, "]");
+            LOG(INFO, "Listen Socket[", iListenSocket, "]");
 
-            //람다함수를 함수포인터로 변경함.
-            //이 람다함수로 소켓을 등록하는 함수를 대신함.
-            auto lambda = [=](){
-
-                struct epoll_event ev{};
-                memset(&ev, 0x00, sizeof(struct epoll_event));
-
-                int conn_sock;
-                conn_sock = CommunicationMember::TcpApi::Accept(iListenSocket);
-                LOG(INFO, "Accepted FD[", conn_sock,"]");
-                if (conn_sock == -1) {
-                    LOG(ERROR, "fail to accept socket.");
-                    return -1;
-                }
-
-                // Timeout 설정함
-                conn_sock = CommunicationMember::TcpApi::SetTimeoutOpt(conn_sock, 10);
-
-                ev.events = EPOLLIN;
-                ev.data.fd = conn_sock;
-                auto function = reinterpret_cast< int(*)(int) >( delegation.target< int(int) >() );
-                ev.data.ptr = (void*)function;
-                if (epoll_ctl(iEpollFd, EPOLL_CTL_ADD, conn_sock, &ev) == -1)
-                {
-                    LOG(ERROR, "epoll, fail to EPOLL_CTL_ADD");
-                    return -1;
-                }
-                return conn_sock;
-            }; // 람다 끝
-
-            std::function< int() > funcWapper = lambda;
-
-            //Listen소켓으로 연결요청이 오면, 소켓을 epoll에 등록하는 함수를 호출하도록 사전에 저장
-            void *pRegisterFunc = reinterpret_cast< void* >( funcWapper.target< int() >() );
-
-            struct epoll_event ev;
+            struct epoll_event ev{};
 
             ev.events = EPOLLIN ;
-//            ev.data.ptr = pRegisterFunc;
             ev.data.fd = iListenSocket;
             if ( epoll_ctl(iEpollFd, EPOLL_CTL_ADD, iListenSocket, &ev) == -1)
             {
@@ -272,7 +238,7 @@ namespace doori {
             return iEpollFd;
         }
 
-        auto TcpApi::RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout) -> void {
+        auto TcpApi::RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout, int(*delegation)(int)) -> void {
 
             char	errorStr[1024]={0};
 
@@ -294,9 +260,10 @@ namespace doori {
                     LOG(ERROR, "Wait error[",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
                     throw new system_error();
 
-                } else {
+                } else if (nCnt == 0){
 
                     LOG(DEBUG, "timeout!");
+                    continue;
 
                 }
 
@@ -304,18 +271,21 @@ namespace doori {
 
                     if( pEvents[i].data.fd == listenSocket ) {
 
-                        std::function<int()> function = reinterpret_cast< int(*)() >( pEvents[i].data.ptr );
+                        LOG(DEBUG, "Listen -> Accept");
 
-                        if( -1 == function() ) {
+                        if( -1 == doori::CommunicationMember::TcpApi::AddAsEpollList(epollFd, listenSocket, delegation) ) {
                             LOG(ERROR, "Epoll add socket to failure [",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
                             throw new system_error();
                         }
                     }
                     else {
 
-                        std::function<int(int)> function = reinterpret_cast< int(*)(int) >( pEvents[i].data.ptr );
+                        LOG(DEBUG, "Recv -> Processing");
 
-                        if( -1 == function(pEvents[i].data.fd) ) {
+                        int(*pFunc)(int) = (  int(*)(int)  )( pEvents[i].data.ptr );
+                        LOG(INFO, "Recv FD[", pEvents[i].data.fd, "]");
+
+                        if( -1 == pFunc(pEvents[i].data.fd) ) {
                             LOG(ERROR, "fail to process Data [",errno,"] :" ,strerror_r(errno, errorStr, sizeof(errorStr)));
                         }
 
@@ -324,6 +294,35 @@ namespace doori {
             }
 
 
+        }
+
+        int TcpApi::AddAsEpollList(int epollFd, int listenSocket, int(*delegation)(int) ) {
+
+            int conn_sock;
+            conn_sock = CommunicationMember::TcpApi::Accept(listenSocket);
+            LOG(INFO, "Accepted FD[", conn_sock,"]");
+            if (conn_sock == -1) {
+                LOG(ERROR, "fail to accept socket.");
+                return -1;
+            }
+
+            // Timeout 설정함
+            if (-1 == CommunicationMember::TcpApi::SetTimeoutOpt(conn_sock, 10) ) {
+                LOG(ERROR, "fail to SetTimeoutOpt.");
+                return -1;
+            }
+
+            struct epoll_event ev{};
+            ev.events = EPOLLIN;
+            ev.data.fd = conn_sock;
+            ev.data.ptr = (void*)delegation;
+            if (epoll_ctl(epollFd, EPOLL_CTL_ADD, conn_sock, &ev) == -1)
+            {
+                LOG(ERROR, "epoll, fail to EPOLL_CTL_ADD");
+                return -1;
+            }
+
+            return 0;
         }
 
     } // doori

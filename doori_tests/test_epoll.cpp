@@ -13,7 +13,7 @@ using namespace doori::CommunicationMember;
 
 auto ProcessMessage(int socket) -> int
 {
-    int iReadLen = 0;
+    int iReadLen = 3;
 
     std::unique_ptr<char[]> dataContainer = std::make_unique<char []>(iReadLen+1);  // 1 is null size
     memset(dataContainer.get(), 0x00, iReadLen + 1);
@@ -24,11 +24,12 @@ auto ProcessMessage(int socket) -> int
     stream = dataContainer.get();
     LOG( DEBUG, "####### [", stream, "] #######");
 
+    sleep(5);
     return 0;
 }
 
 static void RunClient() {
-    sleep(5);
+    sleep(2);
     LOG( DEBUG, "RunClient ");
 
     int sock = TcpApi::CreateSocket();
@@ -44,7 +45,7 @@ TEST(Epoll, Usage) {
 
     TcpApi::Bind(socket, "127.0.0.1", "8888");
 
-    int epollFd = TcpApi::CreateEpoll(socket, 1, ProcessMessage);
+    int epollFd = TcpApi::CreateEpoll(socket, 1);
 
     LOG(DEBUG, "epollFd:", epollFd);
 
@@ -53,7 +54,7 @@ TEST(Epoll, Usage) {
      * 바로, 접속시도를 막기위해서*/
     std::thread t(RunClient);
 
-    TcpApi::RunningEpoll(epollFd, socket, 1, 10);
+    TcpApi::RunningEpoll(epollFd, socket, 1, 2000, ProcessMessage);
 
     t.join();
 
