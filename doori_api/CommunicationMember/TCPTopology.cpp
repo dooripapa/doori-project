@@ -12,6 +12,7 @@ namespace doori::CommunicationMember {
 
     }
 
+    /* 의존성 주입 */
     TCPTopology::TCPTopology(int dataPassage) : mDataPassage(dataPassage){
     }
 

@@ -14,7 +14,7 @@ auto ICommunication::Init(string ip, string port, Topic topic, Protocol_backup::
     LOG(INFO, "Tnsd Communication TopicAccess : ", mICommTopic.getTopicName());
 
     do{
-        if( (mTnsdSocket = CommunicationMember::TcpApi::RequestConnection(ip, port, 10))<0) {
+        if((mTnsdSocket = CommunicationMember::TcpApi::Connect(ip, port, 10)) < 0) {
             LOG(ERROR, "failed to connect to Tnsd", ip, ":", port);
             std::this_thread::sleep_for(std::chrono::seconds(5));
             if( ++retryCnt > RETRY_MAX ) {

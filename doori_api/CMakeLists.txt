@@ -83,7 +83,7 @@ set(SRC_FILES
 		Interface/Protocol.cpp
 		Interface/ProtocolHeader.h
 		Interface/ProtocolHeader.cpp
-		)
+        CommunicationMember/Socket.cpp CommunicationMember/Socket.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

@@ -6,6 +6,7 @@
 #define DOORI_PROJECT_TCPAPI_H
 
 #include "Common/Log.h"
+#include "Socket.h"
 #include <string>
 #include <sys/socket.h>
 #include <bits/socket.h>
@@ -17,104 +18,93 @@
 namespace doori {
     namespace CommunicationMember {
 
-        enum class SOCK_OPT {
-             REUSE                  // 주소와 포트를 재사용할 수 있도록 허용합니다.
-            ,KEEPALIVE              // TCP 연결에서 keep-alive 메시지를 사용하도록 설정합니다.
-            ,LINGER                 // 소켓이 close될 때 남아 있는 데이터 처리를 제어합니다.
-            ,RCVBUF                 // 수신 버퍼의 크기를 설정합니다.
-            ,SNDBUF                 // 송신 버퍼의 크기를 설정합니다.
-            ,RCVTIMEO               // 수신 시간 초과를 설정합니다.
-            ,SNDTIMEO               // 송신 시간 초과를 설정합니다.
-            ,BROADCAST              // 소켓에서 브로드캐스트 메시지를 허용합니다.
-            ,OFF_NAGLE              // Nagle 알고리즘을 비활성화하여 지연을 최소화합니다.
-        };
-
-        /**
-         * TcpApi이 함수는 static 기질을 가지면 안된다.
-         */
         class TcpApi {
+
         public:
+
             /**
              * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
              * @return 소켓 FD
              */
-            static int CreateSocket();
+            Socket CreateSocket();
 
             /**
              * SOL_SOCKET을 SO_REUSEPORT 와 SO_REUSEADDR 설정함
              * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
-             * @param fd 소켓 FD
+             * @param socket Socket Wrapper 클래스
              * @param ip가 ""이면, INADDR_ANY, 지정되면 해당IP로 바인딩 및 옵션이 셋팅됨
              * @param port 포트번호
              * @todo 수신부 IP, PORT 접속정보를 확인할 수 있는 옵션도 셋팅할것
-             * @return
+             * @return Socket Wrapper 클래스
              */
-            static int SetReuseOpt(int fd,std::string ip, std::string port);
+            Socket SetReuseOpt(Socket socket, std::string ip, std::string port);
 
             /**
              * recv()함수에 Timeout 를 설정하기위해서 사전에 호출되어야 하는 함수
              * 소켓을 재설정함. SOL_SCOCKET, SO_RCVTIMEO를 설정함.
-             * @param fd  소켓 FD
-             * @param timeout  Timeout값(second)
-             * @return 재설정되고 나서, 리턴되는 소켓 FD, -1이면 error
+             * @param socket Socket Wrapper 클래스
+             * @param timeout Timeout값(second)
+             * @return Socket Wrapper 클래스
              */
-            static int SetTimeoutOpt(int fd, std::uint8_t timeout);
+            Socket SetTimeoutOpt(Socket socket, std::uint8_t timeout);
 
             /**
              * IP, PORT정보를 이용하여 바인딩처리함
              * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
-             * @param fd 소켓 FD
+             * @param socket Socket Wrapper 클래스
              * @param sockaddrIn
-             * @return
+             * @return Socket Wrapper 클래스
              */
-            static int Bind(int fd, std::string ip, std::string port);
+            Socket Bind(Socket socket, std::string ip, std::string port);
 
             /**
              * 입력 받은 소켓을 listen상태로 만든다.
              * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
              *       또한 Bind()함수로 바인딩 상태이어야 한다.
-             * @param fd 소켓 FD
+             * @param socket Socket Wrapper 클래스
              * @param backlogNum 접속 요청이 들어올 경우, 최대 대기 배열 수
-             * @return
+             * @return Socket Wrapper 클래스
              */
-            static int Listen(int fd, int backlogNum);
+            Socket Listen(Socket socket, int backlogNum);
 
             /**
              * 입력 받은 소켓을 accept상태로 만든다. 수신요청이 오면, 또 다른 FD로 리턴되고, 해당 FD로 통신이 가능하다.
              * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
              *       또한 Bind()함수로 바인딩 상태이어야 한다.
-             * @param fd 소켓 FD
+             * @param socket Socket Wrapper 클래스
              * @param sockaddrIn
-             * @return
+             * @return Socket Wrapper 클래스
              */
-            static int Accept(int fd);
+            Socket Accept(Socket socket);
 
             /**
              * 원격지 접속을 요청합니다.
-             * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
+             * @param socket Socket Wrapper 클래스
              * @param ip 원격지 IP
              * @param port 원격지 PORT
-             * @return
+             * @return Socket Wrapper 클래스
              */
-            static int Connect(int fd, string ip, string port);
+            Socket Connect(Socket socket, string ip, string port);
 
             /**
-             * 데이터를 송신합다니.
-             * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
+             * 데이터를 송신합니다.
+             * @param socket Socket Wrapper 클래스
+             * @note established socket꼭 특정 IP, PORT에 바인딩 될 필요는 없음.
              * @param data 데이터
              * @param dataLen 데이터길이
-             * @return
+             * @return Socket Wrapper 클래스
              */
-            static int Send(int fd, const char *data, uint8_t dataLen);
+            Socket Send(Socket socket, const char *data, uint8_t dataLen);
 
             /**
              * 데이터를 수신합니다.
-             * @param fd 바인딩 소켓, 혹은 바인딩 되지 않는 소켓
+             * @param socket Socket Wrapper 클래스
+             * @note established socket꼭 특정 IP, PORT에 바인딩 될 필요는 없음.
              * @param dataContainer 데이터를 저장할 변수
              * @param dataLen  데이터 수신 후 수신이 완료 되기 위한 데이터 길이
-             * @return  -1 error, 0이면 session 종료, 0 보다 크면, 실제로 수신된 데이터 사이즈
+             * @return Socket Wrapper 클래스
              */
-            static int Recv(int fd, char *dataContainer, std::uint8_t dataLen);
+            Socket Recv(Socket socket, char *dataContainer, std::uint8_t dataLen);
 
             /**
              * 주어진 ip, port정보를 이용하여, 접속요청 바로 시도 합니다.
@@ -122,42 +112,43 @@ namespace doori {
              * @param ip destination ip
              * @param port  destination port
              * @param timeout SetTimeoutOpt 값
-             * @return -1 이면 fail, 0보다 이상이면 socket fd값
+             * @return Socket Wrapper 클래스
              */
-            static int RequestConnection(string ip, string port, std::uint8_t timeout);
+            Socket Connect(string ip, string port, std::uint8_t timeout);
 
             /**
              * 이미 Established 소켓으로 부터 데이터를 주고 받습니다.
-             * @param socketFd  Establised socket
+             * @param socket Socket Wrapper 클래스
              * @param data  송신데이터
              * @param dataLen  송신데이터 길이
              * @param recvData 수신데이터
              * @param tilDataSize 수신데이터 완전한 데이터 사이즈
-             * @return -1 이면 fail, 0> 이면 수신데이터 총 사이즈
+             * @return Socket Wrapper 클래스
              */
-            static int Reply(int socketFd, const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize);
+            Socket Reply(Socket sockeet, const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize);
 
             /**
              * Epoll 생성합니다.
              * @note socketFd는 넘겨주기전에 바인딩된 상태이어야 한다.
-             * @param socketFd  listen용으로 사용하기 위한 소켓
+             * @param socket Socket Wrapper 클래스
              * @param backlogNum  backlogNum 접속 요청이 들어올 경우, 최대 대기 배열 수
-             * @param delegation 데이터를 수신시, 처리한다. 첫번째 인자는 수신fd, 두번째 인자는 수신데이터
-             * @return 생성된 EpollFd를 리턴합니다.
+             * @return Epoll용 Socket Wrapper 클래스
              */
-            static int CreateEpoll(int socketFd, int backlogNum);
+            Socket CreateEpoll(Socket socket, int backlogNum);
 
-             /**
-              * Epoll loop back형식으로 처리한다. Epoll의 연결요청이 아닌 데이터수신 이벤트는 delegation함수로 처리한다.
-              * @param epollFd 초기화가 완료된 epoll fd
-              * @param backlogEventNum  epoll event가 발생시, 최대 대기 이벤트 수
-              * @param timeout  epoll event가 타임아웃 값.
-              * @return
-              */
-            [[noreturn]] static void RunningEpoll(int epollFd, int listenSocket, int backlogEventNum, int timeout ,int(*delegation)(int)  ) ;
+            /**
+             * Epoll loop back형식으로 처리한다. Epoll의 연결요청이 아닌 데이터수신 이벤트는 delegation함수로 처리한다.
+             * @param epoll용 Socket Wrapper 클래스
+             * @param listen용 Socket Wrapper 클래스
+             * @param backlogEventNum  epoll event가 발생시, 최대 대기 이벤트 수
+             * @param timeout  epoll event가 타임아웃 값.
+             * @param delegation 데이터를 수신시, 처리한다. ex) int delegation( Socket socket )
+             * @return 리턴하지 않음.
+             */
+            [[noreturn]] static void RunningEpoll(Socket epoll, Socket socket, int backlogEventNum, int timeout , int(*delegation)(Socket)  ) ;
 
         private:
-            static int AddAsEpollList( int epollFd, int listenSocket, int(*delegation)(int) );
+            Socket AddAsEpollList(Socket epoll, Socket socket, int(*delegation)(Socket) );
         };
 
     } // doori

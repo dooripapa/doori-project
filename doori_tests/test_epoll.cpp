@@ -11,7 +11,7 @@ using namespace std;
 using namespace doori::Common;
 using namespace doori::CommunicationMember;
 
-auto ProcessMessage(int socket) -> int
+auto ProcessMessage(TcpApi::Socket socket) -> int
 {
     int iReadLen = 3;
 
@@ -32,7 +32,7 @@ static void RunClient() {
     sleep(2);
     LOG( DEBUG, "RunClient ");
 
-    int sock = TcpApi::CreateSocket();
+    auto sock = TcpApi::CreateSocket();
     TcpApi::Connect(sock, "127.0.0.1", "8888");
 
     const char *p = "lee";
@@ -41,13 +41,13 @@ static void RunClient() {
 
 TEST(Epoll, Usage) {
 
-    int socket = TcpApi::CreateSocket();
+    auto socket = TcpApi::CreateSocket();
 
     TcpApi::Bind(socket, "127.0.0.1", "8888");
 
-    int epollFd = TcpApi::CreateEpoll(socket, 1);
+    TcpApi::Listen(socket, 10);
 
-    LOG(DEBUG, "epollFd:", epollFd);
+    auto epollFd = TcpApi::CreateEpoll(socket, 1);
 
     /* 클라이언트 접속 프로그램 기동,
      * 단, 2초뒤에 기동됨.기동하자마자,

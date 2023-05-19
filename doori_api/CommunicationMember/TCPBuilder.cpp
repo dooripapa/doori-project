@@ -17,11 +17,10 @@ namespace doori::CommunicationMember {
      * SERVER이면 수신 해야 함으로, 특정IP, PORT로 바인딩되어야 함
      */
     int TCPBuilder::BindFrom() {
-        auto sock = -1;
         string err = "";
 
-        sock = TcpApi::CreateSocket();
-        if (sock < 0)
+        auto sock = TcpApi::CreateSocket();
+        if (sock.IsFailure())
             throw std::runtime_error("TcpApi::CreateSocket()");
 
         switch (mType) {
