@@ -7,26 +7,36 @@
 
 #include "Common/Log.h"
 #include "Socket.h"
+#include "Common/Error.h"
 #include <string>
 #include <sys/socket.h>
 #include <bits/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
+#include <fcntl.h>
 #include <functional>
 
-namespace doori {
-    namespace CommunicationMember {
+namespace doori::CommunicationMember {
 
-        class TcpApi {
+        class Socket;
+
+        class TcpApi final : public Common::Error {
 
         public:
+
+            TcpApi();
+            explicit TcpApi(Socket socket);
+            TcpApi(const TcpApi&) = default;
+            TcpApi(TcpApi&&) = default;
+            TcpApi& operator=(const TcpApi&) = default;
+            TcpApi& operator=(TcpApi&&) = default;
 
             /**
              * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
              * @return 소켓 FD
              */
-            Socket CreateSocket();
+            void CreateSocket();
 
             /**
              * SOL_SOCKET을 SO_REUSEPORT 와 SO_REUSEADDR 설정함
@@ -37,7 +47,7 @@ namespace doori {
              * @todo 수신부 IP, PORT 접속정보를 확인할 수 있는 옵션도 셋팅할것
              * @return Socket Wrapper 클래스
              */
-            Socket SetReuseOpt(Socket socket, std::string ip, std::string port);
+            void SetReuseOpt(const std::string& ip, const std::string& port);
 
             /**
              * recv()함수에 Timeout 를 설정하기위해서 사전에 호출되어야 하는 함수
@@ -46,7 +56,7 @@ namespace doori {
              * @param timeout Timeout값(second)
              * @return Socket Wrapper 클래스
              */
-            Socket SetTimeoutOpt(Socket socket, std::uint8_t timeout);
+            void SetTimeoutOpt(std::uint8_t timeout);
 
             /**
              * IP, PORT정보를 이용하여 바인딩처리함
@@ -55,7 +65,7 @@ namespace doori {
              * @param sockaddrIn
              * @return Socket Wrapper 클래스
              */
-            Socket Bind(Socket socket, std::string ip, std::string port);
+            void Bind(const std::string& ip, const std::string& port);
 
             /**
              * 입력 받은 소켓을 listen상태로 만든다.
@@ -65,7 +75,7 @@ namespace doori {
              * @param backlogNum 접속 요청이 들어올 경우, 최대 대기 배열 수
              * @return Socket Wrapper 클래스
              */
-            Socket Listen(Socket socket, int backlogNum);
+            void Listen(int backlogNum);
 
             /**
              * 입력 받은 소켓을 accept상태로 만든다. 수신요청이 오면, 또 다른 FD로 리턴되고, 해당 FD로 통신이 가능하다.
@@ -75,7 +85,7 @@ namespace doori {
              * @param sockaddrIn
              * @return Socket Wrapper 클래스
              */
-            Socket Accept(Socket socket);
+            Socket Accept();
 
             /**
              * 원격지 접속을 요청합니다.
@@ -84,7 +94,7 @@ namespace doori {
              * @param port 원격지 PORT
              * @return Socket Wrapper 클래스
              */
-            Socket Connect(Socket socket, string ip, string port);
+            void Connect(const string& ip, const string& port);
 
             /**
              * 데이터를 송신합니다.
@@ -94,7 +104,7 @@ namespace doori {
              * @param dataLen 데이터길이
              * @return Socket Wrapper 클래스
              */
-            Socket Send(Socket socket, const char *data, uint8_t dataLen);
+            void Send(const char *data, uint8_t dataLen);
 
             /**
              * 데이터를 수신합니다.
@@ -104,7 +114,7 @@ namespace doori {
              * @param dataLen  데이터 수신 후 수신이 완료 되기 위한 데이터 길이
              * @return Socket Wrapper 클래스
              */
-            Socket Recv(Socket socket, char *dataContainer, std::uint8_t dataLen);
+            void Recv(char *dataContainer, std::uint8_t dataLen);
 
             /**
              * 주어진 ip, port정보를 이용하여, 접속요청 바로 시도 합니다.
@@ -114,7 +124,7 @@ namespace doori {
              * @param timeout SetTimeoutOpt 값
              * @return Socket Wrapper 클래스
              */
-            Socket Connect(string ip, string port, std::uint8_t timeout);
+            void Connect(const string& ip, const string& port, std::uint8_t timeout);
 
             /**
              * 이미 Established 소켓으로 부터 데이터를 주고 받습니다.
@@ -125,33 +135,17 @@ namespace doori {
              * @param tilDataSize 수신데이터 완전한 데이터 사이즈
              * @return Socket Wrapper 클래스
              */
-            Socket Reply(Socket sockeet, const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize);
+            void Reply(const char *data, uint8_t dataLen, char *recvData, uint8_t tilDataSize);
 
             /**
-             * Epoll 생성합니다.
-             * @note socketFd는 넘겨주기전에 바인딩된 상태이어야 한다.
-             * @param socket Socket Wrapper 클래스
-             * @param backlogNum  backlogNum 접속 요청이 들어올 경우, 최대 대기 배열 수
-             * @return Epoll용 Socket Wrapper 클래스
+             * Socket wrapper 객체를 리턴합니다.
+             * @return Socker wrapper class
              */
-            Socket CreateEpoll(Socket socket, int backlogNum);
-
-            /**
-             * Epoll loop back형식으로 처리한다. Epoll의 연결요청이 아닌 데이터수신 이벤트는 delegation함수로 처리한다.
-             * @param epoll용 Socket Wrapper 클래스
-             * @param listen용 Socket Wrapper 클래스
-             * @param backlogEventNum  epoll event가 발생시, 최대 대기 이벤트 수
-             * @param timeout  epoll event가 타임아웃 값.
-             * @param delegation 데이터를 수신시, 처리한다. ex) int delegation( Socket socket )
-             * @return 리턴하지 않음.
-             */
-            [[noreturn]] static void RunningEpoll(Socket epoll, Socket socket, int backlogEventNum, int timeout , int(*delegation)(Socket)  ) ;
-
+            Socket GetSocket() ;
         private:
-            Socket AddAsEpollList(Socket epoll, Socket socket, int(*delegation)(Socket) );
+            Socket mSocket;
         };
 
-    } // doori
-} // CommunicationMember
+    } // CommunicationMember
 
 #endif //DOORI_PROJECT_TCPAPI_H

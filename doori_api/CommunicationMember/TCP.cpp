@@ -39,7 +39,7 @@ namespace doori::CommunicationMember{
         return mConnection;
     }
 
-    unique_ptr<ITopology> TCP::GetIPC() noexcept {
+    unique_ptr<IIPCTopology> TCP::GetIPC() noexcept {
         return std::make_unique<TCPTopology>(mConnection);
     }
 

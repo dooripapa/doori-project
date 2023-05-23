@@ -28,8 +28,6 @@ set(HEADER_FILES
 		DataStream/DataSegment.hpp
 		DataStream/Dictionary.h
 		CommunicationMember/Endpoint.h
-		CommunicationMember/Epoll.h
-		CommunicationMember/EpollEvents.h
 		CommunicationMember/TCP.h
 		Common/Error.h
 		Process/Getopt.h
@@ -47,7 +45,7 @@ set(HEADER_FILES
 		DataStream/Json.h
 		CommunicationMember/IIPCBuilder.h
 		CommunicationMember/TCPBuilder.h
-        CommunicationMember/ITopology.h
+		CommunicationMember/IIPCTopology.h
 		CommunicationMember/TCPTopology.h
 		Etc/Bigdecimal.h
         )
@@ -60,8 +58,6 @@ set(SRC_FILES
 		DataStream/DataSegment.cpp
 		DataStream/Dictionary.cpp
 		CommunicationMember/Endpoint.cpp
-		CommunicationMember/Epoll.cpp
-		CommunicationMember/EpollEvents.cpp
 		Common/Error.cpp
 		Process/Getopt.cpp
 		TnsdDistrict/ICommunication.cpp
@@ -83,7 +79,9 @@ set(SRC_FILES
 		Interface/Protocol.cpp
 		Interface/ProtocolHeader.h
 		Interface/ProtocolHeader.cpp
-        CommunicationMember/Socket.cpp CommunicationMember/Socket.h)
+        CommunicationMember/Socket.cpp
+		CommunicationMember/Socket.h
+		CommunicationMember/EpollApi.cpp CommunicationMember/EpollApi.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

@@ -19,30 +19,32 @@ namespace doori::CommunicationMember {
     int TCPBuilder::BindFrom() {
         string err = "";
 
-        auto sock = TcpApi::CreateSocket();
-        if (sock.IsFailure())
+        TcpApi tcpApi{};
+
+        tcpApi.CreateSocket();
+        if (!tcpApi.Status())
             throw std::runtime_error("TcpApi::CreateSocket()");
 
         switch (mType) {
             case CLIENT:
                 break;
             case SERVER:
-                sock = TcpApi::Bind(sock, mSourceIp, mSourcePort);
-                if (sock < 0) {
+                tcpApi.Bind(mSourceIp, mSourcePort);
+                if (!tcpApi.Status()) {
                     err = "TcpApi::Bind";
                     break;
                 }
-                sock = TcpApi::SetReuseOpt(sock, mSourceIp, mSourcePort);
+                tcpApi.SetReuseOpt(mSourceIp, mSourcePort);
                 err = "TcpApi::SetReuseOpt";
                 break;
         }
 
-        if (sock < 0)
+        if (!tcpApi.Status())
             throw std::runtime_error(err);
 
-        mSourceFd = sock;
+        mSourceFd = tcpApi.GetSocket().GetFd();
 
-        return sock;
+        return mSourceFd;
     }
 
     /*
@@ -53,29 +55,34 @@ namespace doori::CommunicationMember {
         auto sock = -1;
         string err = "";
 
-        sock = TcpApi::CreateSocket();
-        if (sock < 0)
+        TcpApi tcpApi{};
+
+        tcpApi.CreateSocket();
+        if (!tcpApi.Status())
             throw std::runtime_error("TcpApi::CreateSocket()");
 
         switch (mType) {
             case CLIENT:
                 if( !mSourceIp.empty() && !mSourcePort.empty() )
                 {
-                    sock = TcpApi::Bind(mSourceFd, mSourceIp, mSourcePort);
-                    if (sock < 0) {
+                    tcpApi.Bind(mSourceIp, mSourcePort);
+                    if (!tcpApi.Status()) {
                         err = "TcpApi::Bind";
                         break;
                     }
-                    sock = TcpApi::SetReuseOpt(mSourceFd, mSourceIp, mSourcePort);
+                    tcpApi.SetReuseOpt(mSourceIp, mSourcePort);
                     err = "TcpApi::SetReuseOpt";
+                    break;
                 }
                 break;
             case SERVER:
                 break;
         }
 
-        if (sock < 0)
+        if (!tcpApi.Status())
             throw std::runtime_error(err);
+
+        mSourceFd = tcpApi.GetSocket().GetFd();
 
         return mSourceFd;
     }
@@ -83,20 +90,29 @@ namespace doori::CommunicationMember {
     int TCPBuilder::EstablishTopologies() {
         int sock = -1;
         int connSock = -1;
+
+        TcpApi tcpApi{};
+
+        tcpApi.CreateSocket();
+        if (!tcpApi.Status())
+            throw std::runtime_error("TcpApi::CreateSocket()");
+
         string err = "";
         switch (mType) {
             case CLIENT:
-                connSock = TcpApi::Connect(mSourceFd, mDestIp, mDestPort);
-                err = "TcpApi::Connect";
+                tcpApi.Connect(mDestIp, mDestPort);
+                if(!tcpApi.Status()) {
+                    err = "TcpApi::Connect";
+                }
                 break;
             case SERVER:
-                sock = TcpApi::Listen(mSourceFd, kBackLog);
+                sock = TcpApi::Listen(kBackLog);
                 if (sock < 0) {
                     err = "TcpApi::Listen";
                     break;
                 }
                 mListenFd = sock;
-                connSock = TcpApi::Accept(mListenFd);
+                connSock = TcpApi::Accept();
                 err = "TcpApi::Accept";
                 break;
         }

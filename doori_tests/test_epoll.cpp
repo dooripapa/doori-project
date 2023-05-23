@@ -6,19 +6,22 @@
 #include <thread>
 #include "Common/Log.h"
 #include "CommunicationMember/TcpApi.h"
+#include "CommunicationMember/EpollApi.h"
 
 using namespace std;
 using namespace doori::Common;
 using namespace doori::CommunicationMember;
 
-auto ProcessMessage(TcpApi::Socket socket) -> int
+auto ProcessMessage(Socket socket) -> int
 {
     int iReadLen = 3;
 
     std::unique_ptr<char[]> dataContainer = std::make_unique<char []>(iReadLen+1);  // 1 is null size
     memset(dataContainer.get(), 0x00, iReadLen + 1);
 
-    TcpApi::Recv(socket, dataContainer.get(), iReadLen);
+    TcpApi tcpApi{};
+
+    tcpApi.Recv(dataContainer.get(), iReadLen);
 
     string stream;
     stream = dataContainer.get();
@@ -32,29 +35,52 @@ static void RunClient() {
     sleep(2);
     LOG( DEBUG, "RunClient ");
 
-    auto sock = TcpApi::CreateSocket();
-    TcpApi::Connect(sock, "127.0.0.1", "8888");
+    TcpApi tcpApi{};
+
+    tcpApi.CreateSocket();
+
+    tcpApi.Connect("127.0.0.1", "8888");
 
     const char *p = "lee";
-    TcpApi::Send(sock, p, 3);
+    tcpApi.Send(p, 3);
 }
 
 TEST(Epoll, Usage) {
 
-    auto socket = TcpApi::CreateSocket();
+    TcpApi tcpApi{};
 
-    TcpApi::Bind(socket, "127.0.0.1", "8888");
+    tcpApi.CreateSocket();
+    if( !tcpApi.Status() )
+    {
+        ASSERT_TRUE(false);
+    }
 
-    TcpApi::Listen(socket, 10);
+    tcpApi.Bind("127.0.0.1", "8888");
+    if( !tcpApi.Status() )
+    {
+        ASSERT_TRUE(false);
+    }
 
-    auto epollFd = TcpApi::CreateEpoll(socket, 1);
+    tcpApi.Listen(10);
+    if( !tcpApi.Status() )
+    {
+        ASSERT_TRUE(false);
+    }
+
+    EpollApi epollApi{};
+
+    epollApi.CreateEpoll();
+    if( !epollApi.Status() )
+    {
+        ASSERT_TRUE(false);
+    }
 
     /* 클라이언트 접속 프로그램 기동,
      * 단, 2초뒤에 기동됨.기동하자마자,
      * 바로, 접속시도를 막기위해서*/
     std::thread t(RunClient);
 
-    TcpApi::RunningEpoll(epollFd, socket, 1, 2000, ProcessMessage);
+    epollApi.RunningEpoll( 1, 2000, ProcessMessage);
 
     t.join();
 

@@ -7,25 +7,34 @@
 namespace doori {
     namespace CommunicationMember {
 
-        void Socket::SetBitwise(int fd, SOCK_STATUS status) {
-            this->fd = fd;
-            this->status = this->status | status;
+        Socket::Socket() : mFd(-1), mStatus(SOCK_STATUS::CLOSED) {
+
+        }
+
+        Socket::Socket(int fd, SOCK_STATUS status) : mFd(fd), mStatus(status) {
+
         };
 
-        bool Socket::IsFailure() const {
-            if( (this->status & SOCK_STATUS::FAILURE) == SOCK_STATUS::FAILURE) {
-                LOG(ERROR, "Failure Bitwise.");
-                return true;
-            }
-            return false;
+        void Socket::SetBitwise(SOCK_STATUS status) {
+            this->mStatus = this->mStatus | status;
         };
 
         bool Socket::IsBitwise(SOCK_STATUS status) const {
-            if( (this->status & status) == status) {
+            if( (this->mStatus & status) == status) {
                 LOG(DEBUG, "Set Bitwise:[", status, "]");
                 return true;
             }
             return false;
         }
+
+        int Socket::GetFd() const{
+            return this->mFd;
+        }
+
+        void Socket::SetBitwise(int fd, SOCK_STATUS status) {
+            this->mFd = fd;
+            this->mStatus = this->mStatus | status;
+        }
+
     } // doori
 } // CommunicationMember

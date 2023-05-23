@@ -17,7 +17,7 @@
 #include "DataStream/Stream.h"
 #include "Addr.h"
 #include "CommunicationMember/Endpoint.h"
-#include "CommunicationMember/ITopology.h"
+#include "CommunicationMember/IIPCTopology.h"
 
 namespace doori::CommunicationMember {
 

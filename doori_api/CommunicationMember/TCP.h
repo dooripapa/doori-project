@@ -10,7 +10,7 @@
 #include <memory>
 #include "CommunicationMember/IIPC.h"
 #include "CommunicationMember/Endpoint.h"
-#include "CommunicationMember/ITopology.h"
+#include "CommunicationMember/IIPCTopology.h"
 #include "CommunicationMember/TCPTopology.h"
 
 using namespace std;
@@ -23,7 +23,7 @@ namespace doori::CommunicationMember {
 
         int Create(IIPCBuilder& builder) override;
 
-        unique_ptr<ITopology> GetIPC() noexcept override;
+        unique_ptr<IIPCTopology> GetIPC() noexcept override;
     private:
         int mConnection;
     };

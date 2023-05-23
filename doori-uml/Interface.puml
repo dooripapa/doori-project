@@ -9,6 +9,30 @@ skinparam linetype ortho
 '그래프로 표시되는 글자는 설치되어 있는 D2Coding 폰트로 지정함
 skinparam defaultFontName D2Coding
 'https://plantuml.com/class-diagram
+set namespaceSeparator ::
+
+class doori::Common::Log{
+}
+class doori::Common::Error{
++Error()
++Error(Error&& rhs)
++Error(const Error& rhs)
++Error& operator=(Error&& rhs)
++Error& operator=(const Error& rhs)
++void occur(int errnum, bool status, const std::string& cause)
++void occur(int errnum, bool status, char const(&value)[N])
++virtual ~Error()
++void Clear()
++bool Status()
++int Errno()
++const std::string& Cause()
+#inline void InjectBySystemcall()
+#inline void InjectByClient(const string& cause)
+#void InjectByClient(char const(&value)[N])
+-bool mStatus
+-int mErrno
+-string mCause
+}
 
 Interface Application{
 #IInterface CreateInterface()
@@ -51,17 +75,16 @@ interface IDictionary{
 class TnsdDictionary{
 }
 
-enum SOCK_STATUS {
+enum doori::CommunicationMember::SOCK_STATUS {
 +INIT
 +BINDING
 +LISTEN
 +ACCEPT
 +ESTABLISED
 +CLOSED
-+FAILURE
 }
 
-enum SOCK_OPT {
+enum doori::CommunicationMember::SOCK_OPT {
 +REUSE
 +KEEPALIVE
 +LINGER
@@ -73,49 +96,69 @@ enum SOCK_OPT {
 +OFF_NAGLE
 }
 
-class Socket{
+
+
+class doori::CommunicationMember::Socket{
++Socket();
++Socket(int fd, SOCK_STATUS status);
++Socket& operator=(const Socket & rhs)
++Socket& operator=(Socket && rhs)
++Socket(const Socket & rhs)
++Socket(Socket && rhs)
++~Socket()
++bool IsBitwise(SOCK_STATUS status)
++void SetBitwise(SOCK_STATUS status)
++void SetBitwise(int fd, SOCK_STATUS status)
++int GetFd()
+---
+-int mFd
+-int mStatus
 }
 
-class TcpApi{
-+{static} int Socket();
-+{static} int SetReuseOpt();
-+{static} int SetTimeoutOpt();
-+{static} int Bind();
-+{static} int Listen();
-+{static} int Accept();
-+{static} int Connect();
-+{static} int Send();
-+{static} int Recv();
-+{static} int RequestConnection();
-+{static} int Reply();
+class doori::CommunicationMember::TcpApi{
++void Socket();
++void SetReuseOpt();
++void SetTimeoutOpt();
++void Bind();
++void Listen();
++Socket Accept();
++void Connect();
++void Send();
++void Recv();
++void RequestConnection();
++void Reply();
+-Socket mSocket
 }
 
-interface IIPC{
+Error <|-- TcpApi : 상속
+Socket *-- TcpApi
+
+interface doori::CommunicationMember::IIPC{
 +int Create(IIPCBuilder& builder)
-+ITopology* GetIPC()
++IIPCTopology* GetIPC()
 }
 
-class TCP{
+class doori::CommunicationMember::TCP{
 int Create(IIPCBuilder& builder) override
-unique_ptr<ITopology> GetIPC() noexcept override
+unique_ptr<IIPCTopology> GetIPC() noexcept override
 ..
 -int mConnection
 }
 
 
-enum TOPOLOGY_TYPE {
+enum doori::CommunicationMember::TOPOLOGY_TYPE {
 SERVER,
 CLIENT
 }
 
-interface IIPCBuilder{
+interface doori::CommunicationMember::IIPCBuilder{
 int BindFrom()
 int BindTo()
 int GetListenRsc()
 int EstablishTopologies()
 }
 
-class TCPBuilder{
+class doori::CommunicationMember::TCPBuilder{
 +int BindFrom() override;
 +int BindTo() override;
 +int EstablishTopologies() override;
@@ -134,12 +177,14 @@ class TCPBuilder{
 -const int kBackLog=10;
 }
 
-interface ITopology{
+interface doori::CommunicationMember::IIPCTopology{
 int Send(const string &data)
 int Recv(string &data, uint8_t tilSize)
+int Reply()
+int Close()
 }
 
-class TCPTopology{
+class doori::CommunicationMember::TCPTopology{
 int Send(const string &data) override
 int Recv(string &data, uint8_t tilSize) override
 ..
@@ -147,10 +192,10 @@ int Recv(string &data, uint8_t tilSize) override
 -int mDataPassage
 }
 
-class Epoll{
+class doori::CommunicationMember::Epoll{
 }
 
-class EpollEvents{
+class doori::CommunicationMember::EpollEvents{
 }
 
 EpollEvents <-- Epoll
@@ -166,7 +211,7 @@ IInterface <--o Application
 TnsdInterface <--o Tnsd
 
 IIPCBuilder <|-- TCPBuilder
-ITopology <|-- TCPTopology
+IIPCTopology <|-- TCPTopology
 
 IIPC <|-- TCP
 IIPCBuilder <-o IIPC

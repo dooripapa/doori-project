@@ -5,13 +5,13 @@
 #ifndef DOORI_PROJECT_TCPTOPOLOGY_H
 #define DOORI_PROJECT_TCPTOPOLOGY_H
 
-#include "ITopology.h"
+#include "IIPCTopology.h"
 #include "Endpoint.h"
+#include "TcpApi.h"
 
-namespace doori {
-    namespace CommunicationMember {
+namespace doori::CommunicationMember {
 
-        class TCPTopology : public ITopology {
+        class TCPTopology : public IIPCTopology {
         public:
             enum {
                 HEADER_LEN = 10
@@ -24,7 +24,7 @@ namespace doori {
              * 초기화를 합니다.
              * @param dataPassage 데이터를 주고 받을 수 있는 추상리소스
              */
-            TCPTopology(int dataPassage);
+            explicit TCPTopology(Socket socket);
 
             /**
              * 원격지 노드에 데이르터ㄹ 송신합니다.
@@ -41,10 +41,9 @@ namespace doori {
             int Recv(std::string &data, std::uint8_t tilSize) override;
 
         private:
-            int mDataPassage;
+            TcpApi mTcpApi;
         };
 
-    } // doori
-} // CommunicationMember
+    } // CommunicationMember
 
 #endif //DOORI_PROJECT_TCPTOPOLOGY_H

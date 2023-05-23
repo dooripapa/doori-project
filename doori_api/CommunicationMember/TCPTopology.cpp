@@ -13,17 +13,17 @@ namespace doori::CommunicationMember {
     }
 
     /* 의존성 주입 */
-    TCPTopology::TCPTopology(int dataPassage) : mDataPassage(dataPassage){
+    TCPTopology::TCPTopology(Socket socket) : mTcpApi(socket){
+
     }
 
     int TCPTopology::Send(const string &data) {
 
         int nMsgLen = data.size();
 
-        int nRet = TcpApi::Send(mDataPassage, data.c_str(), nMsgLen);
-        if (nRet != 0)
-        {
-            LOG(ERROR, "TcpApi::Send() error");
+        mTcpApi.Send(data.c_str(), nMsgLen);
+        if (!mTcpApi.Status()) {
+            LOG(ERROR, "TcpApi.Send() error");
             return -1;
         }
 
@@ -34,13 +34,11 @@ namespace doori::CommunicationMember {
 
         std::unique_ptr<char []> container = std::make_unique<char []>(tilSize);
 
-        int nRet = TcpApi::Recv(mDataPassage, container.get(), tilSize);
-        if (nRet != 0)
-        {
-            LOG(ERROR, "TcpApi::Recv() error");
+        mTcpApi.Recv(container.get(), tilSize);
+        if ( !mTcpApi.Status() ) {
+            LOG(ERROR, "TcpApi.Recv() error");
             return -1;
         }
-
         data = container.get();
 
         return 0;

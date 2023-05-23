@@ -7,6 +7,7 @@
 
 #include "Common/Log.h"
 #include "TcpApi.h"
+#include "Common/Error.h"
 
 namespace doori {
     namespace CommunicationMember {
@@ -22,7 +23,6 @@ namespace doori {
             ,ACCEPT     = 1 << 2
             ,ESTABLISED = 1 << 3
             ,CLOSED     = 1 << 4
-            ,FAILURE    = 1 << 5
         };
 
         //////////////////////////////////////////////////////////
@@ -44,24 +44,25 @@ namespace doori {
 
         class Socket {
         public:
-            Socket() = delete;
-            Socket(int fd, SOCK_STATUS status) : fd(fd), status(status) { };
+            Socket();
+            Socket(int fd, SOCK_STATUS status);
             Socket& operator=(const Socket & rhs) = default;
             Socket& operator=(Socket && rhs) = default;
             Socket(const Socket & rhs) = default;
             Socket(Socket && rhs) = default;
             ~Socket() = default;
 
-            [[nodiscard]] bool IsFailure() const;
-
             [[nodiscard]] bool IsBitwise(SOCK_STATUS status) const;
+
+            void SetBitwise(SOCK_STATUS status);
 
             void SetBitwise(int fd, SOCK_STATUS status);
 
+            [[nodiscard]] int GetFd() const;
+
         private:
-            friend TcpApi;
-            int fd;
-            int status;
+            int mFd;
+            int mStatus;
         };
 
     } // doori

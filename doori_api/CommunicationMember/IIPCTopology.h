@@ -2,14 +2,14 @@
 // Created by jaeseong on 23. 2. 7.
 //
 
-#ifndef DOORI_PROJECT_ITOPOLOGY_H
-#define DOORI_PROJECT_ITOPOLOGY_H
+#ifndef DOORI_PROJECT_IIPCTOPOLOGY_H
+#define DOORI_PROJECT_IIPCTOPOLOGY_H
 #include <string>
 
 
 namespace doori {
     namespace CommunicationMember {
-        class ITopology {
+        class IIPCTopology {
         public:
             /**
              * 통신 객체를 이용하여, 데이터 보냅니다.
@@ -28,4 +28,4 @@ namespace doori {
     }
 }
 
-#endif //DOORI_PROJECT_ITOPOLOGY_H
+#endif //DOORI_PROJECT_IIPCTOPOLOGY_H

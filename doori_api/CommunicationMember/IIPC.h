@@ -8,7 +8,7 @@
 #include "string"
 #include "CommunicationMember/IIPC.h"
 #include "CommunicationMember/IIPCBuilder.h"
-#include "CommunicationMember/ITopology.h"
+#include "CommunicationMember/IIPCTopology.h"
 #include "CommunicationMember/Endpoint.h"
 #include "Common/Error.h"
 
@@ -19,7 +19,7 @@ namespace doori::CommunicationMember {
     class IIPC {
     public:
         virtual int Create( IIPCBuilder& builder ) = 0;
-        virtual unique_ptr<doori::CommunicationMember::ITopology> GetIPC() noexcept = 0;
+        virtual unique_ptr<doori::CommunicationMember::IIPCTopology> GetIPC() noexcept = 0;
     };
 
 } // doori

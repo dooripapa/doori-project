@@ -4,41 +4,54 @@
 //
 // Created by doori on 19. 7. 25.
 //
+#include <cstring>
 #include "Error.h"
 
-namespace doori{
+namespace doori::Common{
 
-Error Error::oneInstance;
+        Error::Error() : mErrno(0), mStatus(true), mCause() {};
 
-Error::Error() : mErrno(0), mStatus(true), mCause("") {}
+        auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
+        {
+            mErrno = errnum;
+            mStatus = status;
+            mCause = cause;
+        }
 
-auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
-{
-    mErrno = errnum;
-    mStatus = status;
-    mCause = cause;
-}
+        auto Error::Errno() const noexcept -> int {
+            return mErrno;
+        }
 
-auto Error::Errno() const noexcept -> int {
-    return mErrno;
-}
+        auto Error::Cause() const noexcept -> const std::string & {
+            return mCause;
+        }
 
-auto Error::Cause() const noexcept -> const std::string & {
-    return mCause;
-}
+        auto Error::Status() const noexcept -> bool {
+            return mStatus;
+        }
 
-auto Error::singleton() -> Error& {
-    return Error::oneInstance;
-}
+        auto Error::Clear() noexcept -> void {
+            mErrno = 0;
+            mCause = std::string("");
+            mStatus = true;
+        }
 
-auto Error::Status() const noexcept -> bool {
-    return mStatus;
-}
+        inline void Error::InjectBySystemcall() noexcept{
+            mErrno = errno;
+            if( mErrno > 0 ) {
+                mStatus = false;
 
-auto Error::clear() noexcept -> void {
-    mErrno = 0;
-    mCause = std::string("");
-    mStatus = true;
-}
+                char errorStr[1024] = {0};
+                strerror_r(errno, errorStr, sizeof(errorStr) );
+            }
+            else {
+                Clear();
+            }
+        }
 
-}
+        void Error::InjectByClient(const std::string& cause) noexcept{
+            mErrno = -1;
+            mStatus = false;
+            mCause = cause;
+        }
+    }
