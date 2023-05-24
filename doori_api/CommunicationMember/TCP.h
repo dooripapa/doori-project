@@ -18,14 +18,16 @@ using namespace std;
 namespace doori::CommunicationMember {
     class TCP : public IIPC {
     public:
-        TCP();
-        virtual ~TCP();
+        TCP() = default;
+        TCP(const TCP&) = default;
+        TCP(TCP&&) = default;
+        TCP& operator=(const TCP&) = default;
+        TCP& operator=(TCP&&) = default;
+        virtual ~TCP() = default;
 
         int Create(IIPCBuilder& builder) override;
 
         unique_ptr<IIPCTopology> GetIPC() noexcept override;
-    private:
-        int mConnection;
     };
 
 };

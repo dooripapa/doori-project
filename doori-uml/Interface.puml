@@ -110,6 +110,9 @@ class doori::CommunicationMember::Socket{
 +void SetBitwise(SOCK_STATUS status)
 +void SetBitwise(int fd, SOCK_STATUS status)
 +int GetFd()
++long Send()
++long Recv()
++int Close()
 ---
 -int mFd
 -int mStatus
@@ -122,11 +125,9 @@ class doori::CommunicationMember::TcpApi{
 +void Bind();
 +void Listen();
 +Socket Accept();
-+void Connect();
-+void Send();
-+void Recv();
-+void RequestConnection();
-+void Reply();
++Socket Connect();
++Socket GetSocket();
+---
 -Socket mSocket
 }
 
@@ -141,8 +142,6 @@ interface doori::CommunicationMember::IIPC{
 class doori::CommunicationMember::TCP{
 int Create(IIPCBuilder& builder) override
 unique_ptr<IIPCTopology> GetIPC() noexcept override
-..
--int mConnection
 }
 
 
@@ -178,9 +177,8 @@ class doori::CommunicationMember::TCPBuilder{
 }
 
 interface doori::CommunicationMember::IIPCTopology{
-int Send(const string &data)
-int Recv(string &data, uint8_t tilSize)
-int Reply()
+long Send(const string &data)
+long Recv(string &data, uint8_t tilSize)
 int Close()
 }
 
@@ -211,12 +209,12 @@ IInterface <--o Application
 TnsdInterface <--o Tnsd
 
 IIPCBuilder <|-- TCPBuilder
-IIPCTopology <|-- TCPTopology
+IIPCTopology <|-- Socket
 
 IIPC <|-- TCP
 IIPCBuilder <-o IIPC
 TCPBuilder <- TCP : 의존 <
-TCPTopology <.. TCP : 생성 <
+Socket <.. TCP : 생성 <
 
 
 

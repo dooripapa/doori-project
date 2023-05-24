@@ -42,7 +42,7 @@ namespace doori {
             ,OFF_NAGLE              // Nagle 알고리즘을 비활성화하여 지연을 최소화합니다.
         };
 
-        class Socket {
+        class Socket : public IIPCTopology {
         public:
             Socket();
             Socket(int fd, SOCK_STATUS status);
@@ -50,7 +50,7 @@ namespace doori {
             Socket& operator=(Socket && rhs) = default;
             Socket(const Socket & rhs) = default;
             Socket(Socket && rhs) = default;
-            ~Socket() = default;
+            virtual ~Socket() = default;
 
             [[nodiscard]] bool IsBitwise(SOCK_STATUS status) const;
 
@@ -59,6 +59,24 @@ namespace doori {
             void SetBitwise(int fd, SOCK_STATUS status);
 
             [[nodiscard]] int GetFd() const;
+
+            long Send(const string& data);
+
+            long Send(const char* data, uint16_t dataSize);
+
+            template<int N>
+            long Send(char const(&data)[N]) {
+                auto ret = send(mFd, data, N, 0);
+                if(ret == -1) {
+                    LOG(ERROR, "send error" );
+                    return -1;
+                }
+                return ret;
+            };
+
+            long Recv(string &container, uint32_t tilDataSize);
+
+            int Close();
 
         private:
             int mFd;
