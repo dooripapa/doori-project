@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "CommunicationMember/Endpoint.h"
+#include "IIPCTopology.h"
 
 using namespace std;
 
@@ -18,10 +19,8 @@ namespace doori::CommunicationMember {
 
     class IIPCBuilder {
     public:
-        virtual int BindFrom() = 0;
-        virtual int BindTo() = 0;
-        virtual int GetListenRsc() = 0;
-        virtual int EstablishTopologies() = 0;
+        virtual unique_ptr<IIPCTopology> GetListenRsc() = 0;
+        virtual bool EstablishTopologies() = 0;
     };
 
 };

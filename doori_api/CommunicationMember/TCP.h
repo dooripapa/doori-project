@@ -25,9 +25,11 @@ namespace doori::CommunicationMember {
         TCP& operator=(TCP&&) = default;
         virtual ~TCP() = default;
 
-        int Create(IIPCBuilder& builder) override;
+        int Create(IIPCBuilder &builder) override;
 
-        unique_ptr<IIPCTopology> GetIPC() noexcept override;
+        unique_ptr<doori::CommunicationMember::IIPCTopology> GetIPC() noexcept override;
+    private:
+        unique_ptr<doori::CommunicationMember::IIPCTopology> mResource;
     };
 
 };

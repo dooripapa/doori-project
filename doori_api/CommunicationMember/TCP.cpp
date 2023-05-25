@@ -7,40 +7,21 @@
 
 namespace doori::CommunicationMember{
 
-    TCP::~TCP() {
-    }
+    int TCP::Create(IIPCBuilder &builder) {
 
-    TCP::TCP() : mConnection(-1) {
-
-    }
-
-    int TCP::Create( IIPCBuilder& builder) {
-        auto from = builder.BindFrom();
-        if( from == -1 )
+        if( !builder.EstablishTopologies() )
         {
-            LOG(ERROR, "Binding error, From endpoint");
-            return -1;
-        }
-
-        auto to = builder.BindTo();
-        if( to == -1 )
-        {
-            LOG(ERROR, "Binding error, To endpoint");
-            return -1;
-        }
-
-        try {
-            mConnection = builder.EstablishTopologies();
-        }catch (exception e) {
-            LOG(ERROR, "Establish Topologies,call exit()", ":", e.what());
+            LOG(ERROR, "Establish Topologies,call exit()");
             std::exit(-1);
         }
 
-        return mConnection;
+        mResource = builder.GetListenRsc();
+
+        return 0;
     }
 
-    unique_ptr<IIPCTopology> TCP::GetIPC() noexcept {
-        return std::make_unique<TCPTopology>(mConnection);
+    unique_ptr<doori::CommunicationMember::IIPCTopology> TCP::GetIPC() noexcept {
+        return std::move(mResource);
     }
 
 }

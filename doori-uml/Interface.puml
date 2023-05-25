@@ -11,6 +11,9 @@ skinparam defaultFontName D2Coding
 'https://plantuml.com/class-diagram
 set namespaceSeparator ::
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''  Common  Library   ''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 class doori::Common::Log{
 }
 class doori::Common::Error{
@@ -34,25 +37,9 @@ class doori::Common::Error{
 -string mCause
 }
 
-Interface Application{
-#IInterface CreateInterface()
-#IIPC CreateIPC()
-#IDictionary CreateDictionary()
-}
-
-Interface IInterface{
-#string GetHederPacket()
-#string GetFooterPacket()
-}
-
-class Tnsd{
-+CreateInterface()
-}
-
-class TnsdInterface{
-}
-
-
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''  Enum              ''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 enum TnsdTokenId{
 +VERSION
 +TNSD_IP
@@ -66,13 +53,6 @@ enum TnsdTokenId{
 +LOG_LEVEL
 +MY_TOPIC
 +END
-}
-
-interface IDictionary{
-#string GetId(Token id)
-}
-
-class TnsdDictionary{
 }
 
 enum doori::CommunicationMember::SOCK_STATUS {
@@ -96,7 +76,82 @@ enum doori::CommunicationMember::SOCK_OPT {
 +OFF_NAGLE
 }
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''  Process           ''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Interface Application{
+#IInterface CreateInterface()
+#IIPC CreateIPC()
+#IDictionary CreateDictionary()
+}
 
+Interface IInterface{
+#string GetHederPacket()
+#string GetFooterPacket()
+}
+
+class Tnsd{
++CreateInterface()
+}
+
+class TnsdInterface{
+}
+
+
+
+interface IDictionary{
+#string GetId(Token id)
+}
+
+class TnsdDictionary{
+}
+
+IDictionary <|-- TnsdDictionary
+Application <|-- Tnsd
+IInterface <|-- TnsdInterface
+IInterface <--o Application
+TnsdInterface <--o Tnsd
+
+
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''   IPC Builder Pattern   '''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+interface doori::CommunicationMember::IIPC{
++unique_ptr<IIPCTopology> Create(IIPCBuilder& builder)
+}
+
+interface doori::CommunicationMember::IIPCBuilder{
+bool EstablishTopologies()
+}
+
+class doori::CommunicationMember::TCP{
++unique_ptr<IIPCTopology> Create(IIPCBuilder& builder) override
+#TCP(Socket& socket)
+#Socket& mSocket;
+}
+
+class doori::CommunicationMember::TCPBuilder{
++bool EstablishTopologies() override;
+..
++TCPBuilder() = delete
++TCPBuilder(Socket &socket);
++TCPBuilder(const TCPBuilder&) = delete
++TCPBuilder(TCPBuilder&&) = delete
++TCPBuilder& operator=(const TCPBuilder&) = delete
++TCPBuilder& operator=(TCPBuilder&&) = delete
++int From(string ip, string port)
++int From()
++int To(string ip, string port)
+--
+}
+
+interface doori::CommunicationMember::IIPCTopology{
+long Send(const string &data)
+long Recv(string &data, uint8_t tilSize)
+int Close()
+}
 
 class doori::CommunicationMember::Socket{
 +Socket();
@@ -119,75 +174,20 @@ class doori::CommunicationMember::Socket{
 }
 
 class doori::CommunicationMember::TcpApi{
-+void Socket();
++TcpApi() = delete
++TcpApi(Socket& socket)
++TcpApi(const TcpApi&) = delete
++TcpApi(TcpApi&&) = delete
++TcpApi& operator=(const TcpApi&) = delete
++TcpApi& operator=(TcpApi&&) = delete
 +void SetReuseOpt();
 +void SetTimeoutOpt();
-+void Bind();
++void Bind(string ip, string port);
 +void Listen();
-+Socket Accept();
-+Socket Connect();
-+Socket GetSocket();
++int Accept();
++void Connect();
 ---
--Socket mSocket
-}
-
-Error <|-- TcpApi : 상속
-Socket *-- TcpApi
-
-interface doori::CommunicationMember::IIPC{
-+int Create(IIPCBuilder& builder)
-+IIPCTopology* GetIPC()
-}
-
-class doori::CommunicationMember::TCP{
-int Create(IIPCBuilder& builder) override
-unique_ptr<IIPCTopology> GetIPC() noexcept override
-}
-
-
-enum doori::CommunicationMember::TOPOLOGY_TYPE {
-SERVER,
-CLIENT
-}
-
-interface doori::CommunicationMember::IIPCBuilder{
-int BindFrom()
-int BindTo()
-int GetListenRsc()
-int EstablishTopologies()
-}
-
-class doori::CommunicationMember::TCPBuilder{
-+int BindFrom() override;
-+int BindTo() override;
-+int EstablishTopologies() override;
-+int GetListenRsc() override;
-..
-+TCPBuilder(TOPOLOGY_TYPE type, string ip, string port);
-+TCPBuilder(string destination_ip, string destination_port, string source_ip, string source_port);
---
--string mDestIp;
--string mDestPort;
--string mSourceIp;
--string mSourcePort;
--int mListenFd;
--int mSourceFd;
--TOPOLOGY_TYPE mType;
--const int kBackLog=10;
-}
-
-interface doori::CommunicationMember::IIPCTopology{
-long Send(const string &data)
-long Recv(string &data, uint8_t tilSize)
-int Close()
-}
-
-class doori::CommunicationMember::TCPTopology{
-int Send(const string &data) override
-int Recv(string &data, uint8_t tilSize) override
-..
---
--int mDataPassage
+-Socket& mSocket
 }
 
 class doori::CommunicationMember::Epoll{
@@ -199,14 +199,9 @@ class doori::CommunicationMember::EpollEvents{
 EpollEvents <-- Epoll
 
 
+Error <|-- TcpApi : 상속
+Socket *-- TcpApi
 
-IDictionary <|-- TnsdDictionary
-
-
-Application <|-- Tnsd
-IInterface <|-- TnsdInterface
-IInterface <--o Application
-TnsdInterface <--o Tnsd
 
 IIPCBuilder <|-- TCPBuilder
 IIPCTopology <|-- Socket
@@ -215,9 +210,5 @@ IIPC <|-- TCP
 IIPCBuilder <-o IIPC
 TCPBuilder <- TCP : 의존 <
 Socket <.. TCP : 생성 <
-
-
-
-
 
 @enduml

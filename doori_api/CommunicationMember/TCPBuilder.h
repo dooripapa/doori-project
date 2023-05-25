@@ -16,7 +16,11 @@ namespace doori::CommunicationMember {
     class TCPBuilder : public IIPCBuilder {
     public:
 
-        TCPBuilder() = delete;
+        TCPBuilder() = default;
+        TCPBuilder(const TCPBuilder&) = default;
+        TCPBuilder(TCPBuilder&&) = default;
+        TCPBuilder& operator=(const TCPBuilder&) = default;
+        TCPBuilder& operator=(TCPBuilder&&) = default;
 
         virtual ~TCPBuilder();
 
@@ -26,7 +30,7 @@ namespace doori::CommunicationMember {
          * @param ip TOPOLOGY_TYPE SERVER이면, 바인딩 ip, CLIENT이면 원격지 ip
          * @param port TOPOLOGY_TYPE SERVER이면, 바인딩 port , CLIENT이면 원격지 port
          */
-        TCPBuilder(TOPOLOGY_TYPE type, string ip, string port);
+        TCPBuilder(string bindingIp, string bindingPort);
 
         /**
          * 초기화를 합니다. TOPOLOGY가 CLIENT 설정됩니다.
@@ -37,13 +41,9 @@ namespace doori::CommunicationMember {
          */
         TCPBuilder(string destination_ip, string destination_port, string source_ip, string source_port);
 
-        int GetListenRsc() override;
+        unique_ptr<IIPCTopology> GetListenRsc() override;
 
-        int BindFrom() override;
-
-        int BindTo() override;
-
-        int EstablishTopologies() override;
+        bool EstablishTopologies() override;
 
     private:
         string mDestIp;
@@ -53,7 +53,6 @@ namespace doori::CommunicationMember {
         int mListenFd;
         int mSourceFd;
         TOPOLOGY_TYPE mType;
-        const int kBackLog=10;
     };
 
 } // doori
