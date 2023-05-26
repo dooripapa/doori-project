@@ -14,8 +14,6 @@ set(TEST_FILES
 		../doori_api/Common/Log.cpp
 		../doori_api/CommunicationMember/TCP.h
 		../doori_api/CommunicationMember/TCP.cpp
-        ../doori_api/CommunicationMember/TCPTopology.h
-        ../doori_api/CommunicationMember/TCPTopology.cpp
 		../doori_api/CommunicationMember/TCPBuilder.h
 		../doori_api/CommunicationMember/TCPBuilder.cpp
 		../doori_api/CommunicationMember/TcpApi.cpp

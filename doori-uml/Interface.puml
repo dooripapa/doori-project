@@ -119,21 +119,22 @@ TnsdInterface <--o Tnsd
 '''''''''   IPC Builder Pattern   '''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 interface doori::CommunicationMember::IIPC{
-+unique_ptr<IIPCTopology> Create(IIPCBuilder& builder)
+void Create(IIPCBuilder& builder)
 }
 
 interface doori::CommunicationMember::IIPCBuilder{
-bool EstablishTopologies()
+unique_ptr<IIPCTopology> GetTopology()
+int Establish()
 }
 
 class doori::CommunicationMember::TCP{
-+unique_ptr<IIPCTopology> Create(IIPCBuilder& builder) override
-#TCP(Socket& socket)
-#Socket& mSocket;
+void Create(IIPCBuilder& builder) override
+..
 }
 
 class doori::CommunicationMember::TCPBuilder{
-+bool EstablishTopologies() override;
++unique_ptr<IIPCTopology> GetTopology() override
++int Establish() override
 ..
 +TCPBuilder() = delete
 +TCPBuilder(Socket &socket);
@@ -141,10 +142,19 @@ class doori::CommunicationMember::TCPBuilder{
 +TCPBuilder(TCPBuilder&&) = delete
 +TCPBuilder& operator=(const TCPBuilder&) = delete
 +TCPBuilder& operator=(TCPBuilder&&) = delete
-+int From(string ip, string port)
-+int From()
-+int To(string ip, string port)
++void From(string ip, string port)
++void To(string ip, string port)
 --
+-Socket& mSocket
+-TcpApi mTcpApi;
+-string mBindingIp
+-string mBindingPort
+-string mRemoteIp
+-string mRemotePort
+-bool mServer
+-bool mClient
+-int SetServer(Socket& server, string ip, string port, int backlogNum, int timeout);
+-int BindingClient(Socket& client, string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout);
 }
 
 interface doori::CommunicationMember::IIPCTopology{
@@ -208,7 +218,7 @@ IIPCTopology <|-- Socket
 
 IIPC <|-- TCP
 IIPCBuilder <-o IIPC
-TCPBuilder <- TCP : 의존 <
+TCPBuilder <-o TCP : 의존 <
 Socket <.. TCP : 생성 <
 
 @enduml

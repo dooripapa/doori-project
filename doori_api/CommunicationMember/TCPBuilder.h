@@ -6,7 +6,9 @@
 #define DOORI_PROJECT_TCPBUILDER_H
 
 #include "CommunicationMember/IIPCBuilder.h"
+#include "CommunicationMember/TcpApi.h"
 #include "Endpoint.h"
+#include "Socket.h"
 #include <string>
 
 using namespace std;
@@ -16,43 +18,36 @@ namespace doori::CommunicationMember {
     class TCPBuilder : public IIPCBuilder {
     public:
 
-        TCPBuilder() = default;
-        TCPBuilder(const TCPBuilder&) = default;
-        TCPBuilder(TCPBuilder&&) = default;
-        TCPBuilder& operator=(const TCPBuilder&) = default;
-        TCPBuilder& operator=(TCPBuilder&&) = default;
+        TCPBuilder() = delete;
+        explicit TCPBuilder(Socket &socket);
+        TCPBuilder(const TCPBuilder&) = delete;
+        TCPBuilder(TCPBuilder&&) = delete;
+        TCPBuilder& operator=(const TCPBuilder&) = delete;
+        TCPBuilder& operator=(TCPBuilder&&) = delete;
 
         virtual ~TCPBuilder();
 
-        /**
-         * 초기화를 합니다.
-         * @param type  SERVER | CLIENT 속성
-         * @param ip TOPOLOGY_TYPE SERVER이면, 바인딩 ip, CLIENT이면 원격지 ip
-         * @param port TOPOLOGY_TYPE SERVER이면, 바인딩 port , CLIENT이면 원격지 port
-         */
-        TCPBuilder(string bindingIp, string bindingPort);
+        unique_ptr<IIPCTopology> GetTopology() override;
 
-        /**
-         * 초기화를 합니다. TOPOLOGY가 CLIENT 설정됩니다.
-         * @param destination_ip : 접속 원격지 IP
-         * @param destination_port : 접속 원격지 PORT
-         * @param source_ip : 원격지 접속시, 지정된 IP로 바인딩 객체와 통신을 강제화 합니다.
-         * @param source_port : 원격지 접속시, 지정된 PORT로 바인딩 객체와 통신을 강제화 합니다.
-         */
-        TCPBuilder(string destination_ip, string destination_port, string source_ip, string source_port);
+        [[maybe_unused]] void From(string ip, string port);
 
-        unique_ptr<IIPCTopology> GetListenRsc() override;
+        [[maybe_unused]] void To(string ip, string port);
 
-        bool EstablishTopologies() override;
+        int Establish();
 
     private:
-        string mDestIp;
-        string mDestPort;
-        string mSourceIp;
-        string mSourcePort;
-        int mListenFd;
-        int mSourceFd;
-        TOPOLOGY_TYPE mType;
+        Socket& mSocket;
+        TcpApi mTcpApi;
+        string mBindingIp;
+        string mBindingPort;
+        string mRemoteIp;
+        string mRemotePort;
+        bool mServer;
+        bool mClient;
+
+        int SetServer(Socket& server, string ip, string port, int backlogNum, int timeout);
+
+        int BindingClient(Socket& client, string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout);
     };
 
 } // doori

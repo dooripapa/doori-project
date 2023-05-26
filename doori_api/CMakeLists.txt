@@ -46,7 +46,6 @@ set(HEADER_FILES
 		CommunicationMember/IIPCBuilder.h
 		CommunicationMember/TCPBuilder.h
 		CommunicationMember/IIPCTopology.h
-		CommunicationMember/TCPTopology.h
 		Etc/Bigdecimal.h
         )
 
@@ -72,7 +71,6 @@ set(SRC_FILES
 		Etc/Bigdecimal.cpp
 		CommunicationMember/TCPBuilder.cpp
 		CommunicationMember/TCP.cpp
-		CommunicationMember/TCPTopology.cpp
 		CommunicationMember/TcpApi.cpp
 		CommunicationMember/TcpApi.h
 		Interface/Protocol.h

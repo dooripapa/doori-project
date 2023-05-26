@@ -72,7 +72,7 @@ namespace doori::Common {
              * 시스템 콜 함수 호출 후 에러가 발생된 경우,
              * Error 객체를 상태를 셋팅한다.
              */
-            inline void InjectBySystemcall() noexcept;
+            void InjectBySystemcall() noexcept;
 
             /**
              * 호출자의 의한 에러 셋팅.

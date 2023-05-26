@@ -112,7 +112,7 @@ namespace doori::CommunicationMember {
          */
         Socket GetSocket() ;
     private:
-        Socket mSocket;
+        doori::CommunicationMember::Socket mSocket;
     };
 
 } // CommunicationMember

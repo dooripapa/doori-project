@@ -16,9 +16,13 @@ using namespace std;
 
 void RunClient() {
 
+    Socket socket;
+
     std::unique_ptr<IIPC> iipc = std::make_unique<TCP>();
 
-    TCPBuilder builder = TCPBuilder(TOPOLOGY_TYPE::CLIENT, "127.0.0.1", "8888");
+    TCPBuilder builder = TCPBuilder(socket);
+
+    builder.To("127.0.0.1", "8888");
 
     try {
         sleep(2);
@@ -30,7 +34,7 @@ void RunClient() {
 
     string container;
 
-    auto conn = iipc->GetIPC();
+    auto conn = builder.GetTopology();
 
     conn->Send("Hello doori world.");
 
@@ -39,11 +43,15 @@ void RunClient() {
     LOG(DEBUG, "Client Recv:", container);
 }
 
-TEST(CommunicationMember, Usage)
-{
+TEST(CommunicationMember, Usage) {
+
+    Socket socket{};
+
     std::unique_ptr<IIPC> iipc = std::make_unique<TCP>();
 
-    TCPBuilder builder = TCPBuilder(TOPOLOGY_TYPE::SERVER, "", "8888");
+    TCPBuilder builder = TCPBuilder(socket);
+
+    builder.From("127.0.0.1", "8888");
 
     /* 클라이언트 접속 프로그램 기동,
      * 단, 2초뒤에 기동됨.기동하자마자,
@@ -51,14 +59,14 @@ TEST(CommunicationMember, Usage)
     std::thread t(RunClient);
 
     try {
-        iipc->Create( builder );
-    }catch (std::exception e) {
+        iipc->Create(builder);
+    } catch (std::exception e) {
         cout << e.what() << endl;
     }
 
     string container;
 
-    auto conn = iipc->GetIPC();
+    auto conn = builder.GetTopology();
 
     conn->Recv(container, 18);
 

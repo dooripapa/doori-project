@@ -19,8 +19,8 @@ namespace doori::CommunicationMember {
 
     class IIPCBuilder {
     public:
-        virtual unique_ptr<IIPCTopology> GetListenRsc() = 0;
-        virtual bool EstablishTopologies() = 0;
+        virtual unique_ptr<IIPCTopology> GetTopology() = 0;
+        virtual int Establish() = 0;
     };
 
 };

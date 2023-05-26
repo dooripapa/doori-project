@@ -36,7 +36,7 @@ namespace doori::Common{
             mStatus = true;
         }
 
-        inline void Error::InjectBySystemcall() noexcept{
+        void Error::InjectBySystemcall() noexcept{
             mErrno = errno;
             if( mErrno > 0 ) {
                 mStatus = false;
