@@ -7,6 +7,14 @@
 
 #include "Common/Log.h"
 #include "Common/Error.h"
+#include "IIPCTopology.h"
+#include <sys/socket.h>
+#include <bits/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/epoll.h>
+#include <fcntl.h>
+#include <functional>
 
 namespace doori::CommunicationMember {
 
@@ -50,6 +58,8 @@ namespace doori::CommunicationMember {
         Socket(Socket && rhs) = default;
         virtual ~Socket() = default;
 
+        [[nodiscard]] bool Init() ;
+
         [[nodiscard]] bool IsBitwise(SOCK_STATUS status) const;
 
         void SetBitwise(SOCK_STATUS status);
@@ -75,6 +85,8 @@ namespace doori::CommunicationMember {
         long Recv(string &container, uint32_t tilDataSize);
 
         int Close();
+
+        int GetBitwise() const;
 
     private:
         int mFd;

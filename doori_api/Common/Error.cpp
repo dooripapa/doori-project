@@ -42,7 +42,9 @@ namespace doori::Common{
                 mStatus = false;
 
                 char errorStr[1024] = {0};
-                strerror_r(errno, errorStr, sizeof(errorStr) );
+                auto p = strerror_r(errno, errorStr, sizeof(errorStr) );
+
+                mCause = p;
             }
             else {
                 Clear();

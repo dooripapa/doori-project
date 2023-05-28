@@ -6,23 +6,8 @@
 
 namespace doori::CommunicationMember {
 
-    TcpApi::TcpApi() : Common::Error(), mSocket(-1, SOCK_STATUS::CLOSED){
+    TcpApi::TcpApi(Socket &socket) : Common::Error(), mSocket(socket) {
 
-    }
-
-    TcpApi::TcpApi(Socket socket) : Common::Error(), mSocket(socket) {
-
-    }
-
-    void TcpApi::CreateSocket() {
-
-        auto fd= socket(AF_INET, SOCK_STREAM, 0);
-        if (fd < 0) {
-            InjectBySystemcall();
-            LOG(ERROR, "TCP socket fd, fail to open", Cause());
-        }
-
-        mSocket = Socket{fd, SOCK_STATUS::INIT};
     }
 
     void TcpApi::SetReuseOpt(const std::string& ip, const std::string& port) {
@@ -43,8 +28,6 @@ namespace doori::CommunicationMember {
     }
 
     void TcpApi::Bind(const std::string& ip, const std::string& port) {
-
-        char errorStr[1024] = {0};
 
         uint16_t u16Temp = 0;
         u16Temp = atoi(port.c_str());
@@ -70,7 +53,6 @@ namespace doori::CommunicationMember {
             return;
         }
 
-        char errorStr[1024] = {0};
         if (listen(mSocket.GetFd(), backlogNum) != 0) {
             InjectBySystemcall();
             LOG(ERROR, "listen error:", Cause() );
@@ -80,45 +62,47 @@ namespace doori::CommunicationMember {
 
     }
 
-    Socket TcpApi::Accept() {
+    int TcpApi::Accept() {
 
         if( !mSocket.IsBitwise(SOCK_STATUS::BINDING) ) {
             InjectByClient("Socket is not Binding");
-            return {-1, SOCK_STATUS::CLOSED};
+            return -1;
         }
 
         if( !mSocket.IsBitwise(SOCK_STATUS::LISTEN) ) {
             InjectByClient("Socket is not Listen");
-            return {-1, SOCK_STATUS::CLOSED};
+            return -1;
         }
 
         int acptFd = 0;
 
         struct sockaddr_in sockaddrIn{};
 
-        socklen_t len = sizeof(::sockaddr_in);
+        socklen_t len = sizeof(struct sockaddr_in);
 
         // sockaddrIn 변수는 접속한 클라이언트 주소 저장용도로 사용가능하다.
         if ((acptFd = accept(mSocket.GetFd(), (struct sockaddr *) &sockaddrIn, &len)) == -1) {
             InjectBySystemcall();
-            LOG(ERROR, "accept error:", Cause());
-            return {-1, SOCK_STATUS::CLOSED};
+            LOG(ERROR, "accept error:",Errno(), ":", Cause());
+            return -1;
         }
 
-        Socket acceptSocket = Socket(acptFd, SOCK_STATUS::INIT);
-        acceptSocket.SetBitwise(SOCK_STATUS::ACCEPT);
-        acceptSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
-
-        return acceptSocket;
+        return acptFd;
     }
 
-    Socket TcpApi::Connect(const string &ip, const string &port) {
+    int TcpApi::Connect(const string &ip, const string &port) {
+
+        if(!mSocket.IsBitwise(SOCK_STATUS::INIT))
+        {
+            InjectByClient("socket not init.");
+            return -1;
+        }
 
         if (ip.empty() || port.empty()) {
             InjectByClient("ip, port value is empty.");
             close(mSocket.GetFd());
             mSocket.SetBitwise(SOCK_STATUS::CLOSED);
-            return mSocket;
+            return -1;
         }
 
         uint16_t u16Temp = 0;
@@ -129,21 +113,23 @@ namespace doori::CommunicationMember {
         sockaddrIn.sin_port = htons(u16Temp);
         sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
 
-        auto iRet = connect(mSocket.GetFd(), (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
-        if (iRet < 0) {
+        auto fd = connect(mSocket.GetFd(), (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
+        if (fd < 0) {
             InjectBySystemcall();
-            LOG(ERROR, "connect error:", Cause());
-            close(mSocket.GetFd());
-            mSocket.SetBitwise(SOCK_STATUS::CLOSED);
-            return mSocket;
+            LOG(ERROR, "connect error:", Cause(), ", errno:", Errno());
+            return -1;
         }
 
-        mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
-
-        return mSocket;
+        return fd;
     }
 
     void TcpApi::SetTimeoutOpt(std::uint8_t timeout) {
+
+        if(!mSocket.IsBitwise(SOCK_STATUS::INIT))
+        {
+            InjectByClient("socket not init.");
+            return;
+        }
 
         /*
           소켓 설정을 논블로킹으로 셋팅함
@@ -172,20 +158,24 @@ namespace doori::CommunicationMember {
 
     }
 
-    Socket TcpApi::Connect(const string& ip, const string& port, std::uint8_t timeout) {
-        char errorStr[1024] = {0};
-
-        CreateSocket();
-        if( !this->Status() ) {
-            return Socket{-1, SOCK_STATUS::CLOSED};
-        }
+    int TcpApi::Connect(const string& ip, const string& port, std::uint8_t timeout) {
 
         SetTimeoutOpt(timeout);
         if( !this->Status() ) {
-            return Socket{-1, SOCK_STATUS::CLOSED};
+            return -1;
         }
 
         return Connect(ip, port);
+    }
+
+    void TcpApi::CreateSocket() {
+
+        if(!mSocket.Init()) {
+            InjectByClient("CreateSocket error");
+            mSocket = Socket{-1, SOCK_STATUS::CLOSED};
+            return;
+        }
+
     }
 
     Socket TcpApi::GetSocket() {

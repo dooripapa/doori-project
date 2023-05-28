@@ -38,17 +38,16 @@ namespace doori::CommunicationMember {
         if ( mServer && !mClient )
         {
 
-            Socket accptSocket{};
+            auto fd = SetServer(mBindingIp, mBindingPort, 10, 10);
 
-            auto ret = SetServer(accptSocket, mBindingIp, mBindingPort, 10, 10);
-
-            if (ret == -1)
+            if (fd == -1)
             {
                 LOG(ERROR, "SetServer error");
-                return ret;
+                return -1;
             }
 
-            mSocket = accptSocket;
+            mSocket = Socket{fd, SOCK_STATUS::INIT};
+            mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
 
@@ -56,14 +55,22 @@ namespace doori::CommunicationMember {
         // 클라이언트 역할. 연결요청만 함.
         else if ( !mServer && mClient )
         {
-            auto connSocket = mTcpApi.Connect(mRemoteIp, mRemotePort, 10);
+            mTcpApi.CreateSocket();
             if(!mTcpApi.Status())
+            {
+                LOG(ERROR, "CreateSocket error");
+                return -1;
+            }
+
+            auto connSocket = mTcpApi.Connect(mRemoteIp, mRemotePort, 10);
+            if(connSocket == -1)
             {
                 LOG(ERROR, "Connect error");
                 return -1;
             }
 
-            mSocket = connSocket;
+            mSocket = Socket{connSocket, SOCK_STATUS::INIT};
+            mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
 
@@ -71,17 +78,16 @@ namespace doori::CommunicationMember {
         // 특정ip port 바인딩 후, 원격지에 연결요청함
         else if ( mServer && mClient )
         {
-            Socket connSocket{};
+            auto fd = BindingClient(mBindingIp, mBindingPort, mRemoteIp, mRemotePort, 10);
 
-            auto ret = BindingClient(connSocket, mBindingIp, mBindingPort, mRemoteIp, mRemotePort, 10);
-
-            if (ret == -1)
+            if (fd == -1)
             {
-                LOG(ERROR, "SetServer error");
-                return ret;
+                LOG(ERROR, "BindingClient error");
+                return -1;
             }
 
-            mSocket = connSocket;
+            mSocket = Socket{fd, SOCK_STATUS::INIT};
+            mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
         }
@@ -93,7 +99,29 @@ namespace doori::CommunicationMember {
         }
     }
 
-    int TCPBuilder::SetServer(Socket& server, string ip, string port, int backlogNum, int timeout) {
+    int TCPBuilder::SetServer(string ip, string port, int backlogNum, int timeout) {
+
+        mTcpApi.CreateSocket();
+
+        if(!mTcpApi.Status())
+        {
+            LOG(ERROR, "CreateSocket error");
+            return -1;
+        }
+
+        mTcpApi.SetReuseOpt(ip, port);
+        if(!mTcpApi.Status())
+        {
+            LOG(ERROR, "SetReuseOpt error");
+            return -1;
+        }
+
+        mTcpApi.SetTimeoutOpt(timeout);
+        if(!mTcpApi.Status())
+        {
+            LOG(ERROR, "SetTimeoutOpt error");
+            return -1;
+        }
 
         mTcpApi.Bind(ip, port);
         if(!mTcpApi.Status())
@@ -109,29 +137,26 @@ namespace doori::CommunicationMember {
             return -1;
         }
 
-        mTcpApi.SetReuseOpt(ip, port);
-        if(!mTcpApi.Status())
-        {
-            LOG(ERROR, "SetReuseOpt error");
-            return -1;
-        }
-
-        mTcpApi.SetTimeoutOpt(timeout);
-        if(!mTcpApi.Status())
-        {
-            LOG(ERROR, "SetReuseOpt error");
-            return -1;
-        }
-
         auto accptSocket = mTcpApi.Accept();
+        if(!mTcpApi.Status())
+        {
+            LOG(ERROR, "Accept error");
+            return -1;
+        }
 
-        server = accptSocket;
-
-        return 0;
+        return accptSocket;
 
     }
 
-    int TCPBuilder::BindingClient(Socket& client, string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout) {
+    int
+    TCPBuilder::BindingClient(string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout) {
+
+        mTcpApi.CreateSocket();
+        if(!mTcpApi.Status())
+        {
+            LOG(ERROR, "CreateSocket error");
+            return -1;
+        }
 
         mTcpApi.Bind(bindingIp, bindingPort);
         if(!mTcpApi.Status())
@@ -154,9 +179,7 @@ namespace doori::CommunicationMember {
             return -1;
         }
 
-        client = connSocket;
-
-        return 0;
+        return connSocket;
     }
 
 } // doori

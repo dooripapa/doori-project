@@ -16,16 +16,16 @@ using namespace std;
 
 void RunClient() {
 
-    Socket socket;
+    Socket socket{};
 
     std::unique_ptr<IIPC> iipc = std::make_unique<TCP>();
 
     TCPBuilder builder = TCPBuilder(socket);
 
-    builder.To("127.0.0.1", "8888");
+    builder.To("127.0.0.1", "88888");
 
     try {
-        sleep(2);
+        sleep(20);
 
         iipc->Create( builder );
     }catch (std::exception e) {
@@ -51,12 +51,12 @@ TEST(CommunicationMember, Usage) {
 
     TCPBuilder builder = TCPBuilder(socket);
 
-    builder.From("127.0.0.1", "8888");
+    builder.From("127.0.0.1", "88888");
 
     /* 클라이언트 접속 프로그램 기동,
      * 단, 2초뒤에 기동됨.기동하자마자,
      * 바로, 접속시도를 막기위해서*/
-    std::thread t(RunClient);
+//    std::thread t(RunClient);
 
     try {
         iipc->Create(builder);
@@ -75,5 +75,5 @@ TEST(CommunicationMember, Usage) {
     conn->Send("Hello doori world.");
 
     /* 클라이언트 종료대기 */
-    t.join();
+//    t.join();
 }

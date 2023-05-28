@@ -33,7 +33,7 @@ namespace doori::CommunicationMember {
 
         [[maybe_unused]] void To(string ip, string port);
 
-        int Establish();
+        int Establish() override;
 
     private:
         Socket& mSocket;
@@ -45,9 +45,9 @@ namespace doori::CommunicationMember {
         bool mServer;
         bool mClient;
 
-        int SetServer(Socket& server, string ip, string port, int backlogNum, int timeout);
+        int SetServer(string ip, string port, int backlogNum, int timeout);
 
-        int BindingClient(Socket& client, string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout);
+        int BindingClient(string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout);
     };
 
 } // doori

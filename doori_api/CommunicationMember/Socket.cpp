@@ -73,4 +73,22 @@ namespace doori::CommunicationMember {
         return close(mFd);
     }
 
+    int Socket::GetBitwise() const {
+        return mStatus;
+    }
+
+    bool Socket::Init() {
+
+        auto fd= socket(AF_INET, SOCK_STREAM, 0);
+        if (fd < 0) {
+            LOG(ERROR, "socket error");
+            return false;
+        }
+
+        mFd = fd;
+        mStatus = SOCK_STATUS::INIT;
+
+        return true;
+    }
+
 } // CommunicationMember

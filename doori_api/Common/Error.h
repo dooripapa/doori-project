@@ -8,6 +8,8 @@
 #include <array>
 #include <string>
 
+using namespace std;
+
 namespace doori::Common {
 
         class Error {

@@ -25,8 +25,8 @@ namespace doori::CommunicationMember {
 
     public:
 
-        TcpApi();
-        explicit TcpApi(Socket socket);
+        TcpApi() = delete;
+        explicit TcpApi(Socket &socket);
         TcpApi(const TcpApi&) = default;
         TcpApi(TcpApi&&) = default;
         TcpApi& operator=(const TcpApi&) = default;
@@ -85,7 +85,7 @@ namespace doori::CommunicationMember {
          * @param sockaddrIn
          * @return Socket Wrapper 클래스
          */
-        Socket Accept();
+        int Accept();
 
         /**
          * 원격지 접속을 요청합니다.
@@ -94,7 +94,7 @@ namespace doori::CommunicationMember {
          * @param port 원격지 PORT
          * @return Socket Wrapper 클래스
          */
-        Socket Connect(const string &ip, const string &port);
+        int Connect(const string &ip, const string &port);
 
         /**
          * 주어진 ip, port정보를 이용하여, 접속요청 바로 시도 합니다.
@@ -104,7 +104,7 @@ namespace doori::CommunicationMember {
          * @param timeout SetTimeoutOpt 값
          * @return Socket Wrapper 클래스
          */
-        Socket Connect(const string& ip, const string& port, std::uint8_t timeout);
+        int Connect(const string& ip, const string& port, std::uint8_t timeout);
 
         /**
          * Socket wrapper 객체를 리턴합니다.
