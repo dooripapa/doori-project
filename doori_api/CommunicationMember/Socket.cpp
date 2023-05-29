@@ -21,7 +21,7 @@ namespace doori::CommunicationMember {
 
     bool Socket::IsBitwise(SOCK_STATUS status) const {
         if( (this->mStatus & status) == status) {
-            LOG(DEBUG, "Set Bitwise:[", status, "]");
+            LOG(DEBUG, "Socket status Bitwise:[", status, "]");
             return true;
         }
         return false;
@@ -38,10 +38,14 @@ namespace doori::CommunicationMember {
 
     long Socket::Send(const string &data) {
 
+        LOG(DEBUG, "Send() stream:", data);
+
         return Send(data.c_str(), data.length());
     }
 
     long Socket::Recv(string &container, uint32_t tilDataSize) {
+
+        char acTemp[1024] = {0,};
 
         auto p = make_unique<char[]>(tilDataSize);
         if(p == nullptr) {
@@ -50,7 +54,8 @@ namespace doori::CommunicationMember {
 
         auto ret = recv(mFd, p.get(), tilDataSize, MSG_WAITALL);
         if(ret == -1) {
-            LOG(ERROR, "recv error");
+            auto p = strerror_r(errno, acTemp, sizeof(acTemp) - 1);
+            LOG(ERROR, "recv errno:", errno, " cause:", p);
             return -1;
         }
 
@@ -61,9 +66,12 @@ namespace doori::CommunicationMember {
 
     long Socket::Send(const char *data, uint16_t dataSize) {
 
+        char acTemp[1024] = {0,};
+
         auto ret = send(mFd, data, dataSize, 0);
         if(ret == -1) {
-            LOG(ERROR, "send error");
+            auto p = strerror_r(errno, acTemp, sizeof(acTemp) - 1);
+            LOG(ERROR, "send errno:", errno, " cause:", p);
             return -1;
         }
         return ret;
@@ -89,6 +97,19 @@ namespace doori::CommunicationMember {
         mStatus = SOCK_STATUS::INIT;
 
         return true;
+    }
+
+    void Socket::SetOptBitwise(SOCK_OPT option) {
+        this->mOption= this->mOption | option;
+    }
+
+    bool Socket::IsOptBitwise(SOCK_OPT option) const {
+
+        if( (this->mOption & option) == option) {
+            LOG(DEBUG, "Socket Option Bitwise:[", option, "]");
+            return true;
+        }
+        return false;
     }
 
 } // CommunicationMember

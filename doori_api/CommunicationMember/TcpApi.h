@@ -52,9 +52,9 @@ namespace doori::CommunicationMember {
         /**
          * recv()함수에 Timeout 를 설정하기위해서 사전에 호출되어야 하는 함수
          * 소켓을 재설정함. SOL_SCOCKET, SO_RCVTIMEO를 설정함.
-         * @param socket Socket Wrapper 클래스
+         * NON-BLOCKING
          * @param timeout Timeout값(second)
-         * @return Socket Wrapper 클래스
+         * @return
          */
         void SetTimeoutOpt(std::uint8_t timeout);
 

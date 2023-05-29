@@ -18,14 +18,14 @@ namespace doori {
 
             if(!mListenSocket.IsBitwise(SOCK_STATUS::LISTEN)
             && !mListenSocket.IsBitwise(SOCK_STATUS::BINDING) ) {
-                InjectByClient("Socket is not listening and binding");
+                InjectedByClientError("Socket is not listening and binding");
                 LOG(ERROR, "CreateEpoll error:", Cause() );
                 return;
             }
 
             auto iEpollFd = epoll_create1(0);
             if( iEpollFd == -1 ) {
-                InjectBySystemcall();
+                InjectedBySystemcall();
                 LOG(ERROR, "epoll_create1 error:", Cause() );
                 return;
             }
@@ -35,7 +35,7 @@ namespace doori {
             ev.events = EPOLLIN ;
             ev.data.fd = mListenSocket.GetFd();
             if (epoll_ctl(iEpollFd, EPOLL_CTL_ADD, mListenSocket.GetFd(), &ev) == -1) {
-                InjectBySystemcall();
+                InjectedBySystemcall();
                 LOG(ERROR, "epoll_ctl error:", Cause() );
                 return;
             }
@@ -66,7 +66,7 @@ namespace doori {
             {
                 int nCnt = epoll_wait(mEpollSocket.GetFd(), pEvents.get(), backlogEventNum, timeout);
                 if (nCnt == -1 ) {
-                    InjectBySystemcall();
+                    InjectedBySystemcall();
                     throw system_error();
                 } else if (nCnt == 0){
                     LOG(DEBUG, "timeout!");
@@ -80,7 +80,7 @@ namespace doori {
                         LOG(DEBUG, "Listen -> Accept");
 
                         if( AddAsEpollList( delegation ) == -1 ) {
-                            InjectByClient("AddAsEpollList error");
+                            InjectedByClientError("AddAsEpollList error");
                             throw system_error();
                         }
                     }
@@ -92,7 +92,7 @@ namespace doori {
                         LOG(INFO, "Recv FD[", pEvents[i].data.fd, "]");
 
                         if( -1 == pFunc(pEvents[i].data.fd) ) {
-                            InjectByClient("fail to process Data");
+                            InjectedByClientError("fail to process Data");
                             LOG(ERROR, "fail to process Data");
                         }
 
@@ -107,7 +107,7 @@ namespace doori {
 
             auto conn_sock = tcpApi.Accept();
             if( tcpApi.Status() ) {
-                InjectByClient("TcpApi Accept() error");
+                InjectedByClientError("TcpApi Accept() error");
                 return  -1;
             }
 
@@ -116,7 +116,7 @@ namespace doori {
             // Timeout 설정함
             tcpApi.SetTimeoutOpt(10);
             if (tcpApi.Status()) {
-                InjectByClient("TcpApi SetTimeoutOpt() error.");
+                InjectedByClientError("TcpApi SetTimeoutOpt() error.");
                 return  -1;
             }
 
@@ -125,7 +125,7 @@ namespace doori {
             ev.data.fd = conn_sock.GetFd();
             ev.data.ptr = (void*)delegation;
             if (epoll_ctl(mEpollSocket.GetFd(), EPOLL_CTL_ADD, conn_sock.GetFd(), &ev) == -1) {
-                InjectBySystemcall();
+                InjectedBySystemcall();
                 LOG(ERROR, "epoll_ctl error : fail to EPOLL_CTL_ADD");
                 return  -1;
             }

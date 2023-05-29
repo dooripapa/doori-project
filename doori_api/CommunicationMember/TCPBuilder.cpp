@@ -13,10 +13,10 @@ namespace doori::CommunicationMember {
     }
 
     unique_ptr<IIPCTopology> TCPBuilder::GetTopology() {
-        return make_unique<Socket>( *dynamic_cast<Socket*>(&mSocket) );
+        return make_unique<Socket>( mEstablishSocket );
     }
 
-    TCPBuilder::TCPBuilder(Socket &socket) : mSocket(socket), mTcpApi(socket), mServer(false), mClient(false){
+    TCPBuilder::TCPBuilder(Socket &socket) : mTcpApi(socket), mServer(false), mClient(false){
 
     }
 
@@ -37,6 +37,7 @@ namespace doori::CommunicationMember {
         // 서버역할, accept 요청오기를 기다림.
         if ( mServer && !mClient )
         {
+            LOG(INFO, "go on server");
 
             auto fd = SetServer(mBindingIp, mBindingPort, 10, 10);
 
@@ -46,8 +47,10 @@ namespace doori::CommunicationMember {
                 return -1;
             }
 
-            mSocket = Socket{fd, SOCK_STATUS::INIT};
-            mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
+            LOG(INFO, "Accept Socket[", fd, "]" );
+
+            mEstablishSocket = Socket{fd, SOCK_STATUS::INIT};
+            mEstablishSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
 
@@ -55,6 +58,8 @@ namespace doori::CommunicationMember {
         // 클라이언트 역할. 연결요청만 함.
         else if ( !mServer && mClient )
         {
+            LOG(INFO, "Not is binding && Client");
+
             mTcpApi.CreateSocket();
             if(!mTcpApi.Status())
             {
@@ -69,8 +74,8 @@ namespace doori::CommunicationMember {
                 return -1;
             }
 
-            mSocket = Socket{connSocket, SOCK_STATUS::INIT};
-            mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
+            mEstablishSocket = Socket{connSocket, SOCK_STATUS::INIT};
+            mEstablishSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
 
@@ -78,6 +83,8 @@ namespace doori::CommunicationMember {
         // 특정ip port 바인딩 후, 원격지에 연결요청함
         else if ( mServer && mClient )
         {
+            LOG(INFO, "On binding && Client");
+
             auto fd = BindingClient(mBindingIp, mBindingPort, mRemoteIp, mRemotePort, 10);
 
             if (fd == -1)
@@ -86,8 +93,8 @@ namespace doori::CommunicationMember {
                 return -1;
             }
 
-            mSocket = Socket{fd, SOCK_STATUS::INIT};
-            mSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
+            mEstablishSocket = Socket{fd, SOCK_STATUS::INIT};
+            mEstablishSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
         }

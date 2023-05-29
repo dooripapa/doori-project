@@ -36,7 +36,7 @@ namespace doori::CommunicationMember {
         int Establish() override;
 
     private:
-        Socket& mSocket;
+        Socket mEstablishSocket;
         TcpApi mTcpApi;
         string mBindingIp;
         string mBindingPort;

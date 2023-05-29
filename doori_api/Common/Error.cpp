@@ -9,51 +9,75 @@
 
 namespace doori::Common{
 
-        Error::Error() : mErrno(0), mStatus(true), mCause() {};
+    Error::Error() : mErrno(0), mStatus(true), mCause() {};
 
-        auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
-        {
-            mErrno = errnum;
-            mStatus = status;
-            mCause = cause;
-        }
+    auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
+    {
+        mErrno = errnum;
+        mStatus = status;
+        mCause = cause;
+    }
 
-        auto Error::Errno() const noexcept -> int {
-            return mErrno;
-        }
+    auto Error::Errno() const noexcept -> int {
+        return mErrno;
+    }
 
-        auto Error::Cause() const noexcept -> const std::string & {
-            return mCause;
-        }
+    auto Error::Cause() const noexcept -> const std::string & {
+        return mCause;
+    }
 
-        auto Error::Status() const noexcept -> bool {
-            return mStatus;
-        }
+    auto Error::Status() const noexcept -> bool {
+        return mStatus;
+    }
 
-        auto Error::Clear() noexcept -> void {
-            mErrno = 0;
-            mCause = std::string("");
-            mStatus = true;
-        }
+    auto Error::Clear() noexcept -> void {
+        mErrno = 0;
+        mCause = std::string("");
+        mStatus = true;
+    }
 
-        void Error::InjectBySystemcall() noexcept{
-            mErrno = errno;
-            if( mErrno > 0 ) {
-                mStatus = false;
-
-                char errorStr[1024] = {0};
-                auto p = strerror_r(errno, errorStr, sizeof(errorStr) );
-
-                mCause = p;
-            }
-            else {
-                Clear();
-            }
-        }
-
-        void Error::InjectByClient(const std::string& cause) noexcept{
-            mErrno = -1;
+    void Error::InjectedBySystemcall() noexcept{
+        mErrno = errno;
+        if( mErrno > 0 ) {
             mStatus = false;
-            mCause = cause;
+
+            char errorStr[1024] = {0};
+            auto p = strerror_r(errno, errorStr, sizeof(errorStr) );
+
+            mCause = p;
+        }
+        else {
+            Clear();
         }
     }
+
+    void Error::InjectedByClientError(const string &cause) noexcept{
+        mErrno = -1;
+        mStatus = false;
+        mCause = cause;
+    }
+
+    void Error::LoggingBySystemcall(const string &loggingCause) noexcept {
+        mErrno = errno;
+        if( mErrno > 0 ) {
+            mStatus = false;
+
+            char errorStr[1024] = {0};
+            auto p = strerror_r(errno, errorStr, sizeof(errorStr) );
+
+            mCause = p;
+
+            LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
+        }
+        else {
+            Clear();
+        }
+    }
+
+    void Error::LoggingByClientError(const string &cause) noexcept {
+        mErrno = -1;
+        mStatus = false;
+        mCause = cause;
+        LOG(ERROR, cause);
+    }
+}
