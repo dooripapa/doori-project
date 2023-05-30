@@ -217,4 +217,30 @@ namespace doori::CommunicationMember {
         return mSocket;
     }
 
+    TcpApi::TcpApi(const TcpApi &rhs) : mSocket{rhs.mSocket} {
+
+    }
+
+    TcpApi::TcpApi(TcpApi &&rhs) noexcept : mSocket{move(rhs.mSocket)}{
+    }
+
+    TcpApi &TcpApi::operator=(const TcpApi &rhs) {
+
+        if(this != &rhs )
+            mSocket = rhs.mSocket;
+
+        return *this;
+    }
+
+    TcpApi &TcpApi::operator=(TcpApi &&rhs) {
+
+        if(this != &rhs )
+        {
+            mSocket = rhs.mSocket;
+            rhs.mSocket = nullptr;
+        }
+
+        return *this;
+    }
+
 } // CommunicationMember

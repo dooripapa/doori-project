@@ -27,10 +27,10 @@ namespace doori::CommunicationMember {
 
         TcpApi() = delete;
         explicit TcpApi(Socket &socket);
-        TcpApi(const TcpApi&) = default;
-        TcpApi(TcpApi&&) = default;
-        TcpApi& operator=(const TcpApi&) = default;
-        TcpApi& operator=(TcpApi&&) = default;
+        TcpApi(const TcpApi& rhs) ;
+        TcpApi(TcpApi&& rhs)  noexcept ;
+        TcpApi& operator=(const TcpApi& rhs);
+        TcpApi& operator=(TcpApi&& rhs);
 
         /**
          * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
@@ -112,7 +112,7 @@ namespace doori::CommunicationMember {
          */
         Socket GetSocket() ;
     private:
-        doori::CommunicationMember::Socket mSocket;
+        doori::CommunicationMember::Socket& mSocket;
     };
 
 } // CommunicationMember

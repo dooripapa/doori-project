@@ -33,7 +33,7 @@ set(TEST_FILES
 		../doori_api/CommunicationMember/IIPC.h
 #		test_protocol.cpp
 #        test_epoll.cpp
-		)
+        test_TcpApi.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 
