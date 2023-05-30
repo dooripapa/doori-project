@@ -17,7 +17,7 @@ namespace doori::Common {
 
     public:
 
-        Error();
+        explicit Error(int errnum = -1, bool status = false);
         Error(Error&& rhs) = default;
         Error(const Error& rhs) = default;
         auto operator=(Error&& rhs) -> Error& = default;
@@ -46,9 +46,9 @@ namespace doori::Common {
         virtual ~Error() = default;
 
         /**
-         * Error객체를 초기화함.
+         * Error객체를 정상으로 초기화함.
          */
-        auto Clear() noexcept -> void;
+        auto Success() noexcept -> void;
 
         /**
          * Error의 상태값 리턴함
@@ -139,7 +139,7 @@ namespace doori::Common {
             LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
         }
         else {
-            Clear();
+            Success();
         }
     }
 } //doori

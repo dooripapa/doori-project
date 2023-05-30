@@ -9,8 +9,6 @@
 
 namespace doori::Common{
 
-    Error::Error() : mErrno(0), mStatus(true), mCause() {};
-
     auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
     {
         mErrno = errnum;
@@ -30,7 +28,7 @@ namespace doori::Common{
         return mStatus;
     }
 
-    auto Error::Clear() noexcept -> void {
+    auto Error::Success() noexcept -> void {
         mErrno = 0;
         mCause = std::string("");
         mStatus = true;
@@ -47,7 +45,7 @@ namespace doori::Common{
             mCause = p;
         }
         else {
-            Clear();
+            Success();
         }
     }
 
@@ -70,7 +68,7 @@ namespace doori::Common{
             LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
         }
         else {
-            Clear();
+            Success();
         }
     }
 
@@ -79,5 +77,9 @@ namespace doori::Common{
         mStatus = false;
         mCause = cause;
         LOG(ERROR, cause);
+    }
+
+    Error::Error(int errnum , bool status ) : mErrno{errnum}, mStatus{status} {
+
     }
 }

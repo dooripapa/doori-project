@@ -22,7 +22,7 @@ namespace doori::DataStream{
     }
 
     /**
-     * Json Clear
+     * Json Success
      */
     auto Json::clear() -> void {
         mFactors.clear();
