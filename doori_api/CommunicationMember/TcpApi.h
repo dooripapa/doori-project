@@ -27,25 +27,21 @@ namespace doori::CommunicationMember {
 
         TcpApi() = delete;
         explicit TcpApi(Socket &socket);
-        TcpApi(const TcpApi& rhs) ;
-        TcpApi(TcpApi&& rhs)  noexcept ;
-        TcpApi& operator=(const TcpApi& rhs);
-        TcpApi& operator=(TcpApi&& rhs);
+        TcpApi(const TcpApi& rhs) = default;
+        TcpApi(TcpApi&& rhs)  noexcept = default;
+        TcpApi& operator=(const TcpApi& rhs) = default;
+        TcpApi& operator=(TcpApi&& rhs) = default;
 
         /**
-         * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 file descriptor리턴
-         * @return 소켓 FD
+         * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 Endpoint 초기화함
          */
-        void CreateSocket();
+        void InitEndpoint();
 
         /**
          * SOL_SOCKET을 SO_REUSEPORT 와 SO_REUSEADDR 설정함
-         * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
-         * @param socket Socket Wrapper 클래스
+         * @note 이 함수가 호출되기전 InitEndpoint()호출로 반환된 소켓FD 필요함
          * @param ip가 ""이면, INADDR_ANY, 지정되면 해당IP로 바인딩 및 옵션이 셋팅됨
          * @param port 포트번호
-         * @todo 수신부 IP, PORT 접속정보를 확인할 수 있는 옵션도 셋팅할것
-         * @return Socket Wrapper 클래스
          */
         void SetReuseOpt(const std::string& ip, const std::string& port);
 
@@ -54,47 +50,38 @@ namespace doori::CommunicationMember {
          * 소켓을 재설정함. SOL_SCOCKET, SO_RCVTIMEO를 설정함.
          * NON-BLOCKING
          * @param timeout Timeout값(second)
-         * @return
          */
         void SetTimeoutOpt(std::uint8_t timeout);
 
         /**
          * IP, PORT정보를 이용하여 바인딩처리함
-         * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
-         * @param socket Socket Wrapper 클래스
-         * @param sockaddrIn
-         * @return Socket Wrapper 클래스
+         * @note 이 함수가 호출되기전 InitEndpoint()호출로 반환된 소켓FD 필요함
+         * @param ip가 ""이면, INADDR_ANY, 지정되면 해당IP로 바인딩 및 옵션이 셋팅됨
+         * @param port 포트번호
          */
         void Bind(const std::string& ip, const std::string& port);
 
         /**
          * 입력 받은 소켓을 listen상태로 만든다.
-         * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
+         * @note 이 함수가 호출되기전 InitEndpoint()호출로 반환된 소켓FD 필요함
          *       또한 Bind()함수로 바인딩 상태이어야 한다.
-         * @param socket Socket Wrapper 클래스
          * @param backlogNum 접속 요청이 들어올 경우, 최대 대기 배열 수
-         * @return Socket Wrapper 클래스
          */
         void Listen(int backlogNum);
 
         /**
          * 입력 받은 소켓을 accept상태로 만든다. 수신요청이 오면, 또 다른 FD로 리턴되고, 해당 FD로 통신이 가능하다.
-         * @note 이 함수가 호출되기전 CreateSocket()호출로 반환된 소켓FD 필요함
+         * @note 이 함수가 호출되기전 InitEndpoint()호출로 반환된 소켓FD 필요함
          *       또한 Bind()함수로 바인딩 상태이어야 한다.
-         * @param socket Socket Wrapper 클래스
-         * @param sockaddrIn
-         * @return Socket Wrapper 클래스
          */
         int Accept();
 
         /**
          * 원격지 접속을 요청합니다.
-         * @param socket Socket Wrapper 클래스
          * @param ip 원격지 IP
          * @param port 원격지 PORT
-         * @return Socket Wrapper 클래스
          */
-        int Connect(const string &ip, const string &port);
+        void Connect(const string &ip, const string &port);
 
         /**
          * 주어진 ip, port정보를 이용하여, 접속요청 바로 시도 합니다.
@@ -102,17 +89,16 @@ namespace doori::CommunicationMember {
          * @param ip destination ip
          * @param port  destination port
          * @param timeout SetTimeoutOpt 값
-         * @return Socket Wrapper 클래스
          */
-        int Connect(const string& ip, const string& port, std::uint8_t timeout);
+        void Connect(const string& ip, const string& port, std::uint8_t timeout);
 
         /**
-         * Socket wrapper 객체를 리턴합니다.
+         * TcpApi클래스의 api 의해 재설정된 Socket wrapper 객체를 리턴합니다.
          * @return Socker wrapper class
          */
         Socket GetSocket() ;
     private:
-        doori::CommunicationMember::Socket& mSocket;
+        doori::CommunicationMember::Socket mSocket;
     };
 
 } // CommunicationMember

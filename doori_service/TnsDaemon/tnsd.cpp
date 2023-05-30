@@ -118,7 +118,7 @@ auto Tnsd::processMessage(int socket, Stream& stream) -> int
     }
 
     responseStream.Init(protocol.toData());
-    LOG(DEBUG, "CreateSocket FD: ", socket, ", Answer Comment[", responseStream.toByteStream(), "]" );
+    LOG(DEBUG, "InitEndpoint FD: ", socket, ", Answer Comment[", responseStream.toByteStream(), "]" );
     if (Connection::sendTo(socket, responseStream) < 0 ) {
         LOG(ERROR, "sendTo fail");
     }

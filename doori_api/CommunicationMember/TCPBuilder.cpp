@@ -60,21 +60,22 @@ namespace doori::CommunicationMember {
         {
             LOG(INFO, "Not is binding && Client");
 
-            mTcpApi.CreateSocket();
+            mTcpApi.InitEndpoint();
             if(!mTcpApi.Status())
             {
-                LOG(ERROR, "CreateSocket error");
+                LOG(ERROR, "InitEndpoint error");
                 return -1;
             }
 
-            auto connSocket = mTcpApi.Connect(mRemoteIp, mRemotePort, 10);
-            if(connSocket == -1)
+            mTcpApi.Connect(mRemoteIp, mRemotePort, 10);
+            if(!mTcpApi.Status())
             {
                 LOG(ERROR, "Connect error");
                 return -1;
             }
 
-            mEstablishSocket = Socket{connSocket, SOCK_STATUS::INIT};
+            auto connectedSocket = mTcpApi.GetSocket();
+            mEstablishSocket = Socket{connectedSocket.GetFd(), SOCK_STATUS::INIT};
             mEstablishSocket.SetBitwise(SOCK_STATUS::ESTABLISED);
 
             return 0;
@@ -108,11 +109,11 @@ namespace doori::CommunicationMember {
 
     int TCPBuilder::SetServer(string ip, string port, int backlogNum, int timeout) {
 
-        mTcpApi.CreateSocket();
+        mTcpApi.InitEndpoint();
 
         if(!mTcpApi.Status())
         {
-            LOG(ERROR, "CreateSocket error");
+            LOG(ERROR, "InitEndpoint error");
             return -1;
         }
 
@@ -158,10 +159,10 @@ namespace doori::CommunicationMember {
     int
     TCPBuilder::BindingClient(string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout) {
 
-        mTcpApi.CreateSocket();
+        mTcpApi.InitEndpoint();
         if(!mTcpApi.Status())
         {
-            LOG(ERROR, "CreateSocket error");
+            LOG(ERROR, "InitEndpoint error");
             return -1;
         }
 
@@ -179,14 +180,16 @@ namespace doori::CommunicationMember {
             return -1;
         }
 
-        auto connSocket = mTcpApi.Connect(remoteIp, remotePort, timeout);
+        mTcpApi.Connect(remoteIp, remotePort, timeout);
         if(!mTcpApi.Status())
         {
             LOG(ERROR, "Connect error");
             return -1;
         }
 
-        return connSocket;
+        auto connSocket = mTcpApi.GetSocket();
+
+        return connSocket.GetFd();
     }
 
 } // doori

@@ -12,6 +12,13 @@ namespace doori::CommunicationMember {
 
     void TcpApi::SetReuseOpt(const std::string& ip, const std::string& port) {
 
+        auto cPort = stoi(port);
+
+        if( 65535 < cPort ) {
+            LoggingByClientError("port range over > 65535");
+            return;
+        }
+
         uint16_t u16Temp = 0;
         u16Temp = atoi(port.c_str());
 
@@ -88,6 +95,14 @@ namespace doori::CommunicationMember {
 
         if(mSocket.IsOptBitwise(SOCK_OPT::RCVTIMEO)) {
 
+            struct timeval tv{};
+            auto socklen =sizeof(struct timeval);
+            if (getsockopt(mSocket.GetFd(), SOL_SOCKET, SO_RCVTIMEO, (void *) &tv,
+                           reinterpret_cast<socklen_t *>(&socklen)) < 0) {
+                LoggingBySystemcallError("getsockopt error");
+                return -1;
+            }
+
             while(true)
             {
                 acptFd = accept(mSocket.GetFd(), nullptr, nullptr);
@@ -95,11 +110,11 @@ namespace doori::CommunicationMember {
                     if (errno == EWOULDBLOCK || errno == EAGAIN) {
                         // No incoming connections at the moment
                         // Handle other tasks or sleep/wait
-                        LOG(INFO, "NON BLOCKING Timeout --> sleep(10)");
-                        sleep(10);
+                        LOG(INFO, "Non-blocking Mode, timeout --> sleep(", tv.tv_sec,")");
+                        sleep(tv.tv_sec);
                         continue;
                     } else {
-                        LoggingBySystemcallError("Non-Blocking accept error");
+                        LoggingBySystemcallError("Non-blocking accept error");
                         return -1;
                     }
                 } else {
@@ -124,26 +139,26 @@ namespace doori::CommunicationMember {
         return acptFd;
     }
 
-    int TcpApi::Connect(const string &ip, const string &port) {
+    void TcpApi::Connect(const string &ip, const string &port) {
 
         auto cPort = stoi(port);
 
         if( 65535 < cPort ) {
             LoggingByClientError("port range over > 65535");
-            return -1;
+            return;
         }
 
         if(!mSocket.IsBitwise(SOCK_STATUS::INIT))
         {
             LoggingByClientError("socket not init.");
-            return -1;
+            return;
         }
 
         if (ip.empty() || port.empty()) {
             LoggingByClientError("ip, port value is empty.");
             close(mSocket.GetFd());
             mSocket.SetBitwise(SOCK_STATUS::CLOSED);
-            return -1;
+            return;
         }
 
         struct sockaddr_in sockaddrIn{};
@@ -151,15 +166,14 @@ namespace doori::CommunicationMember {
         sockaddrIn.sin_port = htons(cPort);
         sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
 
-        auto fd = connect(mSocket.GetFd(), (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
-        if (fd < 0) {
+        auto ret = connect(mSocket.GetFd(), (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
+        if (ret < 0) {
             LoggingBySystemcallError("connect() error");
-            return -1;
+            return;
         }
 
         LOG(INFO, "connected Socket[", mSocket.GetFd(), "]" );
 
-        return mSocket.GetFd();
     }
 
     void TcpApi::SetTimeoutOpt(std::uint8_t timeout) {
@@ -198,15 +212,15 @@ namespace doori::CommunicationMember {
         mSocket.SetOptBitwise(SOCK_OPT::RCVTIMEO);
     }
 
-    int TcpApi::Connect(const string& ip, const string& port, std::uint8_t timeout) {
+    void TcpApi::Connect(const string& ip, const string& port, std::uint8_t timeout) {
 
-        return Connect(ip, port);
+        Connect(ip, port);
     }
 
-    void TcpApi::CreateSocket() {
+    void TcpApi::InitEndpoint() {
 
         if(!mSocket.Init()) {
-            LoggingByClientError("CreateSocket error");
+            LoggingByClientError("InitEndpoint error");
             mSocket = Socket{-1, SOCK_STATUS::CLOSED};
             return;
         }
@@ -215,32 +229,6 @@ namespace doori::CommunicationMember {
 
     Socket TcpApi::GetSocket() {
         return mSocket;
-    }
-
-    TcpApi::TcpApi(const TcpApi &rhs) : mSocket{rhs.mSocket} {
-
-    }
-
-    TcpApi::TcpApi(TcpApi &&rhs) noexcept : mSocket{move(rhs.mSocket)}{
-    }
-
-    TcpApi &TcpApi::operator=(const TcpApi &rhs) {
-
-        if(this != &rhs )
-            mSocket = rhs.mSocket;
-
-        return *this;
-    }
-
-    TcpApi &TcpApi::operator=(TcpApi &&rhs) {
-
-        if(this != &rhs )
-        {
-            mSocket = rhs.mSocket;
-            rhs.mSocket = nullptr;
-        }
-
-        return *this;
     }
 
 } // CommunicationMember

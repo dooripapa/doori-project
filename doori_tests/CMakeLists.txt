@@ -29,7 +29,7 @@ set(TEST_FILES
 #		test_json.cpp
 #		test_bigdecimal.cpp
 #		test_branch.cpp
-		test_CommunicationMember.cpp
+        test_TCPBuilder.cpp
 		../doori_api/CommunicationMember/IIPC.h
 #		test_protocol.cpp
 #        test_epoll.cpp
