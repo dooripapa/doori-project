@@ -225,9 +225,11 @@ namespace doori::CommunicationMember {
             return;
         }
 
+        this->Success();
+
     }
 
-    Socket TcpApi::GetSocket() {
+    Socket & TcpApi::GetSocket() {
         return mSocket;
     }
 

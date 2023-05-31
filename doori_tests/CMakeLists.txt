@@ -22,6 +22,8 @@ set(TEST_FILES
 		../doori_api/CommunicationMember/TcpApi.cpp
 		../doori_api/CommunicationMember/Socket.h
 		../doori_api/CommunicationMember/Socket.cpp
+		../doori_api/CommunicationMember/EpollApi.h
+		../doori_api/CommunicationMember/EpollApi.cpp
 #        ../doori_api/DataStream/Json.cpp
 #        ../doori_api/DataStream/Json.h
 #        ../doori_api/Etc/Bigdecimal.cpp
@@ -31,9 +33,9 @@ set(TEST_FILES
 #		test_branch.cpp
         test_TCPBuilder.cpp
 		../doori_api/CommunicationMember/IIPC.h
-#		test_protocol.cpp
-#        test_epoll.cpp
-        test_TcpApi.cpp)
+        test_TcpApi.cpp
+		test_EpollApi.cpp
+		)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

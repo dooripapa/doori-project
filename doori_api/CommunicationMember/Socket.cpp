@@ -16,7 +16,7 @@ namespace doori::CommunicationMember {
     };
 
     void Socket::SetBitwise(SOCK_STATUS status) {
-        this->mStatus = this->mStatus | status;
+        this->mStatus = static_cast<SOCK_STATUS>(this->mStatus|status);
     };
 
     bool Socket::IsBitwise(SOCK_STATUS status) const {
@@ -33,7 +33,7 @@ namespace doori::CommunicationMember {
 
     void Socket::SetBitwise(int fd, SOCK_STATUS status) {
         this->mFd = fd;
-        this->mStatus = this->mStatus | status;
+        this->mStatus = static_cast<SOCK_STATUS>(this->mStatus | status);
     }
 
     long Socket::Send(const string &data) {
@@ -100,7 +100,7 @@ namespace doori::CommunicationMember {
     }
 
     void Socket::SetOptBitwise(SOCK_OPT option) {
-        this->mOption= this->mOption | option;
+        this->mOption= static_cast<SOCK_OPT>(this->mOption | option);
     }
 
     bool Socket::IsOptBitwise(SOCK_OPT option) const {

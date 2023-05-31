@@ -52,6 +52,9 @@ namespace doori::Common{
         mLogfile << setfill(' ') << setw(20) << put_time(ptm,"%F %X"); //not supported by gcc
     #endif
         auto strFilename = string(fileName);
+        size_t pos = strFilename.rfind("/");
+        if(pos != std::string::npos)
+            strFilename = strFilename.substr(pos+1);
         auto strFuncname = string(funcName);
         if(!mLogfile)
         {
@@ -113,6 +116,9 @@ namespace doori::Common{
         mLogfile << setfill(' ') << setw(20) << put_time(ptm,"%F %X"); //not supported by gcc
     #endif
         auto strFilename = string(fileName);
+        size_t pos = strFilename.rfind("/");
+        if(pos != std::string::npos)
+            strFilename = strFilename.substr(pos+1);
         auto strFuncname = string(funcName);
         if(!mLogfile)
         {

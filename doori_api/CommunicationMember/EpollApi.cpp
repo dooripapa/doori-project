@@ -2,6 +2,7 @@
 // Created by jaeseong on 23. 5. 23.
 //
 
+#include <memory>
 #include "EpollApi.h"
 #include "TcpApi.h"
 
@@ -25,10 +26,16 @@ namespace doori::CommunicationMember {
             return;
         }
 
+        //공용체이므로, fd외 더 많은 정보를 저장하기 위해. 포인터를 활용함
+        auto p = malloc(sizeof(struct EpollData));
+        auto structP = (struct EpollData*)p;
+        structP->mFd = mListenSocket.GetFd();
+        structP->mCallEpollApiProcess = nullptr;
+
         struct epoll_event ev{};
 
         ev.events = EPOLLIN ;
-        ev.data.fd = mListenSocket.GetFd();
+        ev.data.ptr = p;
         if (epoll_ctl(mEpollRoot, EPOLL_CTL_ADD, mListenSocket.GetFd(), &ev) == -1) {
             LoggingBySystemcallError("epoll_ctl error:");
             return;
@@ -39,7 +46,7 @@ namespace doori::CommunicationMember {
 
     }
 
-    auto EpollApi::RunningEpoll(int backlogEventNum, int timeout, int (*delegation)(Socket)) -> void {
+    auto EpollApi::RunningEpoll(int backlogEventNum, int timeout, int(*delegation)(Socket) ) -> void {
 
         LOG(INFO, "==================================");
         LOG(INFO, "running Method for Event Delegate!");
@@ -50,45 +57,72 @@ namespace doori::CommunicationMember {
             throw system_error();
         }
 
+        // seconds
+        auto seconds = timeout * 1000;
+
         while (true)
         {
-            int nCnt = epoll_wait(mListenSocket.GetFd(), pEvents.get(), backlogEventNum, timeout);
+            int nCnt = epoll_wait(mEpollRoot, pEvents.get(), backlogEventNum, seconds);
             if (nCnt == -1 ) {
                 LoggingBySystemcallError("epoll_wait error");
                 throw system_error();
             } else if (nCnt == 0){
-                LOG(DEBUG, "epoll_wait timeout(", timeout, ")");
+                LOG(DEBUG, "epoll_wait timeout(", timeout, "s)");
                 continue;
             }
 
             for(int i=0; i<nCnt; i++) {
 
-                if( pEvents[i].data.fd == mListenSocket.GetFd() ) {
+                //공용체이므로
+                auto structP = (struct EpollData*)pEvents[i].data.ptr;
+
+                if( structP->mFd == mListenSocket.GetFd() ) {
                     LOG(DEBUG, "Listen,  Process to add Epoll List ");
 
-                    if(AddFdInEpollList(delegation) == -1 ) {
+                    if( AddFdInEpollList() == -1 ) {
                         LoggingByClientError("AddFdInEpollList error");
                         throw system_error();
                     }
                 }
                 else {
+                    LOG(DEBUG, "Recv -> Processing, FD[", structP->mFd, "]");
 
-                    LOG(DEBUG, "Recv -> Processing");
+                    if( -1 == structP->mCallEpollApiProcess( structP->mFd, delegation ) ) {
 
-                    int(*pFunc)(int) = ( int(*)(int) )( pEvents[i].data.ptr );
-                    LOG(INFO, "Recv FD[", pEvents[i].data.fd, "]");
+                        LoggingByClientError("User's Process done");
+                        LOG(ERROR,"socket close(", structP->mFd,")", "heap free(", structP, ")");
 
-                    if( -1 == pFunc(pEvents[i].data.fd) ) {
-                        InjectedByClientError("fail to process Data");
-                        LOG(ERROR, "fail to process Data");
+                        close(structP->mFd);
+                        free(structP);
                     }
 
-                }
-            }
-        }
+                }//else
+
+            }//for
+
+        }//while
     }
 
-    int EpollApi::AddFdInEpollList( int(*delegation)(Socket) ) {
+    int EpollApi::CallEpollApiProcess( int fd, int(*userFunc)(Socket socket) ) {
+
+        Socket socket = Socket{fd, static_cast<enum SOCK_STATUS>(SOCK_STATUS::INIT | SOCK_STATUS::ESTABLISED) };
+
+        auto ret = userFunc(socket);
+
+        if(ret<=0)
+        {
+           if(ret==0)
+               LOG(INFO, "Closed from the other side" );
+           else
+               LOG(ERROR, "fail to process defined User's Function" );
+
+            return -1;
+        }
+
+        return 0;
+    }
+
+    int EpollApi::AddFdInEpollList( ) {
 
         TcpApi tcpApi{mListenSocket};
 
@@ -100,11 +134,14 @@ namespace doori::CommunicationMember {
 
         LOG(INFO, "Accepted FD[", requestToConnect, "]");
 
-        auto p = make_unique<EpollData>( EpollData{requestToConnect, delegation});
+        auto p = malloc(sizeof(struct EpollData));
+        auto structP = (struct EpollData*)p;
+        structP->mFd = requestToConnect;
+        structP->mCallEpollApiProcess = EpollApi::CallEpollApiProcess;
 
         struct epoll_event ev{};
         ev.events = EPOLLIN;
-        ev.data.ptr = p.get();
+        ev.data.ptr = p;
         if (epoll_ctl(mEpollRoot, EPOLL_CTL_ADD, requestToConnect, &ev) == -1) {
             LoggingBySystemcallError("epoll_ctl() for adding FD");
             return  -1;

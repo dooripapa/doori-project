@@ -10,9 +10,13 @@
 
 namespace doori::CommunicationMember {
 
+    class EpollApi;
+
     struct EpollData {
-        int fd;
-        int (*delegation)(Socket);
+    private:
+        friend EpollApi;
+        int mFd;
+        int (*mCallEpollApiProcess)( int fd, int(*userFunc)(Socket) );
     };
 
     class EpollApi final: public Common::Error  {
@@ -33,16 +37,20 @@ namespace doori::CommunicationMember {
         /**
          * Epoll loop back형식으로 처리합니다. Epoll의 연결요청이 아닌 데이터수신 이벤트는 delegation함수로 처리한다.
          * @param backlogEventNum  epoll event가 발생시, 최대 대기 이벤트 수
-         * @param timeout  epoll event가 타임아웃 값.
+         * @param timeout  epoll event가 타임아웃 값(초) second.
          * @param delegation 데이터를 수신시, 처리한다. ex) int delegation( Socket socket )
+         * @note delegation 유저용 프로세스를 구현할 때, 0인 경우 상대측으로 부터 소켓이 닫는 상태값으로 사용해야 하며,
+         * 그 외는 음수는 에러처리가 된다. 내부적으로 소켓을 닫고, 메모리를 해제함으로 주의해야 한다.
          */
-        [[noreturn]] void RunningEpoll(int backlogEventNum, int timeout, int (*delegation)(Socket));
+        [[noreturn]] void RunningEpoll(int backlogEventNum, int timeout, int(*delegation)(Socket) );
 
     private:
-        int AddFdInEpollList(int(*delegation)(Socket) );
+        int AddFdInEpollList();
+
+        static int CallEpollApiProcess( int fd, int(*userFunc)(Socket socket)  );
 
         int    mEpollRoot;
-        Socket mListenSocket;
+        Socket & mListenSocket;
     };
 
 } // CommunicationMember

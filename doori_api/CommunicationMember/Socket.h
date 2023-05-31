@@ -62,6 +62,8 @@ namespace doori::CommunicationMember {
 
         [[nodiscard]] bool IsBitwise(SOCK_STATUS status) const;
 
+        int GetBitwise() const;
+
         void SetBitwise(SOCK_STATUS status);
 
         void SetBitwise(int fd, SOCK_STATUS status);
@@ -78,7 +80,7 @@ namespace doori::CommunicationMember {
 
         template<int N>
         long Send(char const(&data)[N]) {
-            auto ret = send(mFd, data, N, 0);
+            auto ret = send(mFd, data, N-1, 0);
             if(ret == -1) {
                 LOG(ERROR, "send error" );
                 return -1;
@@ -90,12 +92,11 @@ namespace doori::CommunicationMember {
 
         int Close();
 
-        int GetBitwise() const;
 
     private:
         int mFd;
-        int mStatus;
-        int mOption;
+        enum SOCK_STATUS mStatus;
+        enum SOCK_OPT mOption;
     };
 
 } // CommunicationMember

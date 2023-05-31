@@ -96,9 +96,9 @@ namespace doori::CommunicationMember {
          * TcpApi클래스의 api 의해 재설정된 Socket wrapper 객체를 리턴합니다.
          * @return Socker wrapper class
          */
-        Socket GetSocket() ;
+        Socket & GetSocket() ;
     private:
-        doori::CommunicationMember::Socket mSocket;
+        doori::CommunicationMember::Socket& mSocket;
     };
 
 } // CommunicationMember
