@@ -7,7 +7,6 @@
 
 #include "CommunicationMember/IIPCBuilder.h"
 #include "CommunicationMember/TcpApi.h"
-#include "Endpoint.h"
 #include "Socket.h"
 #include <string>
 

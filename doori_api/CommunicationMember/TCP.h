@@ -9,7 +9,6 @@
 #include <string>
 #include <memory>
 #include "CommunicationMember/IIPC.h"
-#include "CommunicationMember/Endpoint.h"
 #include "CommunicationMember/IIPCTopology.h"
 
 using namespace std;

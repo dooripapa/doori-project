@@ -28,13 +28,13 @@ namespace doori::Common{
         return mStatus;
     }
 
-    auto Error::Success() noexcept -> void {
+    auto Error::AsSuccess() noexcept -> void {
         mErrno = 0;
         mCause = std::string("");
         mStatus = true;
     }
 
-    void Error::InjectedBySystemcall() noexcept{
+    void Error::InjectedBySystemcallError() noexcept{
         mErrno = errno;
         if( mErrno > 0 ) {
             mStatus = false;
@@ -45,7 +45,7 @@ namespace doori::Common{
             mCause = p;
         }
         else {
-            Success();
+            AsSuccess();
         }
     }
 
@@ -55,7 +55,7 @@ namespace doori::Common{
         mCause = cause;
     }
 
-    void Error::LoggingBySystemcall(const string &loggingCause) noexcept {
+    void Error::LoggingBySystemcallError(const string &loggingCause) noexcept {
         mErrno = errno;
         if( mErrno > 0 ) {
             mStatus = false;
@@ -68,7 +68,7 @@ namespace doori::Common{
             LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
         }
         else {
-            Success();
+            AsSuccess();
         }
     }
 

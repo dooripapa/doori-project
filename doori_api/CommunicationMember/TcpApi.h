@@ -27,10 +27,10 @@ namespace doori::CommunicationMember {
 
         TcpApi() = delete;
         explicit TcpApi(Socket &socket);
-        TcpApi(const TcpApi& rhs) = default;
-        TcpApi(TcpApi&& rhs)  noexcept = default;
-        TcpApi& operator=(const TcpApi& rhs) = default;
-        TcpApi& operator=(TcpApi&& rhs) = default;
+        TcpApi(const TcpApi& rhs) = delete;
+        TcpApi(TcpApi&& rhs) noexcept = delete;
+        TcpApi& operator=(const TcpApi& rhs) = delete;
+        TcpApi& operator=(TcpApi&& rhs) = delete;
 
         /**
          * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 Endpoint 초기화함
@@ -44,6 +44,14 @@ namespace doori::CommunicationMember {
          * @param port 포트번호
          */
         void SetReuseOpt(const std::string& ip, const std::string& port);
+
+        /**
+         * SOL_SOCKET을 SO_REUSEPORT 와 SO_REUSEADDR 설정함
+         * @note 이 함수가 호출되기전 InitEndpoint()호출로 반환된 소켓FD 필요함
+         *       ip가 INADDR_ANY, 지정된 Port로 바인딩 및 옵션이 셋팅됨
+         * @param port 포트번호
+         */
+        void SetReuseOpt(const std::string& port);
 
         /**
          * recv()함수에 Timeout 를 설정하기위해서 사전에 호출되어야 하는 함수
@@ -60,6 +68,13 @@ namespace doori::CommunicationMember {
          * @param port 포트번호
          */
         void Bind(const std::string& ip, const std::string& port);
+
+        /**
+         * IP, PORT정보를 이용하여 바인딩처리함 * @note 이 함수가 호출되기전 InitEndpoint()호출로 반환된 소켓FD 필요함
+         *       ip가 INADDR_ANY, 지정된 Port로 바인딩
+         * @param port 포트번호
+         */
+        void Bind(const std::string& port);
 
         /**
          * 입력 받은 소켓을 listen상태로 만든다.
@@ -98,6 +113,8 @@ namespace doori::CommunicationMember {
          */
         Socket & GetSocket() ;
     private:
+        static bool IsValidIP(const string& ip);
+        static bool IsValidPort(const string& port);
         doori::CommunicationMember::Socket& mSocket;
     };
 

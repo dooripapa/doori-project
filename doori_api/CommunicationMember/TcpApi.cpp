@@ -2,6 +2,7 @@
 // Created by jaeseong on 23. 3. 1.
 //
 
+#include <regex>
 #include "TcpApi.h"
 
 namespace doori::CommunicationMember {
@@ -12,20 +13,22 @@ namespace doori::CommunicationMember {
 
     void TcpApi::SetReuseOpt(const std::string& ip, const std::string& port) {
 
-        auto cPort = stoi(port);
-
-        if( 65535 < cPort ) {
-            LoggingByClientError("port range over > 65535");
+        if(!IsValidIP(ip)) {
+            LoggingByClientError("ip is invalid:");
             return;
         }
 
-        uint16_t u16Temp = 0;
-        u16Temp = atoi(port.c_str());
+        if(!IsValidPort(port)) {
+            LoggingByClientError("port invalid");
+            return;
+        }
+
+        auto cPort = stoi(port);
 
         struct sockaddr_in sockaddrIn{};
         sockaddrIn.sin_family = AF_INET;
-        sockaddrIn.sin_port = htons(u16Temp);
-        sockaddrIn.sin_addr.s_addr = ip.empty() ? INADDR_ANY : inet_addr(ip.c_str());
+        sockaddrIn.sin_port = htons(cPort);
+        sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
 
         if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
             LoggingBySystemcallError("setsockopt");
@@ -36,14 +39,43 @@ namespace doori::CommunicationMember {
 
     }
 
-    void TcpApi::Bind(const std::string& ip, const std::string& port) {
+    void TcpApi::SetReuseOpt(const string &port) {
+
+        if(!IsValidPort(port)) {
+            LoggingByClientError("port invalid");
+            return;
+        }
 
         auto cPort = stoi(port);
 
-        if( 65535 < cPort ) {
-            LoggingByClientError("port range over > 65535");
+        struct sockaddr_in sockaddrIn{};
+        sockaddrIn.sin_family = AF_INET;
+        sockaddrIn.sin_port = htons(cPort);
+        sockaddrIn.sin_addr.s_addr = INADDR_ANY;
+
+        if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
+            LoggingBySystemcallError("setsockopt");
             return;
         }
+
+        mSocket.SetOptBitwise(SOCK_OPT::REUSE);
+
+
+    }
+
+    void TcpApi::Bind(const std::string& ip, const std::string& port) {
+
+        if(!IsValidIP(ip)) {
+            LoggingByClientError("ip is invalid:");
+            return;
+        }
+
+        if(!IsValidPort(port)) {
+            LoggingByClientError("port invalid");
+            return;
+        }
+
+        auto cPort = stoi(port);
 
         struct sockaddr_in sockaddrIn{};
         sockaddrIn.sin_family = AF_INET;
@@ -59,6 +91,29 @@ namespace doori::CommunicationMember {
 
     }
 
+    void TcpApi::Bind(const string &port) {
+
+        if(!IsValidPort(port)) {
+            LoggingByClientError("port invalid");
+            return;
+        }
+
+        auto cPort = stoi(port);
+
+        struct sockaddr_in sockaddrIn{};
+        sockaddrIn.sin_family = AF_INET;
+        sockaddrIn.sin_port = htons(cPort);
+        sockaddrIn.sin_addr.s_addr = INADDR_ANY;
+
+        if (bind(mSocket.GetFd(), (struct sockaddr *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
+            LoggingBySystemcallError("TCP socket socket, fail to bind");
+            return;
+        }
+
+        mSocket.SetBitwise(SOCK_STATUS::BINDING);
+    }
+
+
     void TcpApi::Listen(int backlogNum) {
 
         if( !mSocket.IsBitwise(SOCK_STATUS::BINDING) ) {
@@ -67,7 +122,7 @@ namespace doori::CommunicationMember {
         }
 
         if (listen(mSocket.GetFd(), backlogNum) != 0) {
-            InjectedBySystemcall();
+            InjectedBySystemcallError();
             LOG(ERROR, "listen error:", Cause() );
         }
 
@@ -225,12 +280,34 @@ namespace doori::CommunicationMember {
             return;
         }
 
-        this->Success();
+        this->AsSuccess();
 
     }
 
     Socket & TcpApi::GetSocket() {
         return mSocket;
     }
+
+    /**
+     * ip 문자열을 검증합니다. 유효하지 않으면 false
+     * @return
+     */
+    bool TcpApi::IsValidIP(const string &ip) {
+        constexpr auto checkIpRegex ="^((\\d{1,3})\\.){3}(\\d{1,3})$";
+        std::regex regex(checkIpRegex);
+        return std::regex_match(ip, regex);
+    }
+
+    /**
+     * port 문자열을 검증합니다. 유효하지 않으면 false
+     * 1024 ~ 65535 사이 문자열이어야 합니다.
+     * @return
+     */
+    bool TcpApi::IsValidPort(const string &port) {
+        constexpr auto checkPortRegex ="^([1-9][0-9]{3,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
+        std::regex regex(checkPortRegex);
+        return std::regex_match(port, regex);
+    }
+
 
 } // CommunicationMember

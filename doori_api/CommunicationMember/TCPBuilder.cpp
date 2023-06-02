@@ -81,6 +81,7 @@ namespace doori::CommunicationMember {
             return 0;
 
         }
+
         // 특정ip port 바인딩 후, 원격지에 연결요청함
         else if ( mServer && mClient )
         {

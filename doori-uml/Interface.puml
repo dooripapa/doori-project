@@ -184,34 +184,75 @@ class doori::CommunicationMember::Socket{
 }
 
 class doori::CommunicationMember::TcpApi{
-+TcpApi() = delete
 +TcpApi(Socket& socket)
-+TcpApi(const TcpApi&) = delete
-+TcpApi(TcpApi&&) = delete
-+TcpApi& operator=(const TcpApi&) = delete
-+TcpApi& operator=(TcpApi&&) = delete
-+void SetReuseOpt();
-+void SetTimeoutOpt();
++void SetReuseOpt(string ip, string port);
++void SetReuseOpt(string port);
++void SetTimeoutOpt(std::uint8_t timeout);
 +void Bind(string ip, string port);
-+void Listen();
++void Bind(string port);
++void Listen(int backlogNum);
 +int Accept();
-+void Connect();
++void Connect(string ip, string port);
++void Connect(string ip, string port,std::uint8_t timeout);
++Socket & GetSocket() ;
 ---
 -Socket& mSocket
 }
 
-class doori::CommunicationMember::Epoll{
+struct doori::CommunicationMember::EpollData{
+-int mFd;
+-int (*mCallEpollApiProcess)( int fd, int(*userFunc)(Socket) );
 }
 
-class doori::CommunicationMember::EpollEvents{
+class doori::CommunicationMember::EpollApi{
++explicit EpollApi(Socket& socket);
++void InitEpoll();
++void RunningForeground(int backlogEventNum, int timeout, int(*delegation)(Socket) );
+---
+-int AddFdInEpollList();
+-static int CallEpollApiProcess( int fd, int(*userFunc)(Socket socket)  );
+-int    mEpollRoot;
+-Socket& mListenSocket;
 }
 
-EpollEvents <-- Epoll
+enum doori::DataStream::ENCODE_TYPE{
+ASCII
+UTF_8
+}
 
+Interface doori::DataStream::IHeader{
+virtual long TotalLength()
+ENCODE_TYPE Encode()
+}
+
+Interface doori::DataStream::Body{
+virtual string Data()
+}
+
+Interface doori::DataStream::IFooter{
+virtual string Data()
+}
+
+Interface doori::DataStream::ITnsdStream{
++ITnsdStream(IHeader header, IBody body, IFooter footer)
+-IHeader& mHeader
+-IBody& mBody
+-IFooter& mFooter
+}
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' 관계표현
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Error <|-- EpollApi : 상속
+Socket o-- EpollApi : 참조
+EpollData -- EpollApi : 종속
 
 Error <|-- TcpApi : 상속
-Socket *-- TcpApi
+Socket o-- TcpApi : 참조
 
+Socket -- SOCK_STATUS
+Socket -- SOCK_OPT
 
 IIPCBuilder <|-- TCPBuilder
 IIPCTopology <|-- Socket

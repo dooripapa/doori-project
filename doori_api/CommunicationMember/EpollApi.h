@@ -40,9 +40,9 @@ namespace doori::CommunicationMember {
          * @param timeout  epoll event가 타임아웃 값(초) second.
          * @param delegation 데이터를 수신시, 처리한다. ex) int delegation( Socket socket )
          * @note delegation 유저용 프로세스를 구현할 때, 0인 경우 상대측으로 부터 소켓이 닫는 상태값으로 사용해야 하며,
-         * 그 외는 음수는 에러처리가 된다. 내부적으로 소켓을 닫고, 메모리를 해제함으로 주의해야 한다.
+         * 그 외는 음수는 에러처리가 된다. 내부에서 자동으로 소켓을 닫고, 할당된 메모리를 해제한다.
          */
-        [[noreturn]] void RunningEpoll(int backlogEventNum, int timeout, int(*delegation)(Socket) );
+        [[noreturn]] void RunningForeground(int backlogEventNum, int timeout, int(*delegation)(Socket) );
 
     private:
         int AddFdInEpollList();

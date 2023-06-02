@@ -42,11 +42,11 @@ namespace doori::CommunicationMember {
         }
 
         // 이 객체 상태값으로 성공완료함
-        this->Success();
+        this->AsSuccess();
 
     }
 
-    auto EpollApi::RunningEpoll(int backlogEventNum, int timeout, int(*delegation)(Socket) ) -> void {
+    auto EpollApi::RunningForeground(int backlogEventNum, int timeout, int(*delegation)(Socket) ) -> void {
 
         LOG(INFO, "==================================");
         LOG(INFO, "running Method for Event Delegate!");

@@ -9,7 +9,6 @@
 #include "CommunicationMember/IIPC.h"
 #include "CommunicationMember/IIPCBuilder.h"
 #include "CommunicationMember/IIPCTopology.h"
-#include "CommunicationMember/Endpoint.h"
 #include "Common/Error.h"
 
 using namespace std;

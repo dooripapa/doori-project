@@ -48,7 +48,7 @@ namespace doori::Common {
         /**
          * Error객체를 정상으로 초기화함.
          */
-        auto Success() noexcept -> void;
+        auto AsSuccess() noexcept -> void;
 
         /**
          * Error의 상태값 리턴함
@@ -75,8 +75,8 @@ namespace doori::Common {
          * 시스템 콜 함수 호출 후 에러가 발생된 경우,
          * Error 객체를 상태를 셋팅한다.
          */
-        void InjectedBySystemcall() noexcept;
-        void LoggingBySystemcall(const string& loggingCause) noexcept;
+        void InjectedBySystemcallError() noexcept;
+        void LoggingBySystemcallError(const string& loggingCause) noexcept;
 
         template<int N>
         void LoggingBySystemcallError(char const(&loggingCause)[N]) noexcept;
@@ -139,7 +139,7 @@ namespace doori::Common {
             LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
         }
         else {
-            Success();
+            AsSuccess();
         }
     }
 } //doori
