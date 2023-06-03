@@ -1,0 +1,25 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+collections Publisher as Publisher
+
+autonumber
+group protocol
+    "A Subscriber" -> Tnsd : Notify(Topic)
+    "A Subscriber" <- Tnsd : Answer(Pubishers's List, Token)
+end
+
+autonumber stop
+group Connect section
+    "A Subscriber" --> Publisher : Connect to A Publisher
+    "A Subscriber" --> Publisher : Connect to B Publisher
+    "A Subscriber" --> Publisher : ..
+end
+
+autonumber stop
+group data flow section
+    "A Subscriber" <-- Publisher : Publish(Stream)
+    "A Subscriber" <-- Publisher : ..
+    "A Subscriber" <-- Publisher : ..
+end
+@enduml

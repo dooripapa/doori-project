@@ -7,12 +7,12 @@
 #pragma	once
 
 #include <thread>
-#include "ICommunication.h"
+#include "Communication.h"
 #include "Common/Log.h"
 
 namespace doori{
 
-class Publisher : public ICommunication
+class Publisher : public Communication
 {
 public:
     explicit Publisher(std::function<int(int, Stream &)> delegation);

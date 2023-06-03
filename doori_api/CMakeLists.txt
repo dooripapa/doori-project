@@ -23,26 +23,26 @@ set(HEADER_FILES
 		Process/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
 #		CommunicationMember/Connection.h
-		DataStream/Data.h
-		DataStream/DataSegment.h
-		DataStream/DataSegment.hpp
-		DataStream/Dictionary.h
+		Data/Data.h
+		Data/DataSegment.h
+		Data/DataSegment.hpp
+		Data/Dictionary.h
 		CommunicationMember/Endpoint.h
 		CommunicationMember/TCP.h
 		Common/Error.h
 		Process/Getopt.h
-		TnsdDistrict/ICommunication.h
+        Tnsd/Communication.h
 		Common/Log.h
 		Common/Log.hpp
-		TnsdDistrict/Publisher.h
+        Tnsd/Publisher.h
 		Etc/Regex.h
 		Process/Runner.h
-		DataStream/Stream.h
-		TnsdDistrict/Subscriber.h
-		TnsdDistrict/Topic.h
+		Data/Stream.h
+        Tnsd/Subscriber.h
+        Tnsd/Topic.h
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
-		DataStream/Json.h
+		Data/Json.h
 		CommunicationMember/IIPCBuilder.h
 		CommunicationMember/TCPBuilder.h
 		CommunicationMember/IIPCTopology.h
@@ -53,30 +53,30 @@ set(SRC_FILES
 		CommunicationMember/Addr.cpp
 		Process/Application.cpp
 #		CommunicationMember/Connection.cpp
-		DataStream/Data.cpp
-		DataStream/DataSegment.cpp
-		DataStream/Dictionary.cpp
+		Data/Data.cpp
+		Data/DataSegment.cpp
+		Data/Dictionary.cpp
 		CommunicationMember/Endpoint.cpp
 		Common/Error.cpp
 		Process/Getopt.cpp
-		TnsdDistrict/ICommunication.cpp
+        Tnsd/Communication.cpp
 		Common/Log.cpp
-		TnsdDistrict/Publisher.cpp
+        Tnsd/Publisher.cpp
 		Etc/Regex.cpp
 		Process/Runner.cpp
-		DataStream/Stream.cpp
-		TnsdDistrict/Subscriber.cpp
-		TnsdDistrict/Topic.cpp
-		DataStream/Json.cpp
+		Data/Stream.cpp
+        Tnsd/Subscriber.cpp
+        Tnsd/Topic.cpp
+		Data/Json.cpp
 		Etc/Bigdecimal.cpp
 		CommunicationMember/TCPBuilder.cpp
 		CommunicationMember/TCP.cpp
 		CommunicationMember/TcpApi.cpp
 		CommunicationMember/TcpApi.h
-		Interface/Protocol.h
-		Interface/Protocol.cpp
-		Interface/ProtocolHeader.h
-		Interface/ProtocolHeader.cpp
+		Stream/Protocol.h
+		Stream/Protocol.cpp
+		Stream/ProtocolHeader.h
+		Stream/ProtocolHeader.cpp
         CommunicationMember/Socket.cpp
 		CommunicationMember/Socket.h
 		CommunicationMember/EpollApi.cpp CommunicationMember/EpollApi.h)

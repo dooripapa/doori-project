@@ -16,7 +16,7 @@ namespace doori::Process{
 
 /**
  * doori api를 통해서, 어플리케이션을 만들때는 이 클래스를 상속받아서 엄격하게 인터페이스를 구현해야 한다.
- * 이 객체를 상속받아 인터페이스를 구현되어져야 하며,
+ * 이 객체 함수를 상속받아 인터페이스를 구현되어져야 하며,
  * Runner 클래스가 인터페이스를 호출한다.
  */
 class Application {
@@ -67,8 +67,8 @@ public:
      */
     virtual auto Terminate() noexcept -> int = 0;
 private:
-    static const std::string DEFAULT_LOG_PATH;
-    static const std::string DEFAULT_LOG_NAME;
+    std::string mDefaultLogPath{"/tmp/"};
+    std::string mDefaultLogName{"a.out.log"};
 };
 
 }//namespace doori

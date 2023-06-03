@@ -6,12 +6,12 @@
 //
 #pragma once
 #include <thread>
-#include "ICommunication.h"
+#include "Communication.h"
 #include "Common/Log.h"
 
 namespace doori{
 
-    class Subscriber : public ICommunication
+    class Subscriber : public Communication
     {
     public:
         /**

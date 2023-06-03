@@ -7,208 +7,208 @@
 
 #include "DataStructure/Tree.h"
 
-namespace doori{
+namespace doori::DataStructure{
 
-template <typename T>
-auto Tree<T>::copyFrom(const Tree<T>& rhs) -> void
-{
-    mRootBranches = std::move(rhs.mRootBranches);
-}
-
-template <typename T>
-auto Tree<T>::copyFrom(Tree<T>&& rhs) -> void
-{
-    mRootBranches = std::move(rhs.mRootBranches);
-}
-
-template <typename T>
-Tree<T>::Tree() {
-
-}
-
-template <typename T>
-Tree<T>::Tree(const Tree<T>& rhs)
-{
-    copyFrom(rhs);
-}
-
-template <typename T>
-Tree<T>::Tree(Tree<T>&& rhs)
-{
-    copyFrom(std::move(rhs));
-}
-
-/**
- * Topic같은 branch를 찾기
- * @tparam T
- * @param topic_name_segment topic name 부분
- * @return tuple<bool, typename std::vector< doori_branch<T>>::iterator > 찾으면 첫인자는 true, 못찾으면 false, iterator는 대상 branch
- */
-template <typename T>
-auto Tree<T>::findRootBranches(const string& topic_name_segment, typename vector<Branch<T>>::iterator& itPos) -> bool
-{
-    auto it=find_if(
-             mRootBranches.begin()
-            ,mRootBranches.end()
-            ,[=](const Branch<T>& branch){
-                return (branch.GetName() == topic_name_segment);
-            }
-    );
-    auto ret=!(it==mRootBranches.end()); //찾으면 true, or false
-    itPos=it;
-
-    return ret;
-}
-template <typename T>
-auto Tree<T>::findRootBranches(const string& topic_name_segment) -> bool
-{
-    auto it=find_if(
-             mRootBranches.begin()
-            ,mRootBranches.end()
-            ,[=](const Branch<T>& branch){
-                return (branch.GetName() == topic_name_segment);
-            }
-    );
-    return !(it==mRootBranches.end()); //찾으면 true, or false
-}
-
-template <typename T>
-auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT mode) noexcept -> bool
-{
-    auto ret=false;
-    typename vector<Branch<T>>::iterator iter, linkIter;
-    for(auto i=0;i<topic.getDepthSize();++i)
+    template <typename T>
+    auto Tree<T>::copyFrom(const Tree<T>& rhs) -> void
     {
-        if(i==0) {
-            ret=findRootBranches( topic.getTopicName(i) ,iter );
-            if(!ret) {
-                Branch<T> aBranch(topic.getTopicName(i));
-                mRootBranches.push_back(aBranch);
-                findRootBranches( topic.getTopicName(i) ,iter );
-            }
-        } else{
-            ret = (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
-            if(!ret) {
-                Branch<T> aBranch(topic.getTopicName(i));
-                (*iter).GetLinkBranches().push_back(aBranch);
-                (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
-            }
-            iter=linkIter;
-        }
+        mRootBranches = std::move(rhs.mRootBranches);
     }
-    //해당 Branch에서 Linked Branches로부터 해당 중복된 branch가 있는지 확인함
-    ret = (*iter).FindLinkBranches(branch.GetName(), linkIter);
-    if( ret ) {
-        if (mode==INSERT::CHECK)
-            return false;
-        else {
-            (*iter).GetLinkBranches().erase(linkIter);
+
+    template <typename T>
+    auto Tree<T>::copyFrom(Tree<T>&& rhs) -> void
+    {
+        mRootBranches = std::move(rhs.mRootBranches);
+    }
+
+    template <typename T>
+    Tree<T>::Tree() {
+
+    }
+
+    template <typename T>
+    Tree<T>::Tree(const Tree<T>& rhs)
+    {
+        copyFrom(rhs);
+    }
+
+    template <typename T>
+    Tree<T>::Tree(Tree<T>&& rhs)
+    {
+        copyFrom(std::move(rhs));
+    }
+
+    /**
+     * Topic같은 branch를 찾기
+     * @tparam T
+     * @param topic_name_segment topic name 부분
+     * @return tuple<bool, typename std::vector< doori_branch<T>>::iterator > 찾으면 첫인자는 true, 못찾으면 false, iterator는 대상 branch
+     */
+    template <typename T>
+    auto Tree<T>::findRootBranches(const string& topic_name_segment, typename vector<Branch<T>>::iterator& itPos) -> bool
+    {
+        auto it=find_if(
+                 mRootBranches.begin()
+                ,mRootBranches.end()
+                ,[=](const Branch<T>& branch){
+                    return (branch.GetName() == topic_name_segment);
+                }
+        );
+        auto ret=!(it==mRootBranches.end()); //찾으면 true, or false
+        itPos=it;
+
+        return ret;
+    }
+    template <typename T>
+    auto Tree<T>::findRootBranches(const string& topic_name_segment) -> bool
+    {
+        auto it=find_if(
+                 mRootBranches.begin()
+                ,mRootBranches.end()
+                ,[=](const Branch<T>& branch){
+                    return (branch.GetName() == topic_name_segment);
+                }
+        );
+        return !(it==mRootBranches.end()); //찾으면 true, or false
+    }
+
+    template <typename T>
+    auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT mode) noexcept -> bool
+    {
+        auto ret=false;
+        typename vector<Branch<T>>::iterator iter, linkIter;
+        for(auto i=0;i<topic.getDepthSize();++i)
+        {
+            if(i==0) {
+                ret=findRootBranches( topic.getTopicName(i) ,iter );
+                if(!ret) {
+                    Branch<T> aBranch(topic.getTopicName(i));
+                    mRootBranches.push_back(aBranch);
+                    findRootBranches( topic.getTopicName(i) ,iter );
+                }
+            } else{
+                ret = (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                if(!ret) {
+                    Branch<T> aBranch(topic.getTopicName(i));
+                    (*iter).GetLinkBranches().push_back(aBranch);
+                    (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                }
+                iter=linkIter;
+            }
+        }
+        //해당 Branch에서 Linked Branches로부터 해당 중복된 branch가 있는지 확인함
+        ret = (*iter).FindLinkBranches(branch.GetName(), linkIter);
+        if( ret ) {
+            if (mode==INSERT::CHECK)
+                return false;
+            else {
+                (*iter).GetLinkBranches().erase(linkIter);
+                (*iter).GetLinkBranches().push_back(branch);
+            }
+        }
+        else
             (*iter).GetLinkBranches().push_back(branch);
-        }
-    }
-    else
-        (*iter).GetLinkBranches().push_back(branch);
 
-    return true;
-}
-
-template <typename T>
-auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
-{
-    int i;
-    typename vector<Branch<T>>::iterator iter, linkIter;
-    auto ret=false;
-    auto depthMax = topic.getDepthSize();
-    for(i=0;i<depthMax;++i)
-    {
-        if(i==0)
-            ret=findRootBranches( topic.getTopicName(i), iter );
-        else
-            ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
-
-        if(ret) {
-            if(0<i && i<depthMax-1)
-                iter = linkIter;
-            continue;
-        }
-        else
-            break;
-    }
-    if(i==topic.getDepthSize() && ret){
-        (*iter).GetLinkBranches().erase(linkIter );
-        LOG(INFO, "remove Branch TopicAccess:", topic.getTopicName());
         return true;
     }
-    return false;
-}
 
-template <typename T>
-auto Tree<T>::getBranch(const Topic& topic) -> Branch<T>&
-{
-    typename vector<Branch<T>>::iterator iter, linkIter;
-    auto ret=false;
-    for(auto i=0;i<topic.getDepthSize();++i)
+    template <typename T>
+    auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
     {
-        if(i==0) {
-            ret=findRootBranches(topic.getTopicName(i), iter);
-            //없으면 새로 branch 추가
-            if(!ret) {
-                Branch<T> aBranch(topic.getTopicName(i));
-                mRootBranches.push_back(aBranch);
-                findRootBranches(topic.getTopicName(i), iter);
+        int i;
+        typename vector<Branch<T>>::iterator iter, linkIter;
+        auto ret=false;
+        auto depthMax = topic.getDepthSize();
+        for(i=0;i<depthMax;++i)
+        {
+            if(i==0)
+                ret=findRootBranches( topic.getTopicName(i), iter );
+            else
+                ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+
+            if(ret) {
+                if(0<i && i<depthMax-1)
+                    iter = linkIter;
                 continue;
             }
-        } else{
-            ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
-            //없으면 새로 branch 추가
-            if(!ret) {
-                Branch<T> aBranch(topic.getTopicName(i));
-                (*iter).GetLinkBranches().push_back(aBranch);
-                (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
-            }
-            iter=linkIter;
+            else
+                break;
         }
-    }
-    return (*iter);
-}
-
-template <typename T>
-auto Tree<T>::attachLeaf(const Topic& topic, T leaf) -> bool
-{
-    //auto& ...
-    //이렇게 해야, var 변수의 변경은, 값의 변경이 아닌, 참조의 값의 변환이 된다.
-    auto& var = getBranch(topic);
-
-    if(!var.IsThereLeaf(leaf))
+        if(i==topic.getDepthSize() && ret){
+            (*iter).GetLinkBranches().erase(linkIter );
+            LOG(INFO, "remove Branch TopicAccess:", topic.getTopicName());
+            return true;
+        }
         return false;
+    }
 
-    var.AttachLeaf(leaf);
-    return true;
-}
+    template <typename T>
+    auto Tree<T>::getBranch(const Topic& topic) -> Branch<T>&
+    {
+        typename vector<Branch<T>>::iterator iter, linkIter;
+        auto ret=false;
+        for(auto i=0;i<topic.getDepthSize();++i)
+        {
+            if(i==0) {
+                ret=findRootBranches(topic.getTopicName(i), iter);
+                //없으면 새로 branch 추가
+                if(!ret) {
+                    Branch<T> aBranch(topic.getTopicName(i));
+                    mRootBranches.push_back(aBranch);
+                    findRootBranches(topic.getTopicName(i), iter);
+                    continue;
+                }
+            } else{
+                ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                //없으면 새로 branch 추가
+                if(!ret) {
+                    Branch<T> aBranch(topic.getTopicName(i));
+                    (*iter).GetLinkBranches().push_back(aBranch);
+                    (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                }
+                iter=linkIter;
+            }
+        }
+        return (*iter);
+    }
 
-template <typename T>
-auto Tree<T>::operator=(const Tree<T>& rhs) noexcept -> Tree<T>&
-{
-    if( this ==&rhs  )
+    template <typename T>
+    auto Tree<T>::attachLeaf(const Topic& topic, T leaf) -> bool
+    {
+        //auto& ...
+        //이렇게 해야, var 변수의 변경은, 값의 변경이 아닌, 참조의 값의 변환이 된다.
+        auto& var = getBranch(topic);
+
+        if(!var.IsThereLeaf(leaf))
+            return false;
+
+        var.AttachLeaf(leaf);
+        return true;
+    }
+
+    template <typename T>
+    auto Tree<T>::operator=(const Tree<T>& rhs) noexcept -> Tree<T>&
+    {
+        if( this ==&rhs  )
+            return *this;
+
+        copyFrom( rhs);
         return *this;
+    }
 
-    copyFrom( rhs);
-    return *this;
-}
+    template <typename T>
+    auto Tree<T>::operator=(Tree<T>&& rhs) noexcept -> Tree<T>&
+    {
+        if( this ==&rhs  )
+            return *this;
 
-template <typename T>
-auto Tree<T>::operator=(Tree<T>&& rhs) noexcept -> Tree<T>&
-{
-    if( this ==&rhs  )
+        copyFrom( std::move(rhs) );
         return *this;
+    }
 
-    copyFrom( std::move(rhs) );
-    return *this;
-}
-
-template<typename T>
-auto Tree<T>::RootBranches() noexcept -> vector<Branch<T>> & {
-    return mRootBranches;
-}
+    template<typename T>
+    auto Tree<T>::RootBranches() noexcept -> vector<Branch<T>> & {
+        return mRootBranches;
+    }
 
 }//namespace doori

@@ -9,7 +9,7 @@ namespace doori {
         namespace Handler {
             void Recv::recv(IProcedure *procedure) {
 
-                // Interface 수신후
+                // Stream 수신후
                 switch (condition) {
 
                 }

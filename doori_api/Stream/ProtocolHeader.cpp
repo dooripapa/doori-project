@@ -7,5 +7,5 @@
 namespace doori {
     namespace Interface {
 
-    } // Interface
+    } // Stream
 } // doori

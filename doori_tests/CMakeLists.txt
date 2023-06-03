@@ -24,8 +24,8 @@ set(TEST_FILES
 		../doori_api/CommunicationMember/Socket.cpp
 		../doori_api/CommunicationMember/EpollApi.h
 		../doori_api/CommunicationMember/EpollApi.cpp
-#        ../doori_api/DataStream/Json.cpp
-#        ../doori_api/DataStream/Json.h
+#        ../doori_api/Data/Json.cpp
+#        ../doori_api/Data/Json.h
 #        ../doori_api/Etc/Bigdecimal.cpp
 #        ../doori_api/Etc/Bigdecimal.h
 #		test_json.cpp

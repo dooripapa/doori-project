@@ -1,0 +1,31 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber stop
+group Protocol
+    Publisher <- Tnsd : Alive(Hash Token)
+    Publisher <- Publisher : Check(Hash Token)
+    Publisher -> Tnsd : Answer
+    note left
+        정상인 경우
+    end note
+end
+
+group Protocol
+    Publisher -> Tnsd : Notify(Topic)
+    note left
+        비정상 경우
+    end note
+
+    Tnsd -> Subsriber : Change(A Publisher)
+
+    group connection
+        Subsriber -> Publisher : Connect to A Publisher
+    end
+
+end
+group Protocol
+    Tnsd -> Subsriber : Alive
+    Tnsd <- Subsriber : Answer
+end
+@enduml

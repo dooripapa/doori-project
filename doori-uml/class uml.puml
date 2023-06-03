@@ -240,6 +240,19 @@ Interface doori::DataStream::ITnsdStream{
 -IFooter& mFooter
 }
 
+
+class doori::Tnsd::Communication{
+Init(string ip, string port, Topic topic, TREE myType);
+void Notify();
+void ListUp();
+}
+class doori::Tnsd::Publisher{
+}
+class doori::Tnsd::Subscriber{
+}
+class doori::Tnsd::Topic{
+}
+
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
 '' 관계표현
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -261,5 +274,9 @@ IIPC <|-- TCP
 IIPCBuilder <-o IIPC
 TCPBuilder <-o TCP : 의존 <
 Socket <.. TCP : 생성 <
+
+Communication <|-- Publisher : 상속
+Communication <|-- Subscriber : 상속
+Error <|-- Communication : 상속
 
 @enduml
