@@ -7,15 +7,15 @@
 #pragma	once
 
 #include <thread>
-#include "Communication.h"
+#include "MiddleSide.h"
 #include "Common/Log.h"
 
 namespace doori{
 
-class Publisher : public Communication
+class PubSide : public Communication
 {
 public:
-    explicit Publisher(std::function<int(int, Stream &)> delegation);
+    explicit PubSide(std::function<int(int, Stream &)> delegation);
     auto startPublisher(doori::Connection) noexcept -> void;
     auto publish(const Stream&) noexcept -> bool;
 private:

@@ -4,6 +4,10 @@
 collections Publisher as Publisher
 
 autonumber
+group connect
+    "A Subscriber" -> Tnsd : connect
+end
+
 group protocol
     "A Subscriber" -> Tnsd : Notify(Topic)
     "A Subscriber" <- Tnsd : Answer(Pubishers's List, Token)

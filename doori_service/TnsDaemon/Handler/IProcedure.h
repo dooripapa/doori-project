@@ -17,17 +17,17 @@ namespace doori {
             class State;
 
             /*!
-             * Tnsd 기준으로 절차가 진행되어야 함.
+             * MiddleSide 기준으로 절차가 진행되어야 함.
              */
             class IProcedure {
             public:
                 /**
-                 * Tnsd() 최초기동상태
+                 * MiddleSide() 최초기동상태
                  */
                 IProcedure();
 
                 /**
-                 * Tnsd 연결된 노드에게 어떤 정보를 알림
+                 * MiddleSide 연결된 노드에게 어떤 정보를 알림
                  */
                 void notify();
                 /**
@@ -55,12 +55,12 @@ namespace doori {
                  */
                 void sub();
                 /**
-                 * Tnsd() 데이터 송신
+                 * MiddleSide() 데이터 송신
                  * @param protocol
                  */
                 void send();
                 /**
-                 * Tnsd() 데이터 수신
+                 * MiddleSide() 데이터 수신
                  */
                 void recv();
             private:

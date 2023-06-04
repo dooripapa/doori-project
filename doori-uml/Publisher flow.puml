@@ -4,6 +4,9 @@
 collections Subscriber as Subscriber
 
 autonumber
+group connect
+    "A Publisher" -> Tnsd : connect
+end
 group protocol
     "A Publisher" -> Tnsd : Notify(Topic)
     Tnsd -> Subscriber : Change(A Publisher)
@@ -17,7 +20,7 @@ group connect
 end
 
 autonumber stop
-group data flow
+group protocol
     Subscriber <-- "A Publisher" : Publish(Stream)
     Subscriber <-- "A Publisher" : ..
     Subscriber <-- "A Publisher" : ..

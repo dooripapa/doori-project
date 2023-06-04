@@ -6,19 +6,19 @@
 //
 #pragma once
 #include <thread>
-#include "Communication.h"
+#include "MiddleSide.h"
 #include "Common/Log.h"
 
 namespace doori{
 
-    class Subscriber : public Communication
+    class SubSide : public Communication
     {
     public:
         /**
          * subscription를 위한 처리 함수를 등록함
          * @param 데이터 수신시 처리할 delegation callback 함수등록
          */
-        explicit Subscriber(std::function<int(int, Stream&)> delegation);
+        explicit SubSide(std::function<int(int, Stream&)> delegation);
         /**
          * 실질적인 통신초기화, connect 요청 및 데이터 수신 이벤트 등록처리기
          * @brief 복수개의 publisher로부터 데이터를 수신되었을때, 데이터 처리방식을 등록함

@@ -4,20 +4,20 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#include "Subscriber.h"
+#include "SubSide.h"
 
 namespace doori{
 
-    auto Subscriber::startSubscriber(doori::Connection forSubscriber) noexcept -> void {
+    auto SubSide::startSubscriber(doori::Connection forSubscriber) noexcept -> void {
         processingMultisessions(forSubscriber);
     }
 
-    auto Subscriber::onSubscribing() noexcept -> void{
+    auto SubSide::onSubscribing() noexcept -> void{
         while(true)
             std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 
-    Subscriber::Subscriber(std::function<int(int, Stream &)> delegation) : ICommunication(delegation) {
+    SubSide::SubSide(std::function<int(int, Stream &)> delegation) : ICommunication(delegation) {
 
     }
 

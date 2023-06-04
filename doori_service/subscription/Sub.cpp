@@ -39,7 +39,7 @@ auto Sub::operator()() noexcept -> int {
     topic.set(mSubDic.Value(Dictionary::TOKEN_INFO::MY_TOPIC));
     if(!subscriber.Init(tnsdConnection, topic, Protocol::TREE::SUB))
     {
-        LOG(ERROR, "failed to connect to Tnsd");
+        LOG(ERROR, "failed to connect to MiddleSide");
         return -1;
     }
     subscriber.startSubscriber(subConnection );

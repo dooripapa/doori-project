@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace doori::TnsdDistrict{
+namespace doori::Tnsd{
 
     Topic::Topic() : mTopics{} {
     }

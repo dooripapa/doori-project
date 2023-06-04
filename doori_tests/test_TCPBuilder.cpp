@@ -5,12 +5,9 @@
 #include <thread>
 #include "CommunicationMember/TCPBuilder.h"
 #include "Common/Log.h"
-#include "DataStream/Json.h"
 #include "CommunicationMember/TCP.h"
-#include "DataStream/Json.h"
 
 using namespace doori::CommunicationMember;
-using namespace doori::DataStream;
 using namespace doori::Common;
 using namespace std;
 

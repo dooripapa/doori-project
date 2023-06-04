@@ -37,7 +37,7 @@ auto Pub::operator()() noexcept -> int {
     topic.set(mPubDic.Value(Dictionary::TOKEN_INFO::MY_TOPIC));
     if(!publisher.Init(tnsdConn, topic, Protocol::TREE::PUB))
     {
-        LOG(ERROR, "failed to connect to Tnsd");
+        LOG(ERROR, "failed to connect to MiddleSide");
         return -1;
     }
 

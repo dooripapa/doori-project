@@ -12,7 +12,7 @@
 #include <string>
 #include "Common/Log.h"
 
-namespace doori::TnsdDistrict{
+namespace doori::Tnsd{
 
     class Topic
     {

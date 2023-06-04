@@ -4,21 +4,21 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#include "Communication.h"
+#include "MiddleSide.h"
 
 namespace doori::Tnsd{
 
-    auto Communication::Init(string ip, string port, Topic topic, Protocol_backup::TREE myType) noexcept -> bool{
+    auto MiddleSide::Init(string ip, string port, Topic topic, FLOW_SIDE myType) noexcept -> void {
         auto retryCnt = 0;
         mICommTopic = topic;
-        LOG(INFO, "Tnsd Communication TopicAccess : ", mICommTopic.getTopicName());
+        LOG(INFO, "MiddleSide MiddleSide TopicAccess : ", mICommTopic.getTopicName());
 
         do{
             if((mTnsdSocket = CommunicationMember::TcpApi::Connect(ip, port, 10)) < 0) {
-                LOG(ERROR, "failed to connect to Tnsd", ip, ":", port);
+                LOG(ERROR, "failed to connect to MiddleSide", ip, ":", port);
                 std::this_thread::sleep_for(std::chrono::seconds(5));
                 if( ++retryCnt > RETRY_MAX ) {
-                    LOG(ERROR,"To retry is for Tnsd is limited.");
+                    LOG(ERROR,"To retry is for MiddleSide is limited.");
                     return false;
                 }
                 continue;
@@ -29,12 +29,12 @@ namespace doori::Tnsd{
         mMyPubSubType = myType;
 
         // Tnsd에게 Alive 프로토콜을 interval 간격으로 보낸다.
-        mBackgroundFuncs.push_back( std::thread(&Communication::processingAliveService, this) );
+        mBackgroundFuncs.push_back( std::thread(&MiddleSide::processingAliveService, this) );
 
         return true;
     }
 
-    auto Communication::sendNotifyProtocolToTnsd() noexcept -> bool{
+    auto MiddleSide::sendNotifyProtocolToTnsd() noexcept -> bool{
         Protocol_backup sendProtcol, recvProtocol;
         sendProtcol.asSender();
         recvProtocol.asResponser();
@@ -52,17 +52,17 @@ namespace doori::Tnsd{
         }
 
         //
-        // Tnsd 와 정상적으로 통신이 된다면, Tnsd 데이터를 처리할 콜백함수를 등록한다.
+        // MiddleSide 와 정상적으로 통신이 된다면, MiddleSide 데이터를 처리할 콜백함수를 등록한다.
         // 단, doori::WATCHER TYPE은 ONLY RECEIVER 으로 수신만 처리한다.
         // SendWatchers() 함수 호출시 Tnsd쪽으로 데이터가 안 가도록 하기 doori::WATCHER 타입설정.
         //
-        std::function<int(int,string&)> processTnsdData(std::bind(&Communication::processingTnsdData , this, std::placeholders::_1 , std::placeholders::_2));
+        std::function<int(int,string&)> processTnsdData(std::bind(&MiddleSide::processingTnsdData , this, std::placeholders::_1 , std::placeholders::_2));
         mMultiSessions.AddUniqueWatcher(mTnsdSocket, CommunicationMember::WATCHER::TYPE::RECEIVER, processTnsdData) ;
 
         return true;
     }
 
-    auto Communication::processingMultisessions(int socket) noexcept -> bool {
+    auto MiddleSide::processingMultisessions(int socket) noexcept -> bool {
 
         CommunicationMember::EpollEvents eventContainer;
         if(mMultiSessions.Init(socket) < 0)
@@ -77,29 +77,29 @@ namespace doori::Tnsd{
         return true;
     }
 
-    auto Communication::sendProtocolToTnsd(Protocol_backup &sendProtocol, Protocol_backup &responseProtocol) noexcept -> bool{
+    auto MiddleSide::sendProtocolToTnsd(Protocol_backup &sendProtocol, Protocol_backup &responseProtocol) noexcept -> bool{
         Stream sendStream, recvStream;
         Data   answerData;
 
         sendStream = sendProtocol.toData();
-        LOG(DEBUG, "Tnsd <<-- ::", sendStream.getString());
+        LOG(DEBUG, "MiddleSide <<-- ::", sendStream.getString());
         if( mTnsdConnection.reply( sendStream, recvStream ) < 0 ) {
             LOG(ERROR, "TNSD Connection error");
             return false;
         }
-        LOG(DEBUG, "Tnsd -->> ::", recvStream.getString());
+        LOG(DEBUG, "MiddleSide -->> ::", recvStream.getString());
         answerData.fromString(recvStream.getString());
         responseProtocol.fromData(answerData) ;
         return true;
     }
 
     ///@brief TNSD에 protocol객체를 보낸다
-    auto Communication::sendProtocolToTnsd(Protocol_backup &sendProtocol) noexcept -> bool{
+    auto MiddleSide::sendProtocolToTnsd(Protocol_backup &sendProtocol) noexcept -> bool{
         Stream sendStream;
         Data   answerData;
 
         sendStream = sendProtocol.toData();
-        LOG(DEBUG, "Tnsd <<-- ::", sendStream.getString());
+        LOG(DEBUG, "MiddleSide <<-- ::", sendStream.getString());
         if( mTnsdConnection.send( sendStream ) < 0 ) {
             LOG(ERROR, "TNSD Connection error");
             return false;
@@ -109,7 +109,7 @@ namespace doori::Tnsd{
 
     ///@brief TNSD에게 살아 있음을 계속적으로 알린다.
     ///@todo 상태정보 동기화 작업.
-    auto Communication::sendAliveProtocolToTnsd(Topic topic) noexcept -> bool {
+    auto MiddleSide::sendAliveProtocolToTnsd(Topic topic) noexcept -> bool {
         Protocol_backup sendProtcol;
         sendProtcol.asSender();
         sendProtcol.asAlive(mMyPubSubType, topic, mMultiSessions.GetListener().From().Address() );
@@ -122,7 +122,7 @@ namespace doori::Tnsd{
         return true;
     }
 
-    auto Communication::sendListProtocolToTnsd() noexcept -> bool {
+    auto MiddleSide::sendListProtocolToTnsd() noexcept -> bool {
         Protocol_backup sendProtcol, recvProtocol;
         sendProtcol.asSender();
         recvProtocol.asResponser();
@@ -183,7 +183,7 @@ namespace doori::Tnsd{
                         if ( socketFd > 0 )
                             mMultiSessions.AddWatcher(socketFd);
                         else
-                            LOG(FATAL, "fail to connect To Publisher ip:", (*ipIter).getValueToString(), ":",(*portIter).getValueToString());
+                            LOG(FATAL, "fail to connect To PubSide ip:", (*ipIter).getValueToString(), ":",(*portIter).getValueToString());
                         break;
                 }
             }
@@ -192,19 +192,19 @@ namespace doori::Tnsd{
         return true;
     }
 
-    Communication::~Communication() {
+    MiddleSide::~MiddleSide() {
         LOG(INFO, "Connection doRelease.");
         mTnsdConnection.release();
         mMultiSessions.GetListener().release();
     }
 
     ///@brief
-    auto Communication::processingTnsdData(int sock, Stream& stream) noexcept -> int{
+    auto MiddleSide::processingTnsdData(int sock, Stream& stream) noexcept -> int{
         auto ret = 0;
         Data data;
         Protocol_backup protocol;
 
-        LOG(INFO, "Tnsd -->> ::", stream.toByteStream() );
+        LOG(INFO, "MiddleSide -->> ::", stream.toByteStream() );
         if ( data.fromString( stream.getString() ) == -1 )
         {
             LOG(ERROR, "unserialize error, check formated" );
@@ -244,7 +244,7 @@ namespace doori::Tnsd{
         return ret;
     }
 
-    auto Communication::processingAliveService() noexcept -> bool {
+    auto MiddleSide::processingAliveService() noexcept -> bool {
 
         ///continuely send ALIVE protocol.
         while(1)
@@ -254,11 +254,11 @@ namespace doori::Tnsd{
         }
     }
 
-    Communication::Communication(std::function<int(int, string&)> delegation) : mMultiSessions(delegation)
+    MiddleSide::MiddleSide(std::function<int(int, string&)> delegation) : mMultiSessions(delegation)
     {
     }
 
-    Communication::Communication(Communication&& rhs) : mMultiSessions(std::move(rhs.mMultiSessions)) {
+    MiddleSide::MiddleSide(MiddleSide&& rhs) : mMultiSessions(std::move(rhs.mMultiSessions)) {
         mTnsdSocket        =std::move(rhs.mTnsdSocket);
         mTnsdConnection    =std::move(rhs.mTnsdConnection);
         mICommTopic        =std::move(rhs.mICommTopic);
@@ -266,7 +266,7 @@ namespace doori::Tnsd{
         mBackgroundFuncs   =std::move(rhs.mBackgroundFuncs);
     }
 
-    auto Communication::operator=(Communication &&rhs) noexcept -> Communication & {
+    auto MiddleSide::operator=(MiddleSide &&rhs) noexcept -> MiddleSide & {
         if(this==&rhs)
             return *this;
 
@@ -280,8 +280,12 @@ namespace doori::Tnsd{
         return *this;
     }
 
-    auto Communication::sendStreamToMultisessions(const string &stream) noexcept -> bool {
+    auto MiddleSide::sendStreamToMultisessions(const string &stream) noexcept -> bool {
         return mMultiSessions.SendWatchers(stream);
+    }
+
+    MiddleSide::MiddleSide(string ip, string port, Topic topic, FLOW_SIDE side) : mTnsdIp{ip}, mTnsdPort{port}, mTopic{topic}, mSide{side}{
+
     }
 
 }//namespace doori

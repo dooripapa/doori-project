@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
     if(!dictionary.load(getopt.getOptValue("--file")))
     {
-        cout<< "Tnsd error" << endl;
+        cout<< "MiddleSide error" << endl;
         exit(-1);
     }
 

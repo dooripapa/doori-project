@@ -19,7 +19,6 @@ set(DOORI_API_LIBRARY_NAME doori)
 include_directories(SYSTEM .)
 
 set(HEADER_FILES
-		CommunicationMember/Addr.h
 		Process/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
 #		CommunicationMember/Connection.h
@@ -27,18 +26,17 @@ set(HEADER_FILES
 		Data/DataSegment.h
 		Data/DataSegment.hpp
 		Data/Dictionary.h
-		CommunicationMember/Endpoint.h
 		CommunicationMember/TCP.h
 		Common/Error.h
 		Process/Getopt.h
-        Tnsd/Communication.h
+		Tnsd/MiddleSide.h
 		Common/Log.h
 		Common/Log.hpp
-        Tnsd/Publisher.h
+		Tnsd/PubSide.h
 		Etc/Regex.h
 		Process/Runner.h
 		Data/Stream.h
-        Tnsd/Subscriber.h
+		Tnsd/SubSide.h
         Tnsd/Topic.h
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
@@ -50,22 +48,20 @@ set(HEADER_FILES
         )
 
 set(SRC_FILES
-		CommunicationMember/Addr.cpp
 		Process/Application.cpp
 #		CommunicationMember/Connection.cpp
 		Data/Data.cpp
 		Data/DataSegment.cpp
 		Data/Dictionary.cpp
-		CommunicationMember/Endpoint.cpp
 		Common/Error.cpp
 		Process/Getopt.cpp
-        Tnsd/Communication.cpp
+		Tnsd/MiddleSide.cpp
 		Common/Log.cpp
-        Tnsd/Publisher.cpp
+		Tnsd/PubSide.cpp
 		Etc/Regex.cpp
 		Process/Runner.cpp
 		Data/Stream.cpp
-        Tnsd/Subscriber.cpp
+		Tnsd/SubSide.cpp
         Tnsd/Topic.cpp
 		Data/Json.cpp
 		Etc/Bigdecimal.cpp

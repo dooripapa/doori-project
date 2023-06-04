@@ -47,7 +47,7 @@ auto Tnsd::operator()() noexcept -> int
             else
             {
                 LOG(INFO, "another socket action: ", (*it).getFd() );
-                // Tnsd::processMessage private member function이여서, instance없이
+                // MiddleSide::processMessage private member function이여서, instance없이
                 // 바로 사용 불가능하다. instance 작업후 사용하도록 변경함
                 auto iRet = epoll.ExecuteTask((*it).getFd());
 
@@ -293,7 +293,7 @@ auto Tnsd::walkBranches(Branch< Addr>& branch) noexcept -> void
     }
 }
 ///@todo make_unique 적절히 사용했는지 체크해야 함.\
-/// make_unique<Tnsd>(*this) *this 복사가 맞는지 확인할것.
+/// make_unique<MiddleSide>(*this) *this 복사가 맞는지 확인할것.
 auto Tnsd::clone() const noexcept -> std::unique_ptr<Application> {
     return std::make_unique<Tnsd>(*this);
 }
@@ -323,9 +323,9 @@ auto Tnsd::LogLevel() noexcept -> Log::LEVEL {
     return Application::LogLevel();
 }
 
-///@todo Tnsd 종료시 이 함수 호촐되어야 한다. 현재 호출되지 않고 있음.
+///@todo MiddleSide 종료시 이 함수 호촐되어야 한다. 현재 호출되지 않고 있음.
 auto Tnsd::Terminate() noexcept -> int {
-    LOG(INFO, "Tnsd is terminated");
+    LOG(INFO, "MiddleSide is terminated");
     return 0;
 }
 
@@ -365,7 +365,7 @@ auto Tnsd::change_Processing(const Topic &topic) -> void{
                 protocol.asSender();
                 protocol.asChange( Protocol::TREE::PUB, depTopic );
                 responseStream.Init(protocol.toData());
-                LOG(DEBUG, "Subscriber[", sockFd,"]","<<-- ::" , responseStream.toByteStream(), "]" );
+                LOG(DEBUG, "SubSide[", sockFd,"]","<<-- ::" , responseStream.toByteStream(), "]" );
                 if (Connection::sendTo(sockFd, responseStream) < 0 ) {
                     LOG(ERROR, "fail to send CHANGE protocol fd[", sockFd, "]");
                 }

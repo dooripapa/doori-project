@@ -241,16 +241,97 @@ Interface doori::DataStream::ITnsdStream{
 }
 
 
-class doori::Tnsd::Communication{
-Init(string ip, string port, Topic topic, TREE myType);
-void Notify();
-void ListUp();
+''''''''''''''''''''''''''''''''''''''''''''
+'''' Tnsd
+''''''''''''''''''''''''''''''''''''''''''''
+class doori::Tnsd::MiddleSide{
++MiddleSide(string BindingIp, string BindingPort);
++void Alive()
++void Change()
 }
-class doori::Tnsd::Publisher{
+
+class doori::Tnsd::PubSide{
++void PubSide(string tnsdIp, string tnsdPort, Topic topic)
++void Notify()
++void Publish(const IStream&)
++void Anwser()
+-void Check(Hash)
+-vector<Socket> mSubSessions
+-EpollApi mTnsdSessions
 }
-class doori::Tnsd::Subscriber{
+
+class doori::Tnsd::SubSide{
++void SubSide(string tnsdIp, string tnsdPort, Topic topic)
++void Notify()
++void Connect(string PubSideIp, string PubSidePort)
++void Anwser()
+-EpollApi mPubSessions
+-EpollApi mTnsdSessions
 }
+
 class doori::Tnsd::Topic{
++bool set(initializer_list<string>)
++bool set(const string&)
++Topic& operator=(const Topic&)
++Topic& operator=(Topic&&)
++bool operator==(const Topic&)
++string getTopicName() const noexcept;
++string getTopicName(unsigned int depth) const noexcept;
++uint getDepthSize() const noexcept
+}
+
+''''''''''''''''''''''''''''''''''''''''''''
+'''' Etc
+''''''''''''''''''''''''''''''''''''''''''''
+class doori::Etc::Bigdecimal{
+}
+
+class doori::Etc::Regex{
+}
+
+''''''''''''''''''''''''''''''''''''''''''''
+'''' Process
+''''''''''''''''''''''''''''''''''''''''''''
+class doori::Process::Application{
++Application();
++virtual ~Application();
++virtual int operator()() noexcept
++virtual std::unique_ptr<Application> clone() const noexcept
++virtual string ProcessName() noexcept
++virtual bool  Daemonize() noexcept
++virtual string  LogFile() noexcept
++virtual Common::Log::LEVEL LogLevel() noexcept
++virtual int Terminate() noexcept
+-std::string mDefaultLogPath{"/tmp/"};
+-std::string mDefaultLogName{"a.out.log"};
+}
+
+class doori::Process::Getopt{
++Getopt() = delete;
++Getopt(const Getopt&) = default;
++Getopt(Getopt&&) = delete;
++Getopt(int argc, char **argv);
++bool getOptValue(std::string opt, std::string &value)
++string getOptValue(std::string opt) noexcept
++string Process() const noexcept
++Getopt& operator=(const Getopt& rhs) noexcept
+-string getValue(string opt) noexcept
+-int  mArgc;
+-char **mArgv;
+-string mAllCommandLIne;
+}
+
+class doori::Process::Runner{
++Runner();
++~Runner();
++Runner(const Runner& rhs);
++explicit Runner(Application&& app );
++void run() -> void;
+-int doAsBackground() noexcept -> int;
+-int doAsForeground() noexcept -> int;
+-void displayLogInfo() noexcept -> void;
+-void doRelease() -> void;
+-std::unique_ptr< Application > mApp;
 }
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -275,8 +356,10 @@ IIPCBuilder <-o IIPC
 TCPBuilder <-o TCP : 의존 <
 Socket <.. TCP : 생성 <
 
-Communication <|-- Publisher : 상속
-Communication <|-- Subscriber : 상속
-Error <|-- Communication : 상속
+doori::Process::Application o-- doori::Process::Runner: 참조
+
+Error <|-- MiddleSide: 상속
+Error <|-- PubSide: 상속
+Error <|-- SubSide: 상속
 
 @enduml
