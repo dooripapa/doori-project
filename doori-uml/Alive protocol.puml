@@ -5,7 +5,7 @@ autonumber stop
 group Protocol
     Publisher <- Tnsd : Alive(Hash Token)
     Publisher <- Publisher : Check(Hash Token)
-    Publisher -> Tnsd : Answer
+    Publisher -> Tnsd : Answer(Hash Token)
     note left
         정상인 경우
     end note
@@ -19,7 +19,7 @@ group Protocol
 
     Tnsd -> Subsriber : Change(A Publisher)
 
-    group connection
+    group TCP/IP
         Subsriber -> Publisher : Connect to A Publisher
     end
 

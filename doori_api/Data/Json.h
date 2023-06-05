@@ -12,7 +12,7 @@
 #include <vector>
 #include <unordered_map>
 
-namespace doori::DataStream{
+namespace doori::Data{
     class Json;
 
     class Json_value{

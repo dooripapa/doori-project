@@ -1,0 +1,45 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+collections Subsrciber as Subsrciber
+
+autonumber
+group <font color=blue>PubSide
+    group Protocol
+        Publisher -> Tnsd : Close
+        Tnsd -> Tnsd : Arrange Topic/Session
+    end
+    group TCP/IP
+        Tnsd ->x Publisher : close
+    end
+
+    group Protocol
+        Publisher -> Subsrciber : Close
+        Subsrciber <- Subsrciber : Arrange
+    end
+    group TCP/IP
+        Subsrciber ->x Publisher : close
+    end
+end
+
+group <font color=red>SubSide
+
+    autonumber
+
+    group Protocol
+        Subsrciber -> Tnsd : Close
+        Tnsd -> Tnsd : Arrange Topic/Session
+    end
+    group TCP/IP
+        Tnsd ->x Subsrciber : close
+    end
+    group Protocol
+        Tnsd -> Publisher : Change(A Subsriber is closed)
+    end
+    group TCP/IP
+        Publisher ->x Subsrciber : close
+    end
+    Subsrciber <- Subsrciber : Terminate Self
+
+end
+@enduml

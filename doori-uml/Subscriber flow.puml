@@ -4,7 +4,7 @@
 collections Publisher as Publisher
 
 autonumber
-group connect
+group TCP/IP
     "A Subscriber" -> Tnsd : connect
 end
 
@@ -14,14 +14,14 @@ group protocol
 end
 
 autonumber stop
-group Connect section
+group TCP/IP
     "A Subscriber" --> Publisher : Connect to A Publisher
     "A Subscriber" --> Publisher : Connect to B Publisher
     "A Subscriber" --> Publisher : ..
 end
 
 autonumber stop
-group data flow section
+group Protocol
     "A Subscriber" <-- Publisher : Publish(Stream)
     "A Subscriber" <-- Publisher : ..
     "A Subscriber" <-- Publisher : ..

@@ -33,7 +33,7 @@ namespace doori::CommunicationMember {
         TcpApi& operator=(TcpApi&& rhs) = delete;
 
         /**
-         * DOMAIN(AF_INET), mMsgName(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 Endpoint 초기화함
+         * DOMAIN(AF_INET), mProtocol(SOCK_STREAM), PROTOCOL(0) 기본설정으로 소켓 Endpoint 초기화함
          */
         void InitEndpoint();
 

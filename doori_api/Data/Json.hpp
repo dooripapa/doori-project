@@ -7,7 +7,7 @@
 
 #include "Json.h"
 
-namespace doori::DataStream{
+namespace doori::Data{
 
     template <int N>
     auto Json::unserialize(char const(&value)[N]) -> bool {

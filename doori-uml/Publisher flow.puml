@@ -4,7 +4,7 @@
 collections Subscriber as Subscriber
 
 autonumber
-group connect
+group TCP/IP
     "A Publisher" -> Tnsd : connect
 end
 group protocol
@@ -13,7 +13,7 @@ group protocol
 end
 
 autonumber stop
-group connect
+group TCP/IP
     "A Publisher" <-- Subscriber : Connect to A Publisher
     "A Publisher" <-- Subscriber : Connect to A Publisher
     "A Publisher" <-- Subscriber : ..

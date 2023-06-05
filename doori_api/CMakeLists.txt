@@ -29,14 +29,11 @@ set(HEADER_FILES
 		CommunicationMember/TCP.h
 		Common/Error.h
 		Process/Getopt.h
-		Tnsd/MiddleSide.h
 		Common/Log.h
 		Common/Log.hpp
-		Tnsd/PubSide.h
 		Etc/Regex.h
 		Process/Runner.h
 		Data/Stream.h
-		Tnsd/SubSide.h
         Tnsd/Topic.h
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
@@ -55,13 +52,10 @@ set(SRC_FILES
 		Data/Dictionary.cpp
 		Common/Error.cpp
 		Process/Getopt.cpp
-		Tnsd/MiddleSide.cpp
 		Common/Log.cpp
-		Tnsd/PubSide.cpp
 		Etc/Regex.cpp
 		Process/Runner.cpp
 		Data/Stream.cpp
-		Tnsd/SubSide.cpp
         Tnsd/Topic.cpp
 		Data/Json.cpp
 		Etc/Bigdecimal.cpp
@@ -69,13 +63,13 @@ set(SRC_FILES
 		CommunicationMember/TCP.cpp
 		CommunicationMember/TcpApi.cpp
 		CommunicationMember/TcpApi.h
-		Stream/Protocol.h
-		Stream/Protocol.cpp
+		Tnsd/Protocol.h
+		Tnsd/Protocol.cpp
 		Stream/ProtocolHeader.h
 		Stream/ProtocolHeader.cpp
         CommunicationMember/Socket.cpp
 		CommunicationMember/Socket.h
-		CommunicationMember/EpollApi.cpp CommunicationMember/EpollApi.h)
+		CommunicationMember/EpollApi.cpp CommunicationMember/EpollApi.h Stream/IStream.h Stream/IHeader.h Stream/IBody.h Stream/IFooter.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
