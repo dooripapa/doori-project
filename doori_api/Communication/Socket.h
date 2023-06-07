@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include <functional>
 
-namespace doori::CommunicationMember {
+namespace doori::Communication {
 
     //////////////////////////////////////////////////////////
     // 비트 연산을 위해서 enum class 선언하지 않고
@@ -99,6 +99,6 @@ namespace doori::CommunicationMember {
         enum SOCK_OPT mOption;
     };
 
-} // CommunicationMember
+} // Communication
 
 #endif //DOORI_PROJECT_SOCKET_H

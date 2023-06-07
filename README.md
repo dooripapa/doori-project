@@ -1,63 +1,64 @@
 # **doori-project**
-> 사랑하는 아들의 태명(doori)을 본 따 시작된 프로젝트
+> 아들의 태명(doori)으로 시작된 프로젝트
 ------------------------------
 
 ## *Software Architecture*
-1. doori-api : 하위레벨의 libraries 집합체
-2. doori-service : doori-api 도구로 재생산된 daemon 타입 서비스
-3. doori-solution : doori-service 기반으로, 특정 목적에 따라 구현된 서비스
+1. doori-api : libraries
+2. doori-service : doori-api's libraries 으로 만들어진 daemon 서비스
+3. doori-solution : 제작중...
 ------------------------------
 
 ## *doori-api*
-1. Communication Member Objects
-   - Addr
-   - Endpoint
-   - Connection
-   - Epoll
-   - EpollEvents
-   
-2. Data Stream Objects
+1. Communication
+   - EpollApi
+   - Socket 
+   - TCP
+   - TcpApi
+   - TCPBuilder
+2. Data
    - Data
    - DataSegment
    - Stream
    - Dictionary
    - Json
    - Json_value
-   
-3. Data Structure Objects
+   - Stream
+3. Data Structure
    - Tree
    - Branch
-   
-4. Middleware Support Objects
-   - Handler
+4. Tnsd(dedicated)
+   - Protocol
    - Topic
-   - ICommunication
-   - Publisher
-   - Subscriber
- 
-5. Process Support Objects
+5. Process
    - Getopt
    - Runner
    - Application
- 
-6. Common Objects
+6. Common
    - Log
    - Error
- 
-6. Etc
+7. Stream
+   - IHeader(Interface)
+   - IBody(Interface)
+   - IFooter(Interface)
+8. Etc
    - Regex
    - Bigdecimal
 
 ------------------------------
 
 ## *doori-service*
-1. Middleware : TNSD 
-> **T**opic **N**aming **S**ervice **D**aemon. => TNSD
+### Tnsd : 미들웨어
+> **T**opic **N**aming **S**ervice **D**aemon. => Tnsd
 
-2. MemoryDB : TNSDB
-> **T**oken **N**umber **S**ervice **DB**. ==> TNSDB
 
-------------------------------
-## *doori-solution*
-1. doori-watcher
-> Linux monitoring application -----> 	https://github.com/GULapp/doori-watcher 
+#### Topolgies
+* Tnsd : Publisher와 Subscriber를 연결시켜주는 서비스프로세스
+* Publisher : 해당 Topic에 관심있는 Subscriber에게 데이터를 송신하는 프로세스
+* Subscriber : 해당 Topic의 데이터에 관심있는 프로세스
+
+#### Protocol
+* Alive : Tnsd에게 살아있음을 알림.
+* Notify : Tnsd에가 Topic에 관심있다는 것을 알림
+* Anwser : Topologies에 응답메시지를 보냄
+* Change : Topic관심 있는 Topologies가 변경. 통보, 섹션연결 요청
+* Close : 이제는 Topic에 관심을 두지 않는다는 의미. 섹션종료, 리소스해제

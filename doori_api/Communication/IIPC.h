@@ -6,14 +6,14 @@
 #define DOORI_PROJECT_IIPC_H
 
 #include "string"
-#include "CommunicationMember/IIPC.h"
-#include "CommunicationMember/IIPCBuilder.h"
-#include "CommunicationMember/IIPCTopology.h"
+#include "Communication/IIPC.h"
+#include "Communication/IIPCBuilder.h"
+#include "Communication/IIPCTopology.h"
 #include "Common/Error.h"
 
 using namespace std;
 
-namespace doori::CommunicationMember {
+namespace doori::Communication{
 
     class IIPC {
     public:

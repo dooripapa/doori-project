@@ -3,11 +3,11 @@
 //
 #include <gtest/gtest.h>
 #include <thread>
-#include "CommunicationMember/TCPBuilder.h"
+#include "Communication/TCPBuilder.h"
 #include "Common/Log.h"
-#include "CommunicationMember/TCP.h"
+#include "Communication/TCP.h"
 
-using namespace doori::CommunicationMember;
+using namespace doori::Communication;
 using namespace doori::Common;
 using namespace std;
 

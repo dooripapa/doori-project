@@ -5,7 +5,7 @@
 #include <regex>
 #include "TcpApi.h"
 
-namespace doori::CommunicationMember {
+namespace doori::Communication{
 
     TcpApi::TcpApi(Socket &socket) : Common::Error(), mSocket(socket) {
 
@@ -310,4 +310,4 @@ namespace doori::CommunicationMember {
     }
 
 
-} // CommunicationMember
+} // Communication

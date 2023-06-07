@@ -8,12 +8,12 @@
 
 #include <string>
 #include <memory>
-#include "CommunicationMember/IIPC.h"
-#include "CommunicationMember/IIPCTopology.h"
+#include "Communication/IIPC.h"
+#include "Communication/IIPCTopology.h"
 
 using namespace std;
 
-namespace doori::CommunicationMember {
+namespace doori::Communication {
     class TCP : public IIPC {
     public:
         TCP() = default;

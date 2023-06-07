@@ -7,7 +7,7 @@
 #include <string>
 
 
-namespace doori::CommunicationMember {
+namespace doori::Communication{
     class IIPCTopology {
     public:
         /**

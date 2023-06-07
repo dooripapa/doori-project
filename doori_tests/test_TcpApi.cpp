@@ -4,10 +4,10 @@
 
 #include <gtest/gtest.h>
 #include <thread>
-#include "CommunicationMember/TcpApi.h"
-#include "CommunicationMember/Socket.h"
+#include "Communication/TcpApi.h"
+#include "Communication/Socket.h"
 
-using namespace doori::CommunicationMember;
+using namespace doori::Communication;
 
 void TcpApiClient() {
 

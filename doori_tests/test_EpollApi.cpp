@@ -5,12 +5,12 @@
 #include <gtest/gtest.h>
 #include <thread>
 #include "Common/Log.h"
-#include "CommunicationMember/TcpApi.h"
-#include "CommunicationMember/EpollApi.h"
+#include "Communication/TcpApi.h"
+#include "Communication/EpollApi.h"
 
 using namespace std;
 using namespace doori::Common;
-using namespace doori::CommunicationMember;
+using namespace doori::Communication;
 
 auto ProcessMessage(Socket socket) -> int
 {

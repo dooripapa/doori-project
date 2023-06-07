@@ -13,7 +13,7 @@
 #include "Common/Error.h"
 #include "Tnsd/Topic.h"
 #include "Data/Json.h"
-#include "CommunicationMember/IIPCTopology.h"
+#include "Communication/IIPCTopology.h"
 
 using namespace std;
 
@@ -94,63 +94,63 @@ namespace doori::Tnsd{
          * @param iipcTopology subscriber 또는 publisher Topology
          * @param error 에러내용
          */
-        void InternalError(CommunicationMember::IIPCTopology& iipcTopology, string error);
+        void InternalError(Communication::IIPCTopology& iipcTopology, string error);
 
         /**
          * Notify protocol
          * @param iipcTopology Tnsd의 Topology
          * @param myself  subscriber 또는 publisher의 Tnsd에게 자신을 알립니다.
          */
-        void Notify(CommunicationMember::IIPCTopology& iipcTopology, ProtocolSide myself);
+        void Notify(Communication::IIPCTopology& iipcTopology, ProtocolSide myself);
 
         /**
          * Anwser protocol
          * @param iipcTopology  subscriber 또는 publisher Topology
          * @param hash16  정보의 유일성을 체크할 수 있는 해쉬값
          */
-        void Anwser(CommunicationMember::IIPCTopology& iipcTopology, string hash16);
+        void Anwser(Communication::IIPCTopology& iipcTopology, string hash16);
 
         /**
          * Anwser protocol
          * @param iipcTopology subscriber Topology
          * @param publisherList 특정 Topic에 publish하는 publisher의 집합
          */
-        void Anwser(CommunicationMember::IIPCTopology& iipcTopology, vector<ProtocolSide> publisherList);
+        void Anwser(Communication::IIPCTopology& iipcTopology, vector<ProtocolSide> publisherList);
 
         /**
          * Change protocol
          * @param iipcTopology subscriber Topology
          * @param publisher 특정 Topic에 publish하는 a publisher의 정보
          */
-        void Change(CommunicationMember::IIPCTopology& iipcTopology, ProtocolSide publisher);
+        void Change(Communication::IIPCTopology& iipcTopology, ProtocolSide publisher);
 
         /**
          * Close protocol
          * @param iipcTopology  Tnsd의 Topology
          * @param myself 자신의 정보
          */
-        void Close(CommunicationMember::IIPCTopology& iipcTopology, ProtocolSide myself);
+        void Close(Communication::IIPCTopology& iipcTopology, ProtocolSide myself);
 
         /**
          * Publish protocol
          * @param iipcTopology subsriber Topology
          * @param bytes publish하기 위한 데이터
          */
-        void Publish(CommunicationMember::IIPCTopology& iipcTopology, vector<char> bytes);
+        void Publish(Communication::IIPCTopology& iipcTopology, vector<char> bytes);
 
         /**
          * Alive protocol
          * @param iipcTopology subscriber 또는 publisher Topology
          * @param hash16  정보의 유일성을 체크할 수 있는 해쉬값
          */
-        void Alive(CommunicationMember::IIPCTopology& iipcTopology, string hash16 );
+        void Alive(Communication::IIPCTopology& iipcTopology, string hash16 );
 
         /**
          * Report protocol
          * @param iipcTopology Admin Topology
          * @param report 정보성 데이터
          */
-        void Report(CommunicationMember::IIPCTopology& iipcTopology, string report);
+        void Report(Communication::IIPCTopology& iipcTopology, string report);
     };
 }
 

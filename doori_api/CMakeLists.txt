@@ -21,12 +21,12 @@ include_directories(SYSTEM .)
 set(HEADER_FILES
 		Process/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
-#		CommunicationMember/Connection.h
+#		Communication/Connection.h
 		Data/Data.h
 		Data/DataSegment.h
 		Data/DataSegment.hpp
 		Data/Dictionary.h
-		CommunicationMember/TCP.h
+		Communication/TCP.h
 		Common/Error.h
 		Process/Getopt.h
 		Common/Log.h
@@ -38,15 +38,15 @@ set(HEADER_FILES
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
 		Data/Json.h
-		CommunicationMember/IIPCBuilder.h
-		CommunicationMember/TCPBuilder.h
-		CommunicationMember/IIPCTopology.h
+		Communication/IIPCBuilder.h
+		Communication/TCPBuilder.h
+		Communication/IIPCTopology.h
 		Etc/Bigdecimal.h
         )
 
 set(SRC_FILES
 		Process/Application.cpp
-#		CommunicationMember/Connection.cpp
+#		Communication/Connection.cpp
 		Data/Data.cpp
 		Data/DataSegment.cpp
 		Data/Dictionary.cpp
@@ -59,17 +59,17 @@ set(SRC_FILES
         Tnsd/Topic.cpp
 		Data/Json.cpp
 		Etc/Bigdecimal.cpp
-		CommunicationMember/TCPBuilder.cpp
-		CommunicationMember/TCP.cpp
-		CommunicationMember/TcpApi.cpp
-		CommunicationMember/TcpApi.h
+		Communication/TCPBuilder.cpp
+		Communication/TCP.cpp
+		Communication/TcpApi.cpp
+		Communication/TcpApi.h
 		Tnsd/Protocol.h
 		Tnsd/Protocol.cpp
 		Stream/ProtocolHeader.h
 		Stream/ProtocolHeader.cpp
-        CommunicationMember/Socket.cpp
-		CommunicationMember/Socket.h
-		CommunicationMember/EpollApi.cpp CommunicationMember/EpollApi.h Stream/IStream.h Stream/IHeader.h Stream/IBody.h Stream/IFooter.h)
+		Communication/Socket.cpp
+		Communication/Socket.h
+		Communication/EpollApi.cpp Communication/EpollApi.h Stream/IStream.h Stream/IHeader.h Stream/IBody.h Stream/IFooter.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

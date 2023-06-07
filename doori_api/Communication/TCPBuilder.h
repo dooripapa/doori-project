@@ -5,14 +5,14 @@
 #ifndef DOORI_PROJECT_TCPBUILDER_H
 #define DOORI_PROJECT_TCPBUILDER_H
 
-#include "CommunicationMember/IIPCBuilder.h"
-#include "CommunicationMember/TcpApi.h"
+#include "Communication/IIPCBuilder.h"
+#include "Communication/TcpApi.h"
 #include "Socket.h"
 #include <string>
 
 using namespace std;
 
-namespace doori::CommunicationMember {
+namespace doori::Communication{
 
     class TCPBuilder : public IIPCBuilder {
     public:

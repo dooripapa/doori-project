@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace doori::CommunicationMember {
+namespace doori::Communication{
 
     class IIPCBuilder {
     public:

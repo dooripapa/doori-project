@@ -6,7 +6,7 @@
 #include "EpollApi.h"
 #include "TcpApi.h"
 
-namespace doori::CommunicationMember {
+namespace doori::Communication{
 
     EpollApi::EpollApi(Socket &socket) : Common::Error(), mListenSocket(socket) {
 
@@ -150,4 +150,4 @@ namespace doori::CommunicationMember {
         return 0;
     }
 
-} // CommunicationMember
+} // Communication

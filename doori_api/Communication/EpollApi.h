@@ -8,7 +8,7 @@
 #include "Common/Error.h"
 #include "Socket.h"
 
-namespace doori::CommunicationMember {
+namespace doori::Communication {
 
     class EpollApi;
 
@@ -53,6 +53,6 @@ namespace doori::CommunicationMember {
         Socket & mListenSocket;
     };
 
-} // CommunicationMember
+} // Communication
 
 #endif //DOORI_PROJECT_EPOLLAPI_H

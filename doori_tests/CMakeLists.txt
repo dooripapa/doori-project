@@ -14,16 +14,16 @@ set(TEST_FILES
 		../doori_api/Common/Log.cpp
 		../doori_api/Common/Error.h
 		../doori_api/Common/Error.cpp
-		../doori_api/CommunicationMember/TCP.h
-		../doori_api/CommunicationMember/TCP.cpp
-		../doori_api/CommunicationMember/TCPBuilder.h
-		../doori_api/CommunicationMember/TCPBuilder.cpp
-		../doori_api/CommunicationMember/TcpApi.h
-		../doori_api/CommunicationMember/TcpApi.cpp
-		../doori_api/CommunicationMember/Socket.h
-		../doori_api/CommunicationMember/Socket.cpp
-		../doori_api/CommunicationMember/EpollApi.h
-		../doori_api/CommunicationMember/EpollApi.cpp
+        ../doori_api/Communication/TCP.h
+        ../doori_api/Communication/TCP.cpp
+        ../doori_api/Communication/TCPBuilder.h
+        ../doori_api/Communication/TCPBuilder.cpp
+        ../doori_api/Communication/TcpApi.h
+        ../doori_api/Communication/TcpApi.cpp
+        ../doori_api/Communication/Socket.h
+        ../doori_api/Communication/Socket.cpp
+        ../doori_api/Communication/EpollApi.h
+        ../doori_api/Communication/EpollApi.cpp
 #        ../doori_api/Data/Json.cpp
 #        ../doori_api/Data/Json.h
 #        ../doori_api/Etc/Bigdecimal.cpp
@@ -32,7 +32,7 @@ set(TEST_FILES
 #		test_bigdecimal.cpp
 #		test_branch.cpp
         test_TCPBuilder.cpp
-		../doori_api/CommunicationMember/IIPC.h
+        ../doori_api/Communication/IIPC.h
         test_TcpApi.cpp
 		test_EpollApi.cpp
 		)
