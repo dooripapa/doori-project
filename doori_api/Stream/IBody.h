@@ -18,6 +18,8 @@ namespace doori::Stream{
          * @return vector<char>
          */
         virtual vector<char> Get() = 0;
+
+        virtual long GetLength() = 0;
     };
 
 };

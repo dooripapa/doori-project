@@ -12,6 +12,7 @@
 using namespace std;
 
 namespace doori::Stream{
+
     enum struct CODER{
         ASCII
         ,UTF8
@@ -37,7 +38,7 @@ namespace doori::Stream{
          * Header의 길이를 리턴합니다.
          * @return ssize_t
          */
-        virtual ssize_t GetLength() = 0;
+        virtual long GetLength() const = 0;
 
         /**
          * Encode, Decode방식을 리턴합니다.

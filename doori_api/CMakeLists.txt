@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(doori_api)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 if(NOT "${DOORI_PROJECT}")
     set(DOORI_PROJECT "${CMAKE_CURRENT_SOURCE_DIR}/../")
@@ -21,7 +21,6 @@ include_directories(SYSTEM .)
 set(HEADER_FILES
 		Process/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
-#		Communication/Connection.h
 		Data/Data.h
 		Data/DataSegment.h
 		Data/DataSegment.hpp
@@ -65,11 +64,16 @@ set(SRC_FILES
 		Communication/TcpApi.h
 		Tnsd/Protocol.h
 		Tnsd/Protocol.cpp
-		Stream/ProtocolHeader.h
-		Stream/ProtocolHeader.cpp
 		Communication/Socket.cpp
 		Communication/Socket.h
-		Communication/EpollApi.cpp Communication/EpollApi.h Stream/IStream.h Stream/IHeader.h Stream/IBody.h Stream/IFooter.h)
+		Communication/EpollApi.cpp
+		Communication/EpollApi.h
+		Stream/StreamTemplate.h
+		Stream/IHeader.h
+		Stream/IBody.h
+		Tnsd/Body.cpp
+		Tnsd/Body.h
+		Tnsd/Header.cpp Tnsd/Header.h Tnsd/NodeInfo.cpp Tnsd/NodeInfo.h Common/Util.h Stream/StreamTemplate.cpp)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

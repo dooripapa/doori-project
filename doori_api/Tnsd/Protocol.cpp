@@ -8,49 +8,9 @@ using namespace std;
 
 namespace doori::Tnsd{
 
-    ProtocolSide::ProtocolSide(FLOW_SIDE side, string ip, string port, Topic topic) : Common::Error(), mMySide{side}, mMyIp{ip}, mMyPort{port}, mMyTopic{topic} {
+    void Protocol::InternalError(Communication::IIPCTopology &node, string error) {
 
-    };
-
-    ProtocolSideStream ProtocolSide::operator()() {
-
-        ProtocolSideStream stream{};
-
-        switch (mMySide) {
-            case FLOW_SIDE::PUB:
-                strncpy(stream.side, "PUB", 3);
-                break;
-            case FLOW_SIDE::SUB:
-                strncpy(stream.side, "SUB", 3);
-                break;
-        }
-
-        char *endPtr;
-        stream.ip = inet_addr(mMyIp.c_str());
-        stream.port = std::strtoul( mMyPort.c_str(), &endPtr, 10 );
-        if (endPtr == mMyPort.c_str() || *endPtr != '\0') {
-            LoggingByClientError("Error: Invalid input string");
-            return stream;
-        }
-
-        if (stream.port > UINT16_MAX) {
-            LoggingByClientError("Error: Value exceeds the maximum range of in_port_t");
-            return stream;
-        }
-
-        auto length = mMyTopic.getTopicName().length();
-        length = length > 64 ?64 : length;
-
-        strncpy(stream.topic, mMyTopic.getTopicName().c_str(), length);
-
-        this->AsSuccess();
-
-        return stream;
-    }
-
-    void Protocol::InternalError(CommunicationMember::IIPCTopology &iipcTopology, string error) {
-
-        auto ret = iipcTopology.Send(error);
+        auto ret = node.Send(error);
 
         if(ret <= 0){
             LoggingByClientError("Topology's Send() error");
@@ -63,7 +23,7 @@ namespace doori::Tnsd{
 
     }
 
-    void Protocol::Notify(CommunicationMember::IIPCTopology &iipcTopology, ProtocolSide myself) {
+    void Protocol::Notify(Communication::IIPCTopology &tnsdNode, NodeInfo myself) {
 
         auto data = myself();
         if(!myself.Status()) {
@@ -74,11 +34,99 @@ namespace doori::Tnsd{
         const char* buffer = reinterpret_cast<const char*>(&data);
         std::vector<char> byteVector(buffer, buffer + sizeof(data));
 
-        auto ret = iipcTopology.Send( {byteVector.cbegin(), byteVector.cend()});
-        if(ret <= 0){
-            LoggingByClientError("Topology's Send() error");
-            return;
-        }
+        Send(tnsdNode, {byteVector.cbegin(), byteVector.cend()});
 
     }
+
+    void Protocol::Send(Communication::IIPCTopology &iipcTopology, const string &buffer) {
+        auto ret = iipcTopology.Send( buffer );
+        if(ret <= 0){
+            this->LoggingByClientError("Topology's Send() error");
+            return;
+        }
+    }
+
+    void Protocol::Anwser(Communication::IIPCTopology &node, string hash16) {
+
+        Send(node, hash16);
+    }
+
+    void Protocol::Anwser(Communication::IIPCTopology &subNode, vector<ProtocolSide> publisherList) {
+
+        auto pData = make_unique<char[]>(sizeof(ProtocolSide) * publisherList.size());
+
+
+    }
+
+    vector<char> Protocol::GetStream() {
+        return vector<char>();
+    }
+
+    Protocol::Protocol(Stream::IHeader &header, Stream::IBody &body, Stream::IFooter &footer)
+    : StreamTemplate(header, body, footer) , Common::Error(0, true){
+
+    }
+
+    std::string Protocol::SwitchProtocolName(PROTOCOL protocol) const {
+
+        string ret{};
+
+        switch(protocol) {
+            case PROTOCOL::INTERNAL_ERROR:
+                ret = std::string{"INTERNAL_ERROR"};
+                break;
+            case PROTOCOL::NOTIFY:
+                ret = std::string{"NOTIFY"};
+                break;
+            case PROTOCOL::ANWSER:
+                ret = std::string{"ANWSER"};
+                break;
+            case PROTOCOL::CHANGE:
+                ret = std::string{"CHANGE"};
+                break;
+            case PROTOCOL::ALIVE:
+                ret = std::string{"CLOSE"};
+                break;
+            case PROTOCOL::CLOSE:
+                ret = std::string{"PUBLISH"};
+                break;
+            case PROTOCOL::PUBLISH:
+                ret = std::string{"ALIVE"};
+                break;
+            case PROTOCOL::REPORT:
+                ret = std::string{"REPORT"};
+                break;
+            default:
+                ret = std::string{""};
+        }
+        return ret;
+    }
+
+    PROTOCOL Protocol::SwitchProtocolEnum(string protocol) const {
+        if(protocol == "NOTIFY") {
+            return PROTOCOL::NOTIFY;
+        }
+        else if(protocol == "ANWSER") {
+            return PROTOCOL::ANWSER;
+        }
+        else if(protocol == "CHANGE") {
+            return PROTOCOL::CHANGE;
+        }
+        else if(protocol == "CLOSE") {
+            return PROTOCOL::CLOSE;
+        }
+        else if(protocol == "PUBLISH") {
+            return PROTOCOL::PUBLISH;
+        }
+        else if(protocol == "ALIVE") {
+            return PROTOCOL::ALIVE;
+        }
+        else if(protocol == "REPORT") {
+            return PROTOCOL::REPORT;
+        }
+        else{
+            return PROTOCOL::INTERNAL_ERROR;
+        }
+    }
+
 } // Tnsd
