@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 #link_libraries (-lpthread)
 
@@ -35,7 +35,7 @@ set(TEST_FILES
         ../doori_api/Communication/IIPC.h
         test_TcpApi.cpp
 		test_EpollApi.cpp
-		)
+        test_StreamTemplate.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

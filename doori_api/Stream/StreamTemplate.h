@@ -11,21 +11,18 @@
 #include <vector>
 #include "Common/Error.h"
 #include "Common/Util.h"
+#include <iostream>
+
+using namespace std;
 
 namespace doori::Stream {
 
-    class StreamTemplate : Common::Error{
+    template<typename T>
+    class StreamTemplate :  public T , Common::Error{
     public:
-        StreamTemplate(IHeader& header, IBody& body);
-        /**
-         * Bytes를 리턴합니다.
-         * @return vector<char>
-         */
-        vector<char> MakeStream() const;
-        void ParserStream(vector<char>);
-    private:
-        IHeader& mHeader;
-        IBody& mBody;
+        StreamTemplate(T t) : T(t), Common::Error(0, true) {
+        }
+
     };
 };
 

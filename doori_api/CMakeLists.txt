@@ -73,7 +73,7 @@ set(SRC_FILES
 		Stream/IBody.h
 		Tnsd/Body.cpp
 		Tnsd/Body.h
-		Tnsd/Header.cpp Tnsd/Header.h Tnsd/NodeInfo.cpp Tnsd/NodeInfo.h Common/Util.h Stream/StreamTemplate.cpp)
+		Tnsd/Header.cpp Tnsd/Header.h Tnsd/NodeInfo.cpp Tnsd/NodeInfo.h Common/Util.h )
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
