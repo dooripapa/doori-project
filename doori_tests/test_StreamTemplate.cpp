@@ -10,66 +10,71 @@
 using namespace std;
 using namespace doori::Stream;
 
-struct UserStruct{
+struct TnsdProtocol{
     char mIp[16];
     char mPort[8];
     char mName[64];
 
-    UserStruct() = default;
+    TnsdProtocol() = default;
 
-    UserStruct(string ip, string port, string name){
+    TnsdProtocol(string ip, string port, string name){
         CopyToArray(mIp, ip);
         CopyToArray(mPort, port);
         CopyToArray(mName, name);
     };
 };
 
-struct SolidStruct{
+struct Protocol{
     char mLen[8];
     char mCoder[8];
     char mEndian[8];
     char mDataFormat[8];
-    struct UserStruct mUserStruct;
+    struct TnsdProtocol mUserStruct;
 
 
-    SolidStruct(string len, string coder, string endian, string dataFormant, UserStruct user)
+    Protocol(string len, string coder, string endian, string dataFormant, TnsdProtocol user)
     {
         CopyToArray(mLen, len);
         CopyToArray(mCoder, coder);
         CopyToArray(mEndian, endian);
         CopyToArray(mDataFormat, dataFormant);
-        memcpy(&mUserStruct, &user, sizeof(struct UserStruct));
+        memcpy(&mUserStruct, &user, sizeof(struct TnsdProtocol));
     };
 
-//    SolidStruct(SolidStruct&& solidStruct)
-//    {
-//        memcpy(this, &solidStruct, sizeof(*this));
-//    };
-//
-//    SolidStruct(const SolidStruct& solidStruct)
-//    {
-//        memcpy(this, &solidStruct, sizeof(*this));
-//    };
-
-//    SolidStruct(const SolidStruct& solidStruct) = delete;
-//    SolidStruct(SolidStruct&& solidStruct) = delete;
-
-    SolidStruct()  = default;
+    Protocol()  = default;
 
 };
 
 TEST(StreamTemplate, Usage) {
 
-    SolidStruct a = { "0", "ASCII", "LITTLE", "JSON", {"127.0.0.1","8888","leejaeseong"}};
+    Json json{};
+    TnsdProtocol tnsdProtocol{"127.0.0.1", "8888", "lee.jae.seong"};
 
-    StreamTemplate<SolidStruct> protocol{ a };
+/*
+    tnsdProtocol.SetSide();
+    tnsdProtocol.SetIp();
+    tnsdProtocol.SetPort();
+    tnsdProtocol.SetTopic();
+*/
 
-    auto ret = ToBytes(protocol.);
-
-    cout<< "start" << endl;
+    StreamTemplate< IHeader, IBody > stream{tnsdProtocol, json};
+    auto ret = stream.ToStream();
+    cout<< "start 1:";
     for(const auto& m: ret)
     {
-        cout<< "["<< m<< "]" << endl;
+        cout<< m;
     }
-    cout<< "end" << endl;
+    cout<< "end 1" << endl;
+
+    stream.LinkHeader(tnsdProtocol);
+    stream.LinkBody(json);
+
+    ret = stream.ToStream();
+    cout<< "start 2:";
+    for(const auto& m: ret)
+    {
+        cout<< m;
+    }
+    cout<< "end 2" << endl;
+
 }
