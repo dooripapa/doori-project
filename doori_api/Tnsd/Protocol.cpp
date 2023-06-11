@@ -62,11 +62,6 @@ namespace doori::Tnsd{
         return vector<char>();
     }
 
-    Protocol::Protocol(Stream::IHeader &header, Stream::IBody &body, Stream::IFooter &footer)
-    : StreamTemplate(header, body, footer) , Common::Error(0, true){
-
-    }
-
     std::string Protocol::SwitchProtocolName(PROTOCOL protocol) const {
 
         string ret{};

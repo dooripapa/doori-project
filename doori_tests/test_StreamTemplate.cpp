@@ -57,7 +57,7 @@ TEST(StreamTemplate, Usage) {
     tnsdProtocol.SetTopic();
 */
 
-    StreamTemplate< IHeader, IBody > stream{tnsdProtocol, json};
+    StreamTemplate< IHeader, IBody > stream{CODER::ASCII, ENDIAN::LITTLE, DATA_FORMAT::JSON, tnsdProtocol, json};
     auto ret = stream.ToStream();
     cout<< "start 1:";
     for(const auto& m: ret)
@@ -65,9 +65,6 @@ TEST(StreamTemplate, Usage) {
         cout<< m;
     }
     cout<< "end 1" << endl;
-
-    stream.LinkHeader(tnsdProtocol);
-    stream.LinkBody(json);
 
     ret = stream.ToStream();
     cout<< "start 2:";

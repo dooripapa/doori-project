@@ -5,21 +5,11 @@
 #ifndef DOORI_PROJECT_IBODY_H
 #define DOORI_PROJECT_IBODY_H
 
-#include <vector>
-
-using namespace std;
+#include "IStream.h"
 
 namespace doori::Stream{
 
-    class IBody{
-    public:
-        /**
-         * Body 구성된 row data를 리턴합니다.
-         * @return vector<char>
-         */
-        virtual vector<char> Get() = 0;
-
-        virtual long GetLength() = 0;
+    class IBody : IStream{
     };
 
 };

@@ -5,11 +5,11 @@
 #include "Body.h"
 
 namespace doori::Tnsd {
-    vector<char> Body::Get() {
-        return vector<char>({mBody.cbegin(), mBody.cend()});
+    long Body::GetLength() const {
+        return mJson.serialize().length();
     }
 
-    Body::Body(string data) : mBody{data}{
-
+    vector<char> Body::ToStream() {
+        return vector<char>{begin(mJson.serialize()), end(mJson.serialize())};
     }
 } // Tnsd

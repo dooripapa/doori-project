@@ -23,22 +23,11 @@ using namespace std;
 
 namespace doori::Tnsd{
 
-    enum PROTOCOL
-    {
-         INTERNAL_ERROR
-        ,NOTIFY
-        ,ANWSER
-        ,CHANGE
-        ,ALIVE
-        ,CLOSE
-        ,PUBLISH
-        ,REPORT
-    };
 
-    class Protocol : public Common::Error, public Stream::StreamTemplate
+    class Protocol : public Common::Error
     {
     public:
-        Protocol(Stream::IHeader& header, Stream::IBody& body, Stream::IFooter& footer);
+
         /**
          * 처리중 에러가 발생되었습니다. 해당 에러를 보냅니다.
          * @param node subscriber 또는 publisher node
@@ -101,9 +90,6 @@ namespace doori::Tnsd{
          * @param report 정보성 데이터
          */
         void Report(Communication::IIPCTopology& admin, string report);
-
-
-        vector<char> GetStream() override;
 
     private:
         void Send(Communication::IIPCTopology &iipcTopology, const string &buffer);

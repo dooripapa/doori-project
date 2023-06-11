@@ -7,19 +7,22 @@
 
 #include <string>
 #include "Stream/IBody.h"
+#include "Data/Json.h"
+
+using namespace doori;
 
 namespace doori::Tnsd {
 
     class Body : public Stream::IBody {
-
     public:
-        Body(string data);
-        vector<char> Get() override;
+        Body(Data::Json json) : mJson(json) { };
 
+        long GetLength() const override;
+
+        vector<char> ToStream() override;
     private:
-        string mBody;
+        Data::Json mJson;
     };
-
 } // Tnsd
 
 #endif //DOORI_PROJECT_BODY_H
