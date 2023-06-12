@@ -61,6 +61,11 @@ namespace doori::Data{
         Json::operator[](jsonKey) = jsonValue;
     }
 
+    auto Json::append(const std::string &jsonKey, const Json_value &jsonValue) -> void {
+        Json::operator[](jsonKey.c_str()) = jsonValue;
+    }
+
+
     Json::Json(const Json &rhs) {
         copyFrom(rhs);
     }

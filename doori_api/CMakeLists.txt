@@ -62,8 +62,6 @@ set(SRC_FILES
 		Communication/TCP.cpp
 		Communication/TcpApi.cpp
 		Communication/TcpApi.h
-		Tnsd/Protocol.h
-		Tnsd/Protocol.cpp
 		Communication/Socket.cpp
 		Communication/Socket.h
 		Communication/EpollApi.cpp

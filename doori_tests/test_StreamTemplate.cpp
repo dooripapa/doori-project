@@ -4,60 +4,31 @@
 
 #include <gtest/gtest.h>
 #include <thread>
+#include "Data/Json.h"
 #include "Stream/StreamTemplate.h"
-#include "Stream/IHeader.h"
+#include "Tnsd/Header.h"
+#include "Tnsd/Body.h"
 
 using namespace std;
-using namespace doori::Stream;
-
-struct TnsdProtocol{
-    char mIp[16];
-    char mPort[8];
-    char mName[64];
-
-    TnsdProtocol() = default;
-
-    TnsdProtocol(string ip, string port, string name){
-        CopyToArray(mIp, ip);
-        CopyToArray(mPort, port);
-        CopyToArray(mName, name);
-    };
-};
-
-struct Protocol{
-    char mLen[8];
-    char mCoder[8];
-    char mEndian[8];
-    char mDataFormat[8];
-    struct TnsdProtocol mUserStruct;
-
-
-    Protocol(string len, string coder, string endian, string dataFormant, TnsdProtocol user)
-    {
-        CopyToArray(mLen, len);
-        CopyToArray(mCoder, coder);
-        CopyToArray(mEndian, endian);
-        CopyToArray(mDataFormat, dataFormant);
-        memcpy(&mUserStruct, &user, sizeof(struct TnsdProtocol));
-    };
-
-    Protocol()  = default;
-
-};
+using namespace doori;
 
 TEST(StreamTemplate, Usage) {
 
-    Json json{};
-    TnsdProtocol tnsdProtocol{"127.0.0.1", "8888", "lee.jae.seong"};
+    Data::Json json{};
+    Tnsd::Header header{};
+    Tnsd::Body body{};
 
-/*
-    tnsdProtocol.SetSide();
-    tnsdProtocol.SetIp();
-    tnsdProtocol.SetPort();
-    tnsdProtocol.SetTopic();
-*/
+    header.SetProtocol(Tnsd::PROTOCOL::ALIVE);
 
-    StreamTemplate< IHeader, IBody > stream{CODER::ASCII, ENDIAN::LITTLE, DATA_FORMAT::JSON, tnsdProtocol, json};
+    std::size_t hashValue = std::hash<std::string>{}("leejaeseong");
+
+    std::ostringstream oss;
+
+    oss << std::hex << hashValue;
+
+    body.Alive(oss.str());
+
+    Stream::StreamTemplate< Tnsd::Header, Tnsd::Body > stream{Stream::CODER::ASCII, Stream::ENDIAN::LITTLE, Stream::DATA_FORMAT::JSON, header, body};
     auto ret = stream.ToStream();
     cout<< "start 1:";
     for(const auto& m: ret)

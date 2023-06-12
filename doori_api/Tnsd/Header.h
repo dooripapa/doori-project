@@ -5,8 +5,11 @@
 #ifndef DOORI_PROJECT_HEADER_H
 #define DOORI_PROJECT_HEADER_H
 
+#include <string>
 #include "Stream/IHeader.h"
+#include "Tnsd/NodeInfo.h"
 
+using namespace std;
 using namespace doori;
 
 namespace doori::Tnsd {
@@ -29,6 +32,16 @@ namespace doori::Tnsd {
         long GetLength() const override;
 
         vector<char> ToStream() override;
+
+        void SetProtocol(PROTOCOL protocol);
+
+    private:
+
+        PROTOCOL mTnsdProtocol;
+
+        string switchProtocolName(PROTOCOL protocol) const;
+
+        PROTOCOL switchProtocolEnum(string protocol) const;
 
     };
 

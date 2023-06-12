@@ -42,7 +42,7 @@ namespace doori::Stream {
      */
     template<typename T>
     concept IHeaderInterface = requires(T obj) {
-        { obj.GetLength() } -> std::same_as<int>;
+        { obj.GetLength() } -> std::same_as<long>;
         { obj.ToStream() } -> std::same_as<vector<char>>;
     };
     /**
@@ -52,7 +52,7 @@ namespace doori::Stream {
      */
     template<typename T>
     concept IBodyInterface = requires(T obj) {
-        { obj.GetLength() } -> std::same_as<int>;
+        { obj.GetLength() } -> std::same_as<long>;
         { obj.ToStream() } -> std::same_as<vector<char>>;
     };
 
@@ -159,7 +159,7 @@ namespace doori::Stream {
         vector<char> stream(bytesLengthBufferSize + bytesLength);
 
         char acTemp[8];
-        snprintf(acTemp, 8, "%0*d", 8, bytesLength);
+        snprintf(acTemp, 8, "%0*ld", 8, bytesLength);
 
         stream.insert(stream.end(), begin(acTemp), end(acTemp));
 
@@ -175,8 +175,8 @@ namespace doori::Stream {
         convertDataFormat(acTemp);
         stream.insert(stream.end(), begin(acTemp), end(acTemp));
 
-        stream.insert(stream.end(), mHeader.ToStream());
-        stream.insert(stream.end(), mBody.ToStream());
+        stream.insert(stream.end(), mHeader.ToStream().begin(), mHeader.ToStream().end());
+        stream.insert(stream.end(), mBody.ToStream().begin(), mBody.ToStream().end());
 
         return stream;
     }

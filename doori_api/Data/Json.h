@@ -193,6 +193,7 @@ namespace doori::Data{
          * @param jsonValue const Json_value&
          */
         auto append(const char* jsonKey, const Json_value& jsonValue) -> void;
+        auto append(const std::string& jsonKey, const Json_value& jsonValue) -> void;
         /**
          * []연산자를 구현된 Key값으로 접근 가능한, 참조값 리턴
          * @param jsonkey const std::string&

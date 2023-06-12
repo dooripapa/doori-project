@@ -24,15 +24,23 @@ set(TEST_FILES
         ../doori_api/Communication/Socket.cpp
         ../doori_api/Communication/EpollApi.h
         ../doori_api/Communication/EpollApi.cpp
-#        ../doori_api/Data/Json.cpp
-#        ../doori_api/Data/Json.h
-#        ../doori_api/Etc/Bigdecimal.cpp
-#        ../doori_api/Etc/Bigdecimal.h
-#		test_json.cpp
+        ../doori_api/Data/Json.cpp
+        ../doori_api/Data/Json.h
+		../doori_api/Data/Json.hpp
+		../doori_api/Tnsd/Header.h
+		../doori_api/Tnsd/Header.cpp
+		../doori_api/Tnsd/Body.h
+		../doori_api/Tnsd/Body.cpp
+		../doori_api/Tnsd/NodeInfo.h
+		../doori_api/Tnsd/NodeInfo.cpp
+		../doori_api/Tnsd/Topic.h
+		../doori_api/Tnsd/Topic.cpp
+        ../doori_api/Etc/Bigdecimal.cpp
+        ../doori_api/Etc/Bigdecimal.h
+		test_json.cpp
 #		test_bigdecimal.cpp
 #		test_branch.cpp
         test_TCPBuilder.cpp
-        ../doori_api/Communication/IIPC.h
         test_TcpApi.cpp
 		test_EpollApi.cpp
         test_StreamTemplate.cpp)

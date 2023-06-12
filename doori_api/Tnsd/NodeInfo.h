@@ -7,6 +7,7 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include "Common/Error.h"
@@ -15,36 +16,61 @@
 
 using namespace std;
 
-namespace doori {
-    namespace Tnsd {
+namespace doori::Tnsd {
 
-        enum struct SIDE {
-            SUB
-            ,PUB
-        };
+    enum struct SIDE {
+        SUB
+        ,PUB
+    };
+
+    /**
+     * Tnsd node정보를 정의하는 객체입니다.
+     */
+    class NodeInfo : public Common::Error{
+    public:
+        NodeInfo() = default;
+        NodeInfo(const NodeInfo& rhs) = default;
+        NodeInfo(Topic topic, SIDE side, string ip, string port);
+        NodeInfo& operator=(const NodeInfo& rhs) = default;
+        NodeInfo& operator=(NodeInfo&& rhs) = default;
 
         /**
-         * Tnsd node정보를 정의하는 객체입니다.
+         * Bytes 스트림으로 출력한다.
+         * @return
          */
-        class NodeInfo : public Common::Error{
-        public:
-            NodeInfo(Topic topic, SIDE side, string ip, string port);
-            vector<char> operator()();
-        private:
-            struct _solid{
-                char topic[64];
-                char side[8];
-                in_addr_t ip;
-                in_port_t port;
-            };
+        vector<char> Serialize();
 
-            SIDE mSide;
-            string mIp;
-            string mPort;
-            Topic mTopic;
+        /**
+         * Bytes 스트림을 입력받아서, NodeInfo로 변환한다.
+         * @param stream
+         * @return
+         */
+        static NodeInfo Unserialize(vector<char> stream);
+
+        string GetTopic() const;
+
+        string GetSide() const;
+
+        string GetIp() const;
+
+        string GetPort() const;
+
+    private:
+        struct _solid{
+            char topic[64];
+            char side[8];
+            in_addr_t ip;
+            in_port_t port;
         };
 
-    } // doori
+        string switchSideString() const;
+
+        Topic mTopic;
+        SIDE mSide;
+        string mIp;
+        string mPort;
+    };
+
 } // Tnsd
 
 #endif //DOORI_PROJECT_NODEINFO_H
