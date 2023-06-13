@@ -12,42 +12,42 @@ namespace doori::Tnsd {
 
     vector<char> Header::ToStream() {
         auto value = switchProtocolName(mTnsdProtocol);
-        return vector<char>(begin(value), end(value));
+        return vector<char>{begin(value), end(value)};
     }
 
     std::string Header::switchProtocolName(PROTOCOL protocol) const {
-
-        string ret{};
+        ostringstream oss;
 
         switch(protocol) {
             case PROTOCOL::INTERNAL_ERROR:
-                ret = std::string{"INTERNAL_ERROR"};
+                oss << setw(16) << "INTERNAL_ERROR";
                 break;
             case PROTOCOL::NOTIFY:
-                ret = std::string{"NOTIFY"};
+                oss << setw(16) << "NOTIFY";
                 break;
             case PROTOCOL::ANWSER:
-                ret = std::string{"ANWSER"};
+                oss << setw(16) << "ANWSER";
                 break;
             case PROTOCOL::CHANGE:
-                ret = std::string{"CHANGE"};
+                oss << setw(16) << "CHANGE";
                 break;
             case PROTOCOL::ALIVE:
-                ret = std::string{"CLOSE"};
+                oss << setw(16) << "ALIVE";
                 break;
             case PROTOCOL::CLOSE:
-                ret = std::string{"PUBLISH"};
+                oss << setw(16) << "CLOSE";
                 break;
             case PROTOCOL::PUBLISH:
-                ret = std::string{"ALIVE"};
+                oss << setw(16) << "PUBLISH";
                 break;
             case PROTOCOL::REPORT:
-                ret = std::string{"REPORT"};
+                oss << setw(16) << "REPORT";
                 break;
             default:
-                ret = std::string{""};
+                oss << setw(16) << "";
+                break;
         }
-        return ret;
+        return oss.str();
     }
 
     PROTOCOL Header::switchProtocolEnum(string protocol) const {

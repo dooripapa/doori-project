@@ -10,12 +10,13 @@ namespace doori::Tnsd {
     }
 
     vector<char> Body::ToStream() {
-        return vector<char>{begin(mJson.serialize()), end(mJson.serialize())};
+        auto json = mJson.serialize();
+        return vector<char>{begin(json), end(json)};
     }
 
     void Body::InternalError(string error) {
         mJson.clear();
-        mJson["INTERNAL_ERROR"] = error;
+        mJson["error"] = error;
     }
 
     void Body::Notify(const NodeInfo& myNodeInfo) {

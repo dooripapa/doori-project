@@ -14,7 +14,6 @@ using namespace doori;
 
 TEST(StreamTemplate, Usage) {
 
-    Data::Json json{};
     Tnsd::Header header{};
     Tnsd::Body body{};
 
@@ -28,21 +27,28 @@ TEST(StreamTemplate, Usage) {
 
     body.Alive(oss.str());
 
+    /**
+     * 참조로 Tnsd Header, Tnsd Body을 StreamTemplate 구성함.
+     * 그래서, header, body를 변경이 발생되면, ToStream의 출력값이 변경됨.
+     */
     Stream::StreamTemplate< Tnsd::Header, Tnsd::Body > stream{Stream::CODER::ASCII, Stream::ENDIAN::LITTLE, Stream::DATA_FORMAT::JSON, header, body};
     auto ret = stream.ToStream();
-    cout<< "start 1:";
+    cout<< "start 1:[";
     for(const auto& m: ret)
     {
         cout<< m;
     }
-    cout<< "end 1" << endl;
+    cout<< "] end 1" << endl;
+
+    header.SetProtocol(Tnsd::PROTOCOL::ANWSER);
+    body.Anwser(oss.str());
 
     ret = stream.ToStream();
-    cout<< "start 2:";
+    cout<< "start 2:[";
     for(const auto& m: ret)
     {
         cout<< m;
     }
-    cout<< "end 2" << endl;
+    cout<< "] end 2" << endl;
 
 }
