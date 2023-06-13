@@ -32,7 +32,6 @@ set(HEADER_FILES
 		Common/Log.hpp
 		Etc/Regex.h
 		Process/Runner.h
-		Data/Stream.h
         Tnsd/Topic.h
         DataStructure/Tree.h
 		DataStructure/Tree.hpp
@@ -54,7 +53,6 @@ set(SRC_FILES
 		Common/Log.cpp
 		Etc/Regex.cpp
 		Process/Runner.cpp
-		Data/Stream.cpp
         Tnsd/Topic.cpp
 		Data/Json.cpp
 		Etc/Bigdecimal.cpp
