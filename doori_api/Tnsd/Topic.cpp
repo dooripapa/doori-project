@@ -85,22 +85,22 @@ namespace doori::Tnsd{
     }
 
 
-    auto Topic::getTopicName() const noexcept -> std::string
+    auto Topic::GetKeyName() const noexcept -> std::string
     {
         return mTopicSum;
     }
 
-    auto Topic::getTopicName(const unsigned int index) const noexcept -> std::string {
-        if(mTopics.size()<=index)
+    auto Topic::GetDepthKey(const unsigned int index) const noexcept -> std::string {
+        if(mTopics.size() <= depth)
         {
             LOG(FATAL, "Index is overflow");
             return "";
         }
         else
-            return mTopics[index];
+            return mTopics[depth];
     }
 
-    auto Topic::getDepthSize() const noexcept -> uint
+    auto Topic::GetDepth() const noexcept -> uint
     {
         return mTopics.size();
     }

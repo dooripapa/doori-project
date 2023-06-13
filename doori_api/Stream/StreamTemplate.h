@@ -187,8 +187,7 @@ namespace doori::Stream {
     template<IHeaderInterface Header, IBodyInterface Body>
     vector<char> StreamTemplate<Header, Body>::ToStream() {
 
-        long bytesLength = sizeof(mCoder) + sizeof(mEndian) + sizeof(DATA_FORMAT) + mHeader.GetLength() + mBody.GetLength();
-        long bytesLengthBufferSize = sizeof(bytesLength);
+        long bytesLength = K_CODER_LEN + K_ENDIAN_LEN + K_DATAFORMAT_LEN + mHeader.GetLength() + mBody.GetLength();
 
         vector<char> stream{};
 
@@ -201,21 +200,18 @@ namespace doori::Stream {
             stream.push_back(acTemp[i]);
 
         // Coder값
-        memset(acTemp, 0x00, sizeof(8));
-        convertCoder(acTemp);
-        for (i = 0; i < sizeof(acTemp); i++)
-            stream.push_back(acTemp[i]);
+        auto coder = convertCoder();
+        for (i = 0; i < coder.size(); i++)
+            stream.push_back(coder[i]);
 
         // Endian 값
-        memset(acTemp, 0x00, sizeof(8));
-        convertEndian(acTemp);
-        for (i = 0; i < sizeof(acTemp); i++)
-            stream.push_back(acTemp[i]);
+        auto endian = convertEndian();
+        for (i = 0; i < endian.size(); i++)
+            stream.push_back(endian[i]);
 
-        memset(acTemp, 0x00, sizeof(8));
-        convertDataFormat(acTemp);
-        for (i = 0; i < sizeof(acTemp); i++)
-            stream.push_back(acTemp[i]);
+        auto dataformat = convertDataFormat();
+        for (i = 0; i < dataformat.size(); i++)
+            stream.push_back(dataformat[i]);
 
         auto headerVector=mHeader.ToStream();
         for(auto it=headerVector.cbegin(); it!=headerVector.cend();it++)

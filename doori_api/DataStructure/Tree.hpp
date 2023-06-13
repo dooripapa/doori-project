@@ -73,25 +73,25 @@ namespace doori::DataStructure{
     }
 
     template <typename T>
-    auto Tree<T>::attachBranch(const Topic& topic, const Branch<T>& branch, INSERT mode) noexcept -> bool
+    auto Tree<T>::attachBranch(const ILeafKey &dataKey, const Branch<T>& branch, INSERT mode) noexcept -> bool
     {
         auto ret=false;
         typename vector<Branch<T>>::iterator iter, linkIter;
-        for(auto i=0;i<topic.getDepthSize();++i)
+        for(auto i=0; i < dataKey.GetDepth(); ++i)
         {
             if(i==0) {
-                ret=findRootBranches( topic.getTopicName(i) ,iter );
+                ret=findRootBranches(dataKey.GetDepthKey(i) , iter );
                 if(!ret) {
-                    Branch<T> aBranch(topic.getTopicName(i));
+                    Branch<T> aBranch(dataKey.GetDepthKey(i));
                     mRootBranches.push_back(aBranch);
-                    findRootBranches( topic.getTopicName(i) ,iter );
+                    findRootBranches(dataKey.GetDepthKey(i) , iter );
                 }
             } else{
-                ret = (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                ret = (*iter).FindLinkBranches(dataKey.GetDepthKey(i), linkIter);
                 if(!ret) {
-                    Branch<T> aBranch(topic.getTopicName(i));
+                    Branch<T> aBranch(dataKey.GetDepthKey(i));
                     (*iter).GetLinkBranches().push_back(aBranch);
-                    (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                    (*iter).FindLinkBranches(dataKey.GetDepthKey(i), linkIter);
                 }
                 iter=linkIter;
             }
@@ -113,18 +113,18 @@ namespace doori::DataStructure{
     }
 
     template <typename T>
-    auto Tree<T>::removeBranch(const Topic& topic) noexcept -> bool
+    auto Tree<T>::removeBranch(const ILeafKey &dataKey) noexcept -> bool
     {
         int i;
         typename vector<Branch<T>>::iterator iter, linkIter;
         auto ret=false;
-        auto depthMax = topic.getDepthSize();
+        auto depthMax = dataKey.GetDepth();
         for(i=0;i<depthMax;++i)
         {
             if(i==0)
-                ret=findRootBranches( topic.getTopicName(i), iter );
+                ret=findRootBranches(dataKey.GetDepthKey(i), iter );
             else
-                ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                ret= (*iter).FindLinkBranches(dataKey.GetDepthKey(i), linkIter);
 
             if(ret) {
                 if(0<i && i<depthMax-1)
@@ -134,37 +134,37 @@ namespace doori::DataStructure{
             else
                 break;
         }
-        if(i==topic.getDepthSize() && ret){
+        if(i == dataKey.GetDepth() && ret){
             (*iter).GetLinkBranches().erase(linkIter );
-            LOG(INFO, "remove Branch TopicAccess:", topic.getTopicName());
+            LOG(INFO, "remove Branch TopicAccess:", dataKey.GetKeyName());
             return true;
         }
         return false;
     }
 
     template <typename T>
-    auto Tree<T>::getBranch(const Topic& topic) -> Branch<T>&
+    auto Tree<T>::getBranch(const ILeafKey &dataKey) -> Branch<T>&
     {
         typename vector<Branch<T>>::iterator iter, linkIter;
         auto ret=false;
-        for(auto i=0;i<topic.getDepthSize();++i)
+        for(auto i=0; i < dataKey.GetDepth(); ++i)
         {
             if(i==0) {
-                ret=findRootBranches(topic.getTopicName(i), iter);
+                ret=findRootBranches(dataKey.GetDepthKey(i), iter);
                 //없으면 새로 branch 추가
                 if(!ret) {
-                    Branch<T> aBranch(topic.getTopicName(i));
+                    Branch<T> aBranch(dataKey.GetDepthKey(i));
                     mRootBranches.push_back(aBranch);
-                    findRootBranches(topic.getTopicName(i), iter);
+                    findRootBranches(dataKey.GetDepthKey(i), iter);
                     continue;
                 }
             } else{
-                ret= (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                ret= (*iter).FindLinkBranches(dataKey.GetDepthKey(i), linkIter);
                 //없으면 새로 branch 추가
                 if(!ret) {
-                    Branch<T> aBranch(topic.getTopicName(i));
+                    Branch<T> aBranch(dataKey.GetDepthKey(i));
                     (*iter).GetLinkBranches().push_back(aBranch);
-                    (*iter).FindLinkBranches(topic.getTopicName(i), linkIter);
+                    (*iter).FindLinkBranches(dataKey.GetDepthKey(i), linkIter);
                 }
                 iter=linkIter;
             }
@@ -173,11 +173,11 @@ namespace doori::DataStructure{
     }
 
     template <typename T>
-    auto Tree<T>::attachLeaf(const Topic& topic, T leaf) -> bool
+    auto Tree<T>::attachLeaf(const ILeafKey &dataKey, T leaf) -> bool
     {
         //auto& ...
         //이렇게 해야, var 변수의 변경은, 값의 변경이 아닌, 참조의 값의 변환이 된다.
-        auto& var = getBranch(topic);
+        auto& var = getBranch(dataKey);
 
         if(!var.IsThereLeaf(leaf))
             return false;

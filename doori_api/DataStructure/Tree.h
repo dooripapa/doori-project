@@ -4,15 +4,19 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#pragma once
-//forward declaration
+#ifndef DOORI_PROJECT_TREE_H
+#define DOORI_PROJECT_TREE_H
+
 #include <string>
 #include <functional>
 #include <unordered_map>
 #include <ctime>
 #include <chrono>
 #include "Branch.h"
-#include "TnsdDistrict//Topic.h"
+#include "Tnsd/Topic.h"
+
+using namespace std;
+using namespace doori::Tnsd;
 
 namespace doori::DataStructure{
 
@@ -42,30 +46,30 @@ namespace doori::DataStructure{
         /**
          * Tree객체에 데이터구조 나뭇가지를 붙인다.
          * @note INSERT 값이 FORCE이면 이미 존재하더라도, overwrite, CHECK 이면 실패를 리턴
-         * @param topic : const Topic&
+         * @param dataKey : const ILeafKey&
          * @param branch : const Branch<T>&
          * @return true 성공, fail 실패
          */
-        auto attachBranch(const Topic& topic, const Branch<T>& branch, INSERT) noexcept -> bool;
+        auto attachBranch(const ILeafKey& dataKey, const Branch<T>& branch, INSERT) noexcept -> bool;
         /**
          * Topic해당되는 나뭇가지를 제거함
-         * @param topic const Topic&
+         * @param dataKey const ILeafKey&
          * @return 성공적으로 제거되면 true, 제거된게 없다면 fail
          */
-        auto removeBranch(const Topic& topic) noexcept -> bool;
+        auto removeBranch(const ILeafKey& dataKey) noexcept -> bool;
         /**
          * Topic해당되는 나뭇가지를 리턴함
-         * @param topic const Topic&
+         * @param dataKey const ILeafKey&
          * @return Branch<T>&
          */
-        auto getBranch(const Topic& topic) -> Branch<T>&;
+        auto getBranch(const ILeafKey& dataKey) -> Branch<T>&;
         /**
          * Topic해당되는 나뭇가지에 잎을 attach함
-         * @param topic  const Topic&
+         * @param dataKey  const ILeafKey&
          * @param leaf T
          * @return true 잎 attach성공, fail attach하지 못함
          */
-        auto attachLeaf(const Topic& topic, T leaf) -> bool;
+        auto attachLeaf(const ILeafKey& dataKey, T leaf) -> bool;
         /**
          * 복사대입연산자
          * @param rhs
@@ -94,3 +98,5 @@ namespace doori::DataStructure{
 }//namespace doori
 
 #include "Tree.hpp"
+
+#endif //DOORI_PROJECT_TREE_H

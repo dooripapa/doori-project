@@ -138,7 +138,7 @@ auto Tnsd::notify_processing(Protocol& protocol, int socketfd ) -> int
     string ip      =protocol.Ip();
     string port    =protocol.Port();
 
-    LOG(DEBUG, "TopicAccess: ", topic.getTopicName(), " ", "ip: ", ip, " ", "port: ", port);
+    LOG(DEBUG, "TopicAccess: ", topic.GetKeyName(), " ", "ip: ", ip, " ", "port: ", port);
 
     leaf = Addr(ip, port);
     switch(protocol.TreeAccess())
@@ -218,7 +218,7 @@ auto Tnsd::list_processing(Protocol& protocol) -> int
     string port;
     Topic topic{};
 
-    topic.set(protocol.TopicAccess().getTopicName());
+    topic.set(protocol.TopicAccess().GetKeyName());
 
     switch(protocol.TreeAccess())
     {
@@ -336,13 +336,13 @@ auto Tnsd::change_Processing(const Topic &topic) -> void{
     Topic depTopic;
     Stream    responseStream;
     Protocol  protocol;
-    for(auto i=0;i<topic.getDepthSize();++i)
+    for(auto i=0;i< topic.GetDepth(); ++i)
     {
         if(i>0) {
             strTopic += ".";
-            strTopic += topic.getTopicName(i);
+            strTopic += topic.GetDepthKey(i);
         } else
-            strTopic = topic.getTopicName(i);
+            strTopic = topic.GetDepthKey(i);
 
         depTopic.set(strTopic);
         auto branch = m_SubTree.getBranch( depTopic );

@@ -114,7 +114,6 @@ TnsdInterface <--o Tnsd
 
 
 
-
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '''''''''   IPC Builder Pattern   '''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -215,49 +214,164 @@ class doori::CommunicationMember::EpollApi{
 -Socket& mListenSocket;
 }
 
-enum doori::DataStream::ENCODE_TYPE{
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''   Stream                '''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+enum doori::Stream::CODER{
 ASCII
-UTF_8
+UTF8
+UTF16
 }
 
-Interface doori::DataStream::IHeader{
-virtual long TotalLength()
-ENCODE_TYPE Encode()
+enum doori::Stream::ENDIAN{
+BIG
+LITTLE
 }
 
-Interface doori::DataStream::Body{
-virtual string Data()
+enum doori::Stream::DATA_FORMAT{
+SOLID
+JSON
+XML
+CSV
 }
 
-Interface doori::DataStream::IFooter{
-virtual string Data()
+Interface doori::Stream::IStream{
+virtual long GetLength()
+virtual vector<char> ToStream()
 }
 
-Interface doori::DataStream::ITnsdStream{
-+ITnsdStream(IHeader header, IBody body, IFooter footer)
--IHeader& mHeader
--IBody& mBody
--IFooter& mFooter
+Interface doori::Stream::IHeader{
+}
+
+Interface doori::Stream::IBody{
+}
+
+class doori::Stream::Protocol {
++Protocol()
++Protocol(const Protocol& rhs)
++Protocol& operator=(const Protocol& rhs)
+-char mCoder[K_CODER_LEN]
+-char mEndian[K_ENDIAN_LEN]
+-char mDataFormat[K_DATAFORMAT_LEN]
+}
+
+Interface doori::Stream::StreamTemplate{
++StreamTemplate(CODER coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b)
++vector<char> ToStream()
+---
+-constexpr static int K_CODER_LEN = 8
+-constexpr static int K_ENDIAN_LEN = 8
+-constexpr static int K_DATAFORMAT_LEN = 8
+-string convertCoder()
+-string convertEndian()
+-string convertDataFormat()
+-CODER mCoder
+-ENDIAN mEndian
+-DATA_FORMAT mDataFormat
+-Protocol mStreamProtocol
+-Header& mHeader
+-Body& mBody
+}
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''   doori::DataStructure  '''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+enum doori::DataStructure::INSERT{
+FORCE, CHECK
+}
+
+class doori::DataStructure::Tree{
++Tree()
++Tree(const Tree& rhs)
++Tree(Tree&& rhs)
++auto attachBranch(const IDataKey &dataKey, const Branch<T>& branch, INSERT) noexcept -> bool
++auto removeBranch(const IDataKey &dataKey) noexcept -> bool
++auto getBranch(const IDataKey &dataKey) -> Branch<T>&
++auto attachLeaf(const IDataKey &dataKey, T leaf) -> bool
++auto operator=(const Tree& rhs) noexcept -> Tree<T>&
++auto operator=(Tree<T>&& rhs) noexcept -> Tree<T>&
++auto RootBranches() noexcept -> std::vector< Branch<T> >&
+-auto findRootBranches(const string& topic_name_segment, typename vector<Branch<T>>::iterator& itPos) -> bool
+-auto findRootBranches(const string& topic_name_segment) -> bool
+-auto copyFrom(Tree&& rhs) -> void
+-auto copyFrom(const Tree& rhs) -> void
+-vector< Branch<T> >   mRootBranches
+}
+
+class doori::DataStructure::Branch{
++Branch();
++Branch(const Branch&) noexcept ;
++Branch(Branch&&) noexcept ;
++Branch(const std::string& branchName) noexcept ;
++constexpr auto FindLinkBranches(const std::string& branchName, typename vector<Branch<T>>::iterator& branch) noexcept -> bool;
++constexpr auto FindLinkBranches(const std::string& branchName) noexcept -> bool;
++constexpr auto SetName(const std::string& name) noexcept -> void;
++auto GetName() const noexcept -> const std::string&;
++constexpr auto Link(const Branch& branch) noexcept -> bool;
++constexpr auto Link(Branch&&) noexcept -> bool;
++constexpr auto GetLeaves() noexcept -> const std::vector<T>&;
++constexpr auto IsThereLeaf(const T&) noexcept -> bool;
++constexpr auto DropLeaf(const T&) noexcept -> bool;
++constexpr auto AttachLeaf(const T&) noexcept -> void;
++constexpr auto AttachLeaf(T&&) noexcept -> void;
++constexpr auto operator=(const Branch& rhs) noexcept -> Branch&;
++constexpr auto operator=(Branch&& rhs) noexcept -> Branch&;
++constexpr auto operator==(const Branch& rhs) const noexcept -> bool;
+-auto copyFrom(const Branch& rhs) noexcept -> void;
+-auto copyFrom(Branch&& rhs) noexcept -> void;
+-string mName;
+-vector<Branch<T>> mLinkBranches;
+-vector<T> mLeaves;
+}
+
+interface doori::DataStructure::ILeafKey{
+virtual string GetKeyName() const noexcept = 0;
+virtual string GetDepthKey(unsigned int depth) const noexcept = 0;
+virtual uint GetDepth() const noexcept = 0;
 }
 
 
 ''''''''''''''''''''''''''''''''''''''''''''
 '''' Tnsd
 ''''''''''''''''''''''''''''''''''''''''''''
-class doori::Tnsd::MiddleSide{
-+MiddleSide(string BindingIp, string BindingPort);
-+void Alive()
-+void Change()
+enum doori::Tnsd::PROTOCOL{
+INTERNAL_ERROR
+NOTIFY
+ANWSER
+CHANGE
+ALIVE
+CLOSE
+PUBLISH
+REPORT
 }
 
-class doori::Tnsd::PubSide{
-+void PubSide(string tnsdIp, string tnsdPort, Topic topic)
-+void Notify()
-+void Publish(const IStream&)
-+void Anwser()
--void Check(Hash)
--vector<Socket> mSubSessions
--EpollApi mTnsdSessions
+class doori::Tnsd::NodeInfo{
+}
+
+class doori::Tnsd::Header{
++long GetLength() const override
++vector<char> ToStream() override
+---
++void SetProtocol(PROTOCOL protocol)
+-PROTOCOL mTnsdProtocol
+-string switchProtocolName(PROTOCOL protocol) const
+-PROTOCOL switchProtocolEnum(string protocol) const
+}
+
+class doori::Tnsd::Body{
++long GetLength() const override
++vector<char> ToStream() override
+---
++void InternalError(string error)
++void Notify(const NodeInfo& myNodeInfo)
++void Anwser(string hash16)
++void Anwser(vector<NodeInfo> publisherList)
++void Change(NodeInfo publisher)
++void Close(NodeInfo myNodeInfo)
++void Publish(Data::Json json)
++void Alive(string hash16)
++void Report(Data::Json json)
+-Data::Json mJson
 }
 
 class doori::Tnsd::SubSide{
@@ -339,7 +453,7 @@ class doori::Process::Runner{
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Error <|-- EpollApi : 상속
-Socket o-- EpollApi : 참조
+Socket --o EpollApi : 참조
 EpollData -- EpollApi : 종속
 
 Error <|-- TcpApi : 상속
@@ -358,8 +472,28 @@ Socket <.. TCP : 생성 <
 
 doori::Process::Application o-- doori::Process::Runner: 참조
 
-Error <|-- MiddleSide: 상속
-Error <|-- PubSide: 상속
-Error <|-- SubSide: 상속
+doori::Stream::IStream <|-- doori::Stream::IHeader: 상속
+doori::Stream::IStream <|-- doori::Stream::IBody: 상속
+
+doori::Stream::IHeader --o doori::Stream::StreamTemplate: 참조
+doori::Stream::IBody --o doori::Stream::StreamTemplate: 참조
+
+doori::Stream::CODER --* doori::Stream::StreamTemplate
+doori::Stream::ENDIAN --* doori::Stream::StreamTemplate
+doori::Stream::DATA_FORMAT --* doori::Stream::StreamTemplate
+doori::Stream::Protocol --* doori::Stream::StreamTemplate
+
+doori::Stream::IHeader <|-- doori::Tnsd::Header : 구현/실체화
+doori::Stream::IBody <|-- doori::Tnsd::Body : 구현/실체화
+
+doori::Tnsd::PROTOCOL --* doori::Tnsd::Header
+doori::Data::Json --* doori::Tnsd::Body
+doori::Tnsd::NodeInfo -- doori::Tnsd::Body
+
+doori::DataStructure::ILeafKey <|-- doori::Tnsd::Topic :구현/실체화
+
+doori::DataStructure::Branch <-- doori::DataStructure::Branch
+doori::DataStructure::Branch --* doori::DataStructure::Tree
+doori::DataStructure::ILeafKey -- doori::DataStructure::Tree : 사용
 
 @enduml

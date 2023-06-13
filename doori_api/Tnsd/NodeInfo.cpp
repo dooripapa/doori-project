@@ -38,10 +38,10 @@ namespace doori::Tnsd {
             return vector<char>{};
         }
 
-        auto length = mTopic.getTopicName().length();
+        auto length = mTopic.GetKeyName().length();
         length = length > 64 ?64 : length;
 
-        strncpy(solidStruct.topic, mTopic.getTopicName().c_str(), length);
+        strncpy(solidStruct.topic, mTopic.GetKeyName().c_str(), length);
 
         this->AsSuccess();
 
@@ -83,7 +83,7 @@ namespace doori::Tnsd {
     }
 
     string NodeInfo::GetTopic() const {
-        return mTopic.getTopicName();
+        return mTopic.GetKeyName();
     }
 
     string NodeInfo::GetSide() const {

@@ -4,10 +4,14 @@
 //
 // Created by doori on 20. 7. 10.
 //
-#pragma once
+#ifndef DOORI_PROJECT_BRANCH_H
+#define DOORI_PROJECT_BRANCH_H
+
 #include <vector>
 #include <ctime>
 #include <chrono>
+
+using namespace std;
 
 namespace doori::DataStructure{
 
@@ -60,9 +64,7 @@ namespace doori::DataStructure{
          * 자신의 나뭇가지에 또 다른 나뭇가지가 연결되어 있다면, 참조값을 리턴함
          * @todo 참조값 리턴으로, 캡슐화 붕괴. 방안고려해야 함.
          * @return std::vector<Branch<T>>& 연결된 나뭇가지 리스트
-         */
-        auto GetLinkBranches() noexcept -> std::vector<Branch<T>>&;
-        /**
+         */ auto GetLinkBranches() noexcept -> std::vector<Branch<T>>&; /**
          * 자신의 나뭇가지에 나뭇가지를 붙입니다.(Link)
          * 동일한 나뭇가지가 있다면 실패합니다.
          * @param branch : const Branch& 나뭇가지
@@ -132,3 +134,5 @@ namespace doori::DataStructure{
 }//namespace doori
 
 #include "Branch.hpp"
+
+#endif //DOORI_PROJECT_BRANCH_H

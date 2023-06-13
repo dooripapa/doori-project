@@ -51,7 +51,7 @@ auto Sub::operator()() noexcept -> int {
     }
 
     subscriber.sendListProtocolToTnsd();
-    LOG(DEBUG, "Knock TopicAccess! : ", topic.getTopicName() );
+    LOG(DEBUG, "Knock TopicAccess! : ", topic.GetKeyName() );
 
     // Never, Terminated.
     subscriber.onSubscribing();
