@@ -70,13 +70,21 @@
 
 #### Protocol
 * Alive : Tnsd에게 살아있음을 알림.
+
 ![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Alive.png)
+
 * Notify : Tnsd에가 Topic에 관심있다는 것을 알림
+
 ![Notify Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Subscriber_flow.png)
+
 * Anwser : Topologies에 응답메시지를 보냄
 * Change : Topic관심 있는 Topologies가 변경. 통보, 섹션연결 요청
+
 ![Change Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Publisher_flow.png)
+
 * Close : 이제는 Topic에 관심을 두지 않는다는 의미. 섹션종료, 리소스해제
+
 ![Close Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Close.png)
+
 * Report : Admin계정을 위한 정보프로토콜
 
