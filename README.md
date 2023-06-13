@@ -68,7 +68,7 @@
 * Publisher : 해당 Topic에 관심있는 Subscriber에게 데이터를 송신하는 프로세스
 * Subscriber : 해당 Topic의 데이터에 관심있는 프로세스
 
-#### Protocol [doori_uml 참조]
+#### Protocol
 * Alive : Tnsd에게 살아있음을 알림.
 ![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Alive.png)
 * Notify : Tnsd에가 Topic에 관심있다는 것을 알림
