@@ -69,9 +69,14 @@
 * Subscriber : 해당 Topic의 데이터에 관심있는 프로세스
 
 #### Protocol [doori_uml 참조]
-* Alive ![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Alive.png) : Tnsd에게 살아있음을 알림.
+* Alive : Tnsd에게 살아있음을 알림.
 * Notify : Tnsd에가 Topic에 관심있다는 것을 알림
 * Anwser : Topologies에 응답메시지를 보냄
 * Change : Topic관심 있는 Topologies가 변경. 통보, 섹션연결 요청
 * Close : 이제는 Topic에 관심을 두지 않는다는 의미. 섹션종료, 리소스해제
 * Report : Admin계정을 위한 정보프로토콜
+
+![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Alive.png)
+![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Close.png)
+![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Publisher flow.png)
+![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori-uml/Subscriber flow.png)
