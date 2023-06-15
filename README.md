@@ -18,27 +18,27 @@
 
 ## *doori-api*
 1. Communication
-   - EpollApi : Epoll 추상화 객체
-   - Socket : TCP 추상화 객체
-   - TCP : Socket 생성 추상화 객체
-   - TcpApi : linux socket를 설정을 위한 추상화 객체
+   - EpollApi : Epoll 추상객체
+   - Socket : TCP 추상객체
+   - TCP : Socket 생성 추상객체
+   - TcpApi : linux socket를 설정을 위한 추상객체
    - TCPBuilder : Socket 객체를 생성을 위한 빌더객체
 2. Data
    - Data 
    - DataSegment
    - Stream
-   - Dictionary : 설정파일 추상화 객체
+   - Dictionary : 설정파일 추상객체
    - Json
    - Json_value
 3. Data Structure
-   - Tree : 데이터집합 추상화 객체
-   - Branch : 데이터집합 작은 단위 추상화 객체
-   - ILeafKey : Branch 의 데이터('Leaf'이라는 추상화) 접근을 위한 Finder key 추상화 객체
+   - Tree : 데이터집합 추상객체
+   - Branch : 데이터집합 작은 단위 추상객체
+   - ILeafKey(Interface) : Branch 의 데이터('Leaf'이라는 추상화) 접근을 위한 Finder Key 추상객체
 4. Tnsd(dedicated)
    - Protocol : Tnsd 영역의 Topologis Node간 통신프로토콜 정의한 추상객체
-   - Topic : ILeafKey 인터페이스를 상속받은 실체화객체
-   - Header : 인터페이스 Stream::IHeader 상속받은 Tnsd 영역의 프로토콜 추상화 객체
-   - Body : 인터페이스 Stream::IBody 상속받은 Tnsd 영역의 프로토콜 데이터부분 추상화 객체
+   - Topic : ILeafKey 인터페이스를 상속받은 실체객체
+   - Header : 인터페이스 Stream::IHeader 상속받은 Tnsd 영역의 프로토콜 추상객체
+   - Body : 인터페이스 Stream::IBody 상속받은 Tnsd 영역의 프로토콜 데이터부분 추상객체
    - NodeInfo : Tnsd가 Topologies 관리 하기 위한 데이터객체(Leaf)
 5. Process
    - Getopt
@@ -47,6 +47,7 @@
 6. Common
    - Log
    - Error
+   - Util
 7. Stream
    - IHeader(Interface)
    - IBody(Interface)
@@ -55,7 +56,6 @@
 8. Etc
    - Regex
    - Bigdecimal
-   - Util
 
 ------------------------------
 
