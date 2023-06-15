@@ -4,7 +4,7 @@
 //
 // Created by doori on 19. 7. 25.
 //
-namespace doori{
+namespace doori::api::Data{
 template<int N>
 auto DataSegment::set(int fid, char const(&value)[N]) -> void
 {

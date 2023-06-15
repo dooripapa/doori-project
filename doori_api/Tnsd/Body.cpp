@@ -4,7 +4,7 @@
 
 #include "Body.h"
 
-namespace doori::Tnsd {
+namespace doori::api::Tnsd {
     long Body::GetLength() const {
         return mJson.serialize().length();
     }

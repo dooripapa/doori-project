@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace doori::Tnsd{
+namespace doori::api::Tnsd{
 
     Topic::Topic() : mTopics{} {
     }
@@ -85,19 +85,19 @@ namespace doori::Tnsd{
     }
 
 
-    auto Topic::GetKeyName() const noexcept -> std::string
+    auto Topic::GetKey() const noexcept -> std::string
     {
         return mTopicSum;
     }
 
     auto Topic::GetDepthKey(const unsigned int index) const noexcept -> std::string {
-        if(mTopics.size() <= depth)
+        if(mTopics.size() <= index)
         {
             LOG(FATAL, "Index is overflow");
             return "";
         }
         else
-            return mTopics[depth];
+            return mTopics[index];
     }
 
     auto Topic::GetDepth() const noexcept -> uint

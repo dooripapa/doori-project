@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include <functional>
 
-namespace doori::Communication {
+namespace doori::api::Communication {
 
     //////////////////////////////////////////////////////////
     // 비트 연산을 위해서 enum class 선언하지 않고

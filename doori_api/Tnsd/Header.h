@@ -10,9 +10,9 @@
 #include "Tnsd/NodeInfo.h"
 
 using namespace std;
-using namespace doori;
+using namespace doori::api;
 
-namespace doori::Tnsd {
+namespace doori::api::Tnsd {
 
     enum PROTOCOL
     {

@@ -11,7 +11,7 @@
 #include "Application.h"
 #include "Getopt.h"
 
-namespace doori::Process{
+namespace doori::api::Process{
 
 class Runner {
 public:

@@ -9,7 +9,9 @@
 #include <string>
 #include "Etc/Regex.h"
 
-namespace doori{
+using namespace doori::api::Etc;
+
+namespace doori::api::Process{
 
 class Getopt
 {

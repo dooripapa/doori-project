@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     class IIPC {
     public:

@@ -3,7 +3,7 @@
 //
 #include "Bigdecimal.h"
 
-namespace doori {
+namespace doori::api::Etc{
 
     Bigdecimal::Bigdecimal(const std::string &value) {
         init(value);

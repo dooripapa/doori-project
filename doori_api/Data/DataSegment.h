@@ -7,7 +7,7 @@
 #pragma once
 #include "Common/Log.h"
 
-namespace doori{
+namespace doori::api::Data{
 
 //forward declaration, only when using pointer, ref defined
 class Data;

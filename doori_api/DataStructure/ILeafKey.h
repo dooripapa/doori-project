@@ -9,12 +9,12 @@
 
 using namespace std;
 
-namespace doori::DataStructure{
+namespace doori::api::DataStructure{
 
     class ILeafKey{
 
     public:
-        virtual string GetKeyName() const noexcept = 0;
+        virtual string GetKey() const noexcept = 0;
         virtual string GetDepthKey(unsigned int depth) const noexcept = 0;
         virtual uint GetDepth() const noexcept = 0;
 

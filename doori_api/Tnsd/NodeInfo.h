@@ -15,8 +15,9 @@
 #include "Topic.h"
 
 using namespace std;
+using namespace doori::api;
 
-namespace doori::Tnsd {
+namespace doori::api::Tnsd {
 
     enum struct SIDE {
         SUB

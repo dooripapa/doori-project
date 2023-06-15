@@ -12,7 +12,7 @@
 
 using namespace doori;
 
-namespace doori::Tnsd {
+namespace doori::api::Tnsd {
 
     class Body : public Stream::IBody {
     public:

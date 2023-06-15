@@ -12,7 +12,7 @@
 #include <list>
 #include <algorithm>
 
-namespace doori {
+namespace doori::api::Etc{
 
     /**
     * C/C++ 용 Big Decimal 클래스. 아주 큰 값을 문자열방식으로 산수처리함

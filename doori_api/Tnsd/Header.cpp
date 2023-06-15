@@ -4,7 +4,7 @@
 
 #include "Header.h"
 
-namespace doori::Tnsd {
+namespace doori::api::Tnsd {
 
     long Header::GetLength() const {
         return 16;

@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::api::Etc{
 
 auto
 Regex::setObject(const string &object) noexcept -> const string&

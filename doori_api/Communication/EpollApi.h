@@ -8,7 +8,7 @@
 #include "Common/Error.h"
 #include "Socket.h"
 
-namespace doori::Communication {
+namespace doori::api::Communication {
 
     class EpollApi;
 

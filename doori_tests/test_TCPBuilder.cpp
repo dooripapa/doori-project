@@ -7,8 +7,8 @@
 #include "Common/Log.h"
 #include "Communication/TCP.h"
 
-using namespace doori::Communication;
-using namespace doori::Common;
+using namespace doori::api::Communication;
+using namespace doori::api::Common;
 using namespace std;
 
 void RunClient() {

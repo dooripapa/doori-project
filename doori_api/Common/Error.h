@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace doori::Common {
+namespace doori::api::Common {
 
     class Error {
 

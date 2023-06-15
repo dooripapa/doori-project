@@ -5,7 +5,7 @@
 #include <cstring>
 #include "NodeInfo.h"
 
-namespace doori::Tnsd {
+namespace doori::api::Tnsd {
     NodeInfo::NodeInfo(Topic topic, SIDE side, string ip, string port) : mTopic{topic}, mSide{side}, mIp{ip}, mPort{port}{
 
     }
@@ -38,14 +38,14 @@ namespace doori::Tnsd {
             return vector<char>{};
         }
 
-        auto length = mTopic.GetKeyName().length();
+        auto length = mTopic.GetKey().length();
         length = length > 64 ?64 : length;
 
-        strncpy(solidStruct.topic, mTopic.GetKeyName().c_str(), length);
+        strncpy(solidStruct.topic, mTopic.GetKey().c_str(), length);
 
         this->AsSuccess();
 
-        return ToBytes(solidStruct);
+        return Common::ToBytes(solidStruct);
     }
 
     NodeInfo NodeInfo::Unserialize(vector<char> stream) {
@@ -83,7 +83,7 @@ namespace doori::Tnsd {
     }
 
     string NodeInfo::GetTopic() const {
-        return mTopic.GetKeyName();
+        return mTopic.GetKey();
     }
 
     string NodeInfo::GetSide() const {
@@ -97,6 +97,7 @@ namespace doori::Tnsd {
             case SIDE::SUB:
                 return string{"SUB"};
         }
+        return {"ERR"};
     }
 
     string NodeInfo::GetIp() const {

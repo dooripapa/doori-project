@@ -7,7 +7,7 @@
 
 #include "Log.h"
 
-namespace doori::Common{
+namespace doori::api::Common{
 
     template<typename T>
     auto Log::log(T value) -> void

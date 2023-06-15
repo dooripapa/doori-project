@@ -7,7 +7,7 @@
 #include "Communication/TcpApi.h"
 #include "Communication/Socket.h"
 
-using namespace doori::Communication;
+using namespace doori::api::Communication;
 
 void TcpApiClient() {
 

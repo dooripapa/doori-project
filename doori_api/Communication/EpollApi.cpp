@@ -6,7 +6,7 @@
 #include "EpollApi.h"
 #include "TcpApi.h"
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     EpollApi::EpollApi(Socket &socket) : Common::Error(), mListenSocket(socket) {
 

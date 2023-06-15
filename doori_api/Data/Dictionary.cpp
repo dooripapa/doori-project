@@ -5,10 +5,8 @@
 // Created by doori on 19. 7. 25.
 //
 #include "Dictionary.h"
-#include "Common/Log.h"
-#include "Etc/Regex.h"
 
-namespace doori{
+namespace doori::api::Data{
 
     Dictionary::Dictionary() {
     }
@@ -36,14 +34,12 @@ namespace doori{
         if (!dictionaryFile)
         {
             LOG(ERROR, "fail to open Dictionary File");
-            doori::EVENT(errno,-1,"fail to open");
             return false;
         }
 
         if (!parserDic(dictionaryFile))
         {
             LOG(ERROR, "Its wrong to format");
-            doori::EVENT(0,-1,"Dictionary format is wrong");
             return false;
         }
         return true;

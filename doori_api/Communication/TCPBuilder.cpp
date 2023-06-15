@@ -6,7 +6,7 @@
 #include "TcpApi.h"
 #include "Common/Log.h"
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     TCPBuilder::~TCPBuilder() {
 

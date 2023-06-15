@@ -8,7 +8,7 @@
 #include "Common/Log.h"
 #include <regex>
 
-namespace doori{
+namespace doori::api::Etc{
 
 class Regex
 {

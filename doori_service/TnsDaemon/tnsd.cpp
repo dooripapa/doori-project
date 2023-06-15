@@ -1,7 +1,5 @@
 #include "tnsd.h"
 
-namespace doori{
-
 Tnsd::Tnsd(const Dictionary& dictionary): mDic{dictionary} {
 }
 
@@ -373,5 +371,3 @@ auto Tnsd::change_Processing(const Topic &topic) -> void{
         }
     }
 }
-
-}//namespace doori

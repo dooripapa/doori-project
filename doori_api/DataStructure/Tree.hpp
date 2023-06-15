@@ -7,7 +7,7 @@
 
 #include "DataStructure/Tree.h"
 
-namespace doori::DataStructure{
+namespace doori::api::DataStructure{
 
     template <typename T>
     auto Tree<T>::copyFrom(const Tree<T>& rhs) -> void
@@ -136,7 +136,7 @@ namespace doori::DataStructure{
         }
         if(i == dataKey.GetDepth() && ret){
             (*iter).GetLinkBranches().erase(linkIter );
-            LOG(INFO, "remove Branch TopicAccess:", dataKey.GetKeyName());
+            LOG(INFO, "remove Branch TopicAccess:", dataKey.GetKey());
             return true;
         }
         return false;

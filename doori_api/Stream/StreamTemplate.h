@@ -15,7 +15,7 @@
 
 using namespace std;
 
-namespace doori::Stream {
+namespace doori::api::Stream {
 
     enum struct CODER{
         ASCII

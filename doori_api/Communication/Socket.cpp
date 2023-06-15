@@ -5,7 +5,7 @@
 #include <cassert>
 #include "Socket.h"
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     Socket::Socket() : mFd(-1), mStatus(SOCK_STATUS::CLOSED) {
 

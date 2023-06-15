@@ -5,7 +5,7 @@
 #include "TCP.h"
 #include "Common/Log.h"
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     void TCP::Create(IIPCBuilder &builder) {
         if( builder.Establish() != 0)

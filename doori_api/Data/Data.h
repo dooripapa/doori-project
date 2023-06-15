@@ -10,7 +10,7 @@
 #include <algorithm>    // std::sort
 #include "DataSegment.h"
 
-namespace doori{
+namespace doori::api::Data{
 
 class Data
 {

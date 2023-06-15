@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 #link_libraries (-lpthread)
 
-include_directories(${DOORI_PROJECT}/doori_api)
+#include_directories(${DOORI_PROJECT}/doori_api)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/googletest/lib)
 
@@ -37,13 +37,13 @@ set(TEST_FILES
 		../doori_api/Tnsd/Topic.cpp
         ../doori_api/Etc/Bigdecimal.cpp
         ../doori_api/Etc/Bigdecimal.h
-		test_json.cpp
+		test_Json.cpp
 #		test_bigdecimal.cpp
 #		test_branch.cpp
         test_TCPBuilder.cpp
         test_TcpApi.cpp
 		test_EpollApi.cpp
-        test_StreamTemplate.cpp)
+        test_StreamTemplate.cpp test_Bigdecimal.cpp test_Branch.cpp test_Tree.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

@@ -9,8 +9,8 @@
 #include "Communication/EpollApi.h"
 
 using namespace std;
-using namespace doori::Common;
-using namespace doori::Communication;
+using namespace doori::api::Common;
+using namespace doori::api::Communication;
 
 auto ProcessMessage(Socket socket) -> int
 {

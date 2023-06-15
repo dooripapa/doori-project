@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::api::Data{
 /****************************
   @comment  : 생성자, 복제 생성자
   @return   : 

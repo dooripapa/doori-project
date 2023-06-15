@@ -9,8 +9,12 @@
 #include <fstream>
 #include <vector>
 #include "Common/Error.h"
+#include "Common/Log.h"
+#include "Etc/Regex.h"
 
-namespace doori{
+using namespace doori::api::Etc;
+
+namespace doori::api::Data{
 
 class Dictionary {
     public:

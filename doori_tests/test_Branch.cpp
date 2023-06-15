@@ -6,7 +6,7 @@
 #include "DataStructure/Branch.h"
 #include <iostream>
 
-using namespace doori;
+using namespace doori::api::DataStructure;
 using namespace std;
 
 TEST(Branch , Construct)
@@ -18,11 +18,13 @@ TEST(Branch , Construct)
     Branch<string> s{};
 }
 
-TEST(Branch, Sample)
+TEST(Branch, Usage)
 {
-    // 이 가지는 int 형의 잎만 붙일 수 있다.
+    // 이 가지(Branch)는 int 타입만의 잎만 붙일 수 있다.
+    // 이 가지의 이름은 "main branch"
     Branch<int> r{"main branch"};
-    //나무가지에 topic leejaeseong 이라고 정의하고, 잎을 붙인다.
+
+    // "main branch"의 잎에 1,2,3,4,5 붙였습니다.
     r.AttachLeaf(1);
     r.AttachLeaf(2);
     r.AttachLeaf(3);
@@ -30,9 +32,8 @@ TEST(Branch, Sample)
     r.AttachLeaf(5);
 
     //해당 나뭇가자에, 달려 있는 잎을 확인해 본다.
-    for(auto &v : r.GetLeaves() )
-    {
-        cout<< v << endl;
+    for(auto &leaf : r.GetLeaves() ) {
+        cout<< leaf << endl;
     }
 
     if(r.DropLeaf(10))
@@ -40,9 +41,11 @@ TEST(Branch, Sample)
     else
         cout << "10의 잎이 존재하지 않음." << endl;
 
+    if(r.DropLeaf(1))
+        cout << "1의 잎이 제거됨." << endl;
+
     //해당 나뭇가자에, 달려 있는 잎을 확인해 본다.
-    for(auto &v : r.GetLeaves() )
-    {
+    for(auto &v : r.GetLeaves() ) {
         cout<< v << endl;
     }
 
@@ -54,7 +57,7 @@ TEST(Branch, Sample)
     r2.AttachLeaf(14);
     r2.AttachLeaf(15);
 
-    r.Link(r2);
+    cout << boolalpha << r.Link(r2) << endl ;
 
     Branch<int> r3;
     r3.SetName("third branch");
@@ -66,22 +69,27 @@ TEST(Branch, Sample)
 
     cout << boolalpha << r.Link(r3) << endl ;
 
-    vector<Branch<int>>::iterator secondIterator{};
-    auto result = r.FindLinkBranches("main branch", secondIterator);
-
-    //찾았다
+    vector<Branch<int>>::iterator iter{};
+    auto result = r.FindLinkBranches("main branch", iter);
     if (result)
     {
-        for(auto &v: secondIterator->GetLeaves() ) {
-            cout<< "second : "<< v << endl;
+        for(auto &leaf: iter->GetLeaves() ) {
+            cout << "main branch: " << leaf << endl;
+        }
+    }
+
+    if(r.FindLinkBranches("second branch", iter))
+    {
+        for(auto &leaf: iter->GetLeaves() ) {
+            cout << "second branch: " << leaf << endl;
         }
     }
 
     cout << "------------------------------------------" << endl;
-    if (r.FindLinkBranches("third branch", secondIterator))
+    if (r.FindLinkBranches("third branch", iter))
     {
-        for(auto &v: secondIterator->GetLeaves() ) {
-            cout<< "second : "<< v << endl;
+        for(auto &leaf: iter->GetLeaves() ) {
+            cout << "third branch : " << leaf << endl;
         }
     }
 }

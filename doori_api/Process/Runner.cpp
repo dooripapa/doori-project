@@ -6,7 +6,7 @@
 //
 #include "Runner.h"
 
-namespace doori::Process{
+namespace doori::api::Process{
 
 Runner::Runner(Application &&app) : mApp(app.clone()) {
 }

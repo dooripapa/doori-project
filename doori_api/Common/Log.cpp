@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace doori::Common{
+namespace doori::api::Common{
 
     /* 프로그램이 시작할 때, 이 변수를 초기화를 한다.
        사전에 선언되어 있어야 한다. 런타임 시작전에(이 변수를 사용하는 시점에)

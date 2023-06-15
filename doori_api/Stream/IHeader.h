@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace doori::Stream{
+namespace doori::api::Stream{
     class IHeader : public IStream{
     };
 };

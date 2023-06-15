@@ -7,7 +7,7 @@
 #include <cstring>
 #include "Error.h"
 
-namespace doori::Common{
+namespace doori::api::Common{
 
     auto Error::occur(int errnum, bool status, const std::string& cause) noexcept -> void
     {

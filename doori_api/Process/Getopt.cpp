@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace doori{
+namespace doori::api::Process{
 
 Getopt::Getopt(int argc, char**argv)
 {

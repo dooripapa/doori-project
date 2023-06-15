@@ -7,7 +7,7 @@
 #include <algorithm>
 #include "DataStructure/Branch.h"
 
-namespace doori::DataStructure{
+namespace doori::api::DataStructure{
 
     //
     // Created by doori on 19. 5. 1.
@@ -26,8 +26,8 @@ namespace doori::DataStructure{
     }
 
     template<typename T>
-    Branch<T>::Branch(const std::string& topic_name) noexcept {
-        mName=topic_name;
+    Branch<T>::Branch(const std::string& branchName) noexcept {
+        mName=branchName;
     }
 
     template <typename T>

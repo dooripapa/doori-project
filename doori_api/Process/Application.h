@@ -10,9 +10,9 @@
 #include <memory>
 #include <string>
 #include "Getopt.h"
-#include "DataStream/Dictionary.h"
+#include "Data/Dictionary.h"
 
-namespace doori::Process{
+namespace doori::api::Process{
 
 /**
  * doori api를 통해서, 어플리케이션을 만들때는 이 클래스를 상속받아서 엄격하게 인터페이스를 구현해야 한다.

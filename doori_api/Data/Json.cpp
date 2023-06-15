@@ -9,7 +9,7 @@
 #include <limits>
 #include "Json.h"
 
-namespace doori::Data{
+namespace doori::api::Data{
 
     auto Json::operator[](const std::string &jsonkey) -> Json_value & {
         for (auto &item : mFactors) {
@@ -415,13 +415,13 @@ namespace doori::Data{
                 jsonV<<mInt;
                 return jsonV.str();
             case Json_value::STRING:
-//                jsonV<<"\"";
+                jsonV<<"\"";
                 for(auto&i:mStr) {
                     if (i=='"')
                         jsonV<<"\\";
                     jsonV<<i;
                 }
-//                jsonV<<"\"";
+                jsonV<<"\"";
                 return jsonV.str();
             case Json_value::ARRAY:
                 jsonV<<"[";

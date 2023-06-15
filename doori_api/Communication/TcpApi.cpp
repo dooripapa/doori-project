@@ -5,7 +5,7 @@
 #include <regex>
 #include "TcpApi.h"
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     TcpApi::TcpApi(Socket &socket) : Common::Error(), mSocket(socket) {
 

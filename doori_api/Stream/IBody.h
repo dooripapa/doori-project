@@ -7,7 +7,7 @@
 
 #include "IStream.h"
 
-namespace doori::Stream{
+namespace doori::api::Stream{
 
     class IBody : IStream{
     };

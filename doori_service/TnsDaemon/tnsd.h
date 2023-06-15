@@ -1,19 +1,14 @@
 #pragma once
-#include "CommunicationMember/Epoll.h"
 #include "DataStructure/Tree.h"
-#include "CommunicationMember/Addr.h"
-#include "DataStream/Data.h"
-#include "CommunicationMember/Connection.h"
-#include "DataStream/Stream.h"
-#include "MiddlewareSupport/Protocol.h"
 #include "DataStructure/Branch.h"
-#include "ProcessSupport/Application.h"
+#include "Process/Application.h"
+#include "Tnsd/NodeInfo.h"
 #include <thread>
 #include <unordered_map>
 
-namespace doori{
+using namespace doori;
 
-class Tnsd : public Application
+class Tnsd : public Process::Application
 {
 public:
     Tnsd() = delete;
@@ -36,12 +31,10 @@ private:
     auto report_processing (Protocol& protocol) -> int;
     auto list_processing   (Protocol& protocol) -> int;
     auto change_Processing (const Topic& topic) -> void;
-    Tree< Addr > m_PubTree;
-    Tree< Addr > m_SubTree;
+    DataStructure::Tree<NodeInfo> m_PubTree;
+    DataStructure::Tree<NodeInfo> m_SubTree;
 
     Dictionary mDic;
 
     std::unordered_map<std::string, int> mMangedMetaAddresses;
 };
-
-}//namespace doori

@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include <functional>
 
-namespace doori::Communication{
+namespace doori::api::Communication{
 
     class Socket;
 
@@ -115,7 +115,7 @@ namespace doori::Communication{
     private:
         static bool IsValidIP(const string& ip);
         static bool IsValidPort(const string& port);
-        doori::Communication::Socket& mSocket;
+        Socket& mSocket;
     };
 
 } // Communication

@@ -7,7 +7,7 @@
 #include "Application.h"
 #include "Common/Log.h"
 
-namespace doori::Process{
+namespace doori::api::Process{
 
 Application::Application()  {
 }
