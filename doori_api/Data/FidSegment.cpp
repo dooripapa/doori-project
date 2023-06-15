@@ -4,8 +4,8 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#include "DataSegment.h"
-#include "Data.h"
+#include "FidSegment.h"
+#include "Fid.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ namespace doori::api::Data{
   @return   : 
   @argument :
   ****************************/ 
-DataSegment::DataSegment()
+FidSegment::FidSegment()
 {
 	mFid			= numeric_limits<decltype(mFid	  )>::quiet_NaN();    
 	mType			= TYPE::N;
@@ -28,12 +28,12 @@ DataSegment::DataSegment()
 	mDooridata = nullptr;
 }
 
-DataSegment::DataSegment(const DataSegment& rhs)
+FidSegment::FidSegment(const FidSegment& rhs)
 {
 	copyFrom( rhs );
 }
 
-DataSegment::DataSegment(DataSegment&& rhs)
+FidSegment::FidSegment(FidSegment&& rhs)
 {
 	copyFrom( move(rhs) );
 
@@ -41,49 +41,49 @@ DataSegment::DataSegment(DataSegment&& rhs)
 		rhs.mType = TYPE::N;
 }
 
-DataSegment::~DataSegment()
+FidSegment::~FidSegment()
 {
 	if( mType == TYPE::R )
 		delete mDooridata;
 }
 
-DataSegment::DataSegment(int fid, int value)
+FidSegment::FidSegment(int fid, int value)
 {
 	mFid = fid;
 	mType = TYPE::I;
 	mInt = value;
 }
-DataSegment::DataSegment(int fid, long value)
+FidSegment::FidSegment(int fid, long value)
 {
 	mFid = fid;
 	mType = TYPE::L;
 	mLong = value;
 }
-DataSegment::DataSegment(int fid, float value)
+FidSegment::FidSegment(int fid, float value)
 {
 	mFid = fid;
 	mType = TYPE::F;
 	mFloat = value;
 }
-DataSegment::DataSegment(int fid, double value)
+FidSegment::FidSegment(int fid, double value)
 {
 	mFid = fid;
 	mType = TYPE::D;
 	mDouble = value;
 }
-DataSegment::DataSegment(int fid, char value)
+FidSegment::FidSegment(int fid, char value)
 {
 	mFid = fid;
 	mType = TYPE::C;
 	mChar = value;
 }
-DataSegment::DataSegment(int fid, bool value)
+FidSegment::FidSegment(int fid, bool value)
 {
 	mFid = fid;
 	mType = TYPE::B;
 	mBool = value;
 }
-DataSegment::DataSegment(int fid, string& value)
+FidSegment::FidSegment(int fid, string& value)
 {
 	mFid = fid;
 	mType = TYPE::S;
@@ -92,20 +92,20 @@ DataSegment::DataSegment(int fid, string& value)
 	else
 		mStr = value;
 }
-DataSegment::DataSegment(int fid, const string& value)
+FidSegment::FidSegment(int fid, const string& value)
 {
 	mFid = fid;
 	mType = TYPE::S;
 	mStr = value;
 }
-DataSegment::DataSegment(int fid, Data& dooridata)
+FidSegment::FidSegment(int fid, Fid& dooridata)
 {
 	mFid = fid;
 	mType = TYPE::R;
-	mDooridata = new Data( dooridata );
+	mDooridata = new Fid(dooridata );
 }
 
-auto DataSegment::deleteDooridata() -> void
+auto FidSegment::deleteDooridata() -> void
 {
 	if( mType == TYPE::R )
 	{
@@ -116,49 +116,49 @@ auto DataSegment::deleteDooridata() -> void
 	return;
 }
 
-auto DataSegment::set(int fid, int value) -> void
+auto FidSegment::set(int fid, int value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::I;
 	mInt = value;
 }
-auto DataSegment::set(int fid, long value) -> void
+auto FidSegment::set(int fid, long value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::L;
 	mLong = value;
 }
-auto DataSegment::set(int fid, float value) -> void
+auto FidSegment::set(int fid, float value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::F;
 	mFloat = value;
 }
-auto DataSegment::set(int fid, double value) -> void
+auto FidSegment::set(int fid, double value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::D;
 	mDouble = value;
 }
-auto DataSegment::set(int fid, char value) -> void
+auto FidSegment::set(int fid, char value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::C;
 	mChar = value;
 }
-auto DataSegment::set(int fid, bool value) -> void
+auto FidSegment::set(int fid, bool value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::B;
 	mBool = value;
 }
-auto DataSegment::set(int fid, string& value) -> void
+auto FidSegment::set(int fid, string& value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
@@ -168,24 +168,24 @@ auto DataSegment::set(int fid, string& value) -> void
 	else
 		mStr = value;
 }
-auto DataSegment::set(int fid, const string& value) -> void
+auto FidSegment::set(int fid, const string& value) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::S;
 	mStr = value;
 }
-auto DataSegment::set(int fid, Data& dooridata) -> void
+auto FidSegment::set(int fid, Fid& dooridata) -> void
 {
 	deleteDooridata();
 	mFid = fid;
 	mType = TYPE::R;
-	mDooridata = new Data( dooridata );
+	mDooridata = new Fid(dooridata );
 }
 
 
 
-auto DataSegment::copyFrom(const DataSegment& rhs) -> void
+auto FidSegment::copyFrom(const FidSegment& rhs) -> void
 {
 	mFid 		= rhs.mFid		;
 	mType 		= rhs.mType		;
@@ -198,10 +198,10 @@ auto DataSegment::copyFrom(const DataSegment& rhs) -> void
 	mStr		= rhs.mStr		;
 
 	if( mType == TYPE::R )
-		mDooridata	= new Data( *rhs.mDooridata );
+		mDooridata	= new Fid(*rhs.mDooridata );
 	return;
 }
-auto DataSegment::copyFrom(DataSegment&& rhs) -> void
+auto FidSegment::copyFrom(FidSegment&& rhs) -> void
 {
 	mFid 		= rhs.mFid		;
 	mType 		= rhs.mType		;
@@ -225,7 +225,7 @@ auto DataSegment::copyFrom(DataSegment&& rhs) -> void
 @return   : 
 @argument :
 ****************************/ 
-auto DataSegment::operator=(DataSegment&& rhs) -> DataSegment&
+auto FidSegment::operator=(FidSegment&& rhs) -> FidSegment&
 {
 	if( this ==&rhs  )
 		return *this;
@@ -251,7 +251,7 @@ auto DataSegment::operator=(DataSegment&& rhs) -> DataSegment&
 @return   : 
 @argument :
 ****************************/ 
-auto DataSegment::operator=(const DataSegment& rhs) -> DataSegment&
+auto FidSegment::operator=(const FidSegment& rhs) -> FidSegment&
 {
 	if( this ==&rhs  )
 		return *this;
@@ -269,12 +269,12 @@ auto DataSegment::operator=(const DataSegment& rhs) -> DataSegment&
 
 // doori_data_segments의 sort를 할때, 이 함수를 호출이 된다.
 // operator< 함수는 'const'라고 명명선언되어 있어야 한다.
-auto DataSegment::operator<(const DataSegment& rhs) const -> bool
+auto FidSegment::operator<(const FidSegment& rhs) const -> bool
 {
 	return (mFid < rhs.mFid);
 }
-// "1,S=doori" or "10,R=$| ... |$" Data, stream
-auto DataSegment::fromString(string& str) -> int
+// "1,S=doori" or "10,R=$| ... |$" Fid, stream
+auto FidSegment::fromString(string& str) -> int
 {
 	//*this delete
 	deleteDooridata();
@@ -308,7 +308,7 @@ auto DataSegment::fromString(string& str) -> int
 	mType = static_cast<TYPE>(type[0]);
 //	LOG(DEBUG, "value: [", value, "]");
 
-	Data data;
+	Fid data;
 	switch (mType)
 	{
 		case TYPE::I:
@@ -337,7 +337,7 @@ auto DataSegment::fromString(string& str) -> int
 			break;
 		case TYPE::R:
 			data.fromString(value);
-			mDooridata = new Data(data);
+			mDooridata = new Fid(data);
 			break;
 		default:
 			LOG(ERROR, "unknown type");
@@ -346,16 +346,16 @@ auto DataSegment::fromString(string& str) -> int
 	return 0;
 }
 
-auto DataSegment::getFid() const -> int
+auto FidSegment::getFid() const -> int
 {
 	return mFid;
 }
-auto DataSegment::getType() const -> char
+auto FidSegment::getType() const -> char
 {
 	return (char)mType;
 }
 
-auto DataSegment::getValueToString() const -> string
+auto FidSegment::getValueToString() const -> string
 {
 	switch( mType )
 	{
@@ -389,7 +389,7 @@ auto DataSegment::getValueToString() const -> string
 	}
 	return "not implement";
 }
-auto DataSegment::sortDooridata() -> void
+auto FidSegment::sortDooridata() -> void
 {
 	mDooridata->sort();
 	return;

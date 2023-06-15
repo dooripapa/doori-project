@@ -24,8 +24,13 @@ set(TEST_FILES
         ../doori_api/Communication/Socket.cpp
         ../doori_api/Communication/EpollApi.h
         ../doori_api/Communication/EpollApi.cpp
-        ../doori_api/Data/Json.cpp
+		../doori_api/Data/Fid.h
+		../doori_api/Data/Fid.cpp
+		../doori_api/Data/FidSegment.h
+		../doori_api/Data/FidSegment.hpp
+		../doori_api/Data/FidSegment.cpp
         ../doori_api/Data/Json.h
+		../doori_api/Data/Json.cpp
 		../doori_api/Data/Json.hpp
 		../doori_api/Tnsd/Header.h
 		../doori_api/Tnsd/Header.cpp
@@ -43,7 +48,7 @@ set(TEST_FILES
         test_TCPBuilder.cpp
         test_TcpApi.cpp
 		test_EpollApi.cpp
-        test_StreamTemplate.cpp test_Bigdecimal.cpp test_Branch.cpp test_Tree.cpp)
+        test_StreamTemplate.cpp test_Bigdecimal.cpp test_Branch.cpp test_Tree.cpp test_Fid.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

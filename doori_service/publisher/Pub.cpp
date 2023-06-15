@@ -10,7 +10,7 @@ auto Pub::operator()() noexcept -> int {
     Publisher publisher(
             [](int fd, Stream& stream) {
                 LOG(DEBUG, "From FD :", fd);
-                LOG(DEBUG, "Data stream :", stream.toByteStream() );
+                LOG(DEBUG, "Fid stream :", stream.toByteStream() );
                 return 0;
             }
     );

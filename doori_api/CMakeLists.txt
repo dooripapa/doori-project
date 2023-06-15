@@ -21,9 +21,9 @@ include_directories(SYSTEM .)
 set(HEADER_FILES
 		Process/Application.h DataStructure/Branch.h
 		DataStructure/Branch.hpp
-		Data/Data.h
-		Data/DataSegment.h
-		Data/DataSegment.hpp
+        Data/Fid.h
+		Data/FidSegment.h
+		Data/FidSegment.hpp
 		Data/Dictionary.h
 		Communication/TCP.h
 		Common/Error.h
@@ -45,8 +45,8 @@ set(HEADER_FILES
 set(SRC_FILES
 		Process/Application.cpp
 #		Communication/Connection.cpp
-		Data/Data.cpp
-		Data/DataSegment.cpp
+		Data/Fid.cpp
+		Data/FidSegment.cpp
 		Data/Dictionary.cpp
 		Common/Error.cpp
 		Process/Getopt.cpp

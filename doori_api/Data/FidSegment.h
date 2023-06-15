@@ -10,27 +10,27 @@
 namespace doori::api::Data{
 
 //forward declaration, only when using pointer, ref defined
-class Data;
+class Fid;
 
-class DataSegment
+class FidSegment
 {
 public:
     enum class TYPE:char{ I='I', L='L', F='F', D='D', C='C', B='B', S='S', R='R', N='N' };
-	DataSegment();
-	virtual ~DataSegment();
-	DataSegment(const DataSegment& rhs);
-	DataSegment(DataSegment&& rhs);
-	DataSegment(int fid, int value);
-	DataSegment(int fid, long value);
-	DataSegment(int fid, float value);
-	DataSegment(int fid, double value);
-	DataSegment(int fid, char value);
-	DataSegment(int fid, bool value);
-	DataSegment(int fid, std::string& value);
-	DataSegment(int fid, const std::string& value);
+	FidSegment();
+	virtual ~FidSegment();
+	FidSegment(const FidSegment& rhs);
+	FidSegment(FidSegment&& rhs);
+	FidSegment(int fid, int value);
+	FidSegment(int fid, long value);
+	FidSegment(int fid, float value);
+	FidSegment(int fid, double value);
+	FidSegment(int fid, char value);
+	FidSegment(int fid, bool value);
+	FidSegment(int fid, std::string& value);
+	FidSegment(int fid, const std::string& value);
 	template<int N>
-	DataSegment(int fid, char const(&value)[N]);
-	DataSegment(int fid, Data& dooridata);
+	FidSegment(int fid, char const(&value)[N]);
+	FidSegment(int fid, Fid& dooridata);
 
 	auto set(int fid, int value) -> void;
 	auto set(int fid, long value) -> void;
@@ -42,11 +42,11 @@ public:
 	auto set(int fid, const std::string& value) -> void;
 	template<int N>
 	auto set(int fid, char const(&value)[N]) -> void;
-	auto set(int fid, Data& dooridata) -> void;
+	auto set(int fid, Fid& dooridata) -> void;
 
-	auto operator=(const DataSegment& rhs) -> DataSegment&;
-	auto operator=(DataSegment&& rhs) -> DataSegment&;
-	auto operator<(const DataSegment& rhs) const -> bool;
+	auto operator=(const FidSegment& rhs) -> FidSegment&;
+	auto operator=(FidSegment&& rhs) -> FidSegment&;
+	auto operator<(const FidSegment& rhs) const -> bool;
 
 	auto fromString(std::string& formattedStr) -> int;
 	auto getType() const -> char;
@@ -56,8 +56,8 @@ public:
 protected:
 private:
 	auto deleteDooridata() -> void;
-	auto copyFrom(const DataSegment& rhs) -> void;
-	auto copyFrom(DataSegment&& rhs) -> void;
+	auto copyFrom(const FidSegment& rhs) -> void;
+	auto copyFrom(FidSegment&& rhs) -> void;
 	unsigned int				mFid;
 	TYPE					    mType;
 	int							mInt;
@@ -67,9 +67,9 @@ private:
 	char						mChar;
 	bool						mBool;
 	std::string					mStr;
-	Data*					mDooridata; //doori_data는 DataSegment 합
+	Fid*					mDooridata; //doori_data는 FidSegment 합
 };
 
 }
 
-#include "DataSegment.hpp"
+#include "FidSegment.hpp"

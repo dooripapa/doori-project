@@ -4,7 +4,7 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#include "Data.h"
+#include "Fid.h"
 
 using namespace std;
 
@@ -15,31 +15,31 @@ namespace doori::api::Data{
 @return   : 
 @argument :
 ****************************/ 
-Data::Data()
+Fid::Fid()
 {
 }
 
-Data::Data(const Data& rhs)
-{
-    copyFrom( rhs );
-}
-
-Data::Data(Data&& rhs)
+Fid::Fid(const Fid& rhs)
 {
     copyFrom( rhs );
 }
 
-Data::Data(const DataSegment& dataSegment)
+Fid::Fid(Fid&& rhs)
+{
+    copyFrom( rhs );
+}
+
+Fid::Fid(const FidSegment& dataSegment)
 {
 	segments.push_back( dataSegment );
 }
-Data::Data(DataSegment&& dataSegment)
+Fid::Fid(FidSegment&& dataSegment)
 {
 	segments.push_back( dataSegment );
 }
 
 
-Data::~Data()
+Fid::~Fid()
 {
 }
 
@@ -48,7 +48,7 @@ Data::~Data()
 @return   : 
 @argument :
 ****************************/ 
-auto Data::append(const DataSegment& dataSegment) -> void
+auto Fid::append(const FidSegment& dataSegment) -> void
 {
 	segments.push_back( dataSegment );
 	return;
@@ -58,7 +58,7 @@ auto Data::append(const DataSegment& dataSegment) -> void
 @return   : 
 @argument :
 ****************************/ 
-auto Data::append(DataSegment&& dataSegment) -> void
+auto Fid::append(FidSegment&& dataSegment) -> void
 {
 	segments.push_back( dataSegment );
 	return;
@@ -69,12 +69,12 @@ auto Data::append(DataSegment&& dataSegment) -> void
 @return   : 
 @argument :
 ****************************/ 
-auto Data::sort() -> void
+auto Fid::sort() -> void
 {
-	vector<DataSegment>::iterator iter;
+	vector<FidSegment>::iterator iter;
 	for( iter=segments.begin(); iter<segments.end(); iter++ )
 	{
-		if( iter->getType() == static_cast<char>(DataSegment::TYPE::R) )
+		if( iter->getType() == static_cast<char>(FidSegment::TYPE::R) )
 			iter->sortDooridata();
 	}
 	std::sort( segments.begin(), segments.end() );
@@ -86,9 +86,9 @@ auto Data::sort() -> void
 @return   : 
 @argument :
 ****************************/ 
-auto Data::walk( ostream& outPut ) -> void
+auto Fid::walk(ostream& outPut ) -> void
 {
-	vector<DataSegment>::iterator iter;
+	vector<FidSegment>::iterator iter;
 	for( iter=segments.begin(); iter<segments.end(); iter++ )
 	{
 		outPut << (*iter).getFid() << "," << (*iter).getType() << "=" << (*iter).getValueToString() << endl;
@@ -96,12 +96,12 @@ auto Data::walk( ostream& outPut ) -> void
 	return;
 }
 
-//auto Data::walk( ) const -> void
+//auto Fid::walk( ) const -> void
 // const로 선언되어 있다면, const_iterator으로 변경해야 함
 //-------------------------------------------------- 
-auto Data::walk( ) const -> void
+auto Fid::walk( ) const -> void
 {
-	vector<DataSegment>::const_iterator iter;
+	vector<FidSegment>::const_iterator iter;
 	cout << "$|";
 	for( iter=segments.begin(); iter<segments.end(); iter++ )
 	{
@@ -112,44 +112,44 @@ auto Data::walk( ) const -> void
 	return;
 }
 
-auto Data::begin() noexcept -> vector<DataSegment>::iterator
+auto Fid::begin() noexcept -> vector<FidSegment>::iterator
 {
 	return segments.begin();
 }
 
-auto Data::end() noexcept -> vector<DataSegment>::iterator
+auto Fid::end() noexcept -> vector<FidSegment>::iterator
 {
 	return segments.end();
 }
 
-auto Data::cbegin() noexcept -> const vector<DataSegment>::iterator
+auto Fid::cbegin() noexcept -> const vector<FidSegment>::iterator
 {
 	return segments.begin();
 }
 
-auto Data::cend() noexcept -> const vector<DataSegment>::iterator
+auto Fid::cend() noexcept -> const vector<FidSegment>::iterator
 {
 	return segments.end();
 }
 
 
-auto Data::find_if_Fid(int fid) -> vector<DataSegment>::iterator
+auto Fid::find_if_Fid(int fid) -> vector<FidSegment>::iterator
 {
 	return 	find_if(
 				segments.begin(), 
 				segments.end(), 
-				[=](DataSegment segment)
+				[=](FidSegment segment)
 				{
 					return (segment.getFid()==fid);
 				}
 			);
 }
-auto Data::find_if_Fid(vector<DataSegment>::iterator startIterator, int fid) -> vector<DataSegment>::iterator
+auto Fid::find_if_Fid(vector<FidSegment>::iterator startIterator, int fid) -> vector<FidSegment>::iterator
 {
 	return 	find_if(
 				startIterator, 
 				segments.end(), 
-				[=](DataSegment segment)
+				[=](FidSegment segment)
 				{
 					return (segment.getFid()==fid);
 				}
@@ -157,10 +157,10 @@ auto Data::find_if_Fid(vector<DataSegment>::iterator startIterator, int fid) -> 
 }
 
 ///@brief doori_data -> $| FID,mStreamProtocol=VALUE |$  형식의 문자열로 변환
-auto Data::toString() const -> string
+auto Fid::toString() const -> string
 {
 	string sTemp;
-	vector<DataSegment>::const_iterator iter;
+	vector<FidSegment>::const_iterator iter;
 	sTemp += "$|";
 	if (segments.size()==0)
 	{
@@ -181,11 +181,11 @@ auto Data::toString() const -> string
 }
 
 ///@brief doori_data_string -> doori_data 객체로 변경
-auto Data::fromString(string formattedStr) -> int
+auto Fid::fromString(string formattedStr) -> int
 {
 	string doori_data_string;
 	string doori_data_segment_string;
-	DataSegment part;
+	FidSegment part;
 	auto sDataPos = 0;
 	auto eDataPos = formattedStr.size();
 	auto lenFromTo = [](decltype(sDataPos) sPos, decltype(eDataPos) ePos)
@@ -195,7 +195,7 @@ auto Data::fromString(string formattedStr) -> int
 
 	auto dooridataDepth = 0;
 
-	//Data string format check : $| ... |$
+	//Fid string format check : $| ... |$
 	if (formattedStr[0]=='$' 
 	&&  formattedStr[1]=='|' 
 	&&  formattedStr[formattedStr.size()-1] == '$'
@@ -215,8 +215,8 @@ auto Data::fromString(string formattedStr) -> int
 	}
 
 	auto DataTotalLen = doori_data_string.size();
-	// separate DataSegment from Data
-	// DataSegment 의 변수는, for문에서 반복적으로 값이 할당됨
+	// separate FidSegment from Fid
+	// FidSegment 의 변수는, for문에서 반복적으로 값이 할당됨
 	// unserialize() 함수 호출시, 기존에 할당된 개체를 해제되어야 한다.
 	// 그부분을 unserialize() 내부 함수 안에서 해체를 함
 
@@ -275,7 +275,7 @@ auto Data::fromString(string formattedStr) -> int
 				}
 				else
 				{
-					LOG(DEBUG, "Data string is wrong!");
+					LOG(DEBUG, "Fid string is wrong!");
 					return -1;
 				}
 			}
@@ -306,7 +306,7 @@ auto Data::fromString(string formattedStr) -> int
 	return 0;
 }
 
-auto Data::operator=(const Data& rhs)-> Data&
+auto Fid::operator=(const Fid& rhs)-> Fid&
 {
 	if( this ==&rhs  ) 
 		return *this;  
@@ -315,13 +315,13 @@ auto Data::operator=(const Data& rhs)-> Data&
 	return *this;
 }
 
-auto Data::clear() noexcept -> void
+auto Fid::clear() noexcept -> void
 {
 	segments.clear();
 }
 
 ///@note 이동연산 의미가 없으나, 향후 대비차원으로 구현부 추가됨
-auto Data::operator=(Data&& rhs)-> Data&
+auto Fid::operator=(Fid&& rhs)-> Fid&
 {
 	if( this ==&rhs  ) 
 		return *this;  
@@ -330,14 +330,14 @@ auto Data::operator=(Data&& rhs)-> Data&
 	return *this;
 }
 
-auto Data::copyFrom(const Data& rhs) noexcept ->void
+auto Fid::copyFrom(const Fid& rhs) noexcept ->void
 {
 	segments = rhs.segments;
 	return;
 }
 
 ///@note 이동연산 의미가 없으나, 향후 대비차원으로 구현부 추가됨
-auto Data::copyFrom(Data&& rhs) noexcept ->void
+auto Fid::copyFrom(Fid&& rhs) noexcept ->void
 {
 	segments = rhs.segments;
 	return;

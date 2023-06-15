@@ -6,7 +6,7 @@
 //
 namespace doori::api::Data{
 template<int N>
-auto DataSegment::set(int fid, char const(&value)[N]) -> void
+auto FidSegment::set(int fid, char const(&value)[N]) -> void
 {
     deleteDooridata();
     mFid = fid;
@@ -18,7 +18,7 @@ auto DataSegment::set(int fid, char const(&value)[N]) -> void
 }
 
 template<int N>
-DataSegment::DataSegment(int fid, char const(&value)[N])
+FidSegment::FidSegment(int fid, char const(&value)[N])
 {
     mFid = fid;
     mType = TYPE::S;
