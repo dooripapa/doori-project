@@ -53,7 +53,8 @@
    - StreamTemplate<IHeader,IBody>
 8. Etc
    - Regex : 정규식 Wrapper객체
-   - Bigdecimal : 부동소수점 Epsilon 문제를 없앤 객체, 무한대 사칙연산
+   - Bigdecimal : 부동소수점 Epsilon의 문제를 극복하기 위한 객체, 무한대 사칙연산가능 \
+     [자세한내용 click](https://github.com/dooripapa/bigdecimal)
 
 ------------------------------
 

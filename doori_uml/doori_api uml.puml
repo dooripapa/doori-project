@@ -14,9 +14,9 @@ set namespaceSeparator ::
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '''''''''''''''  Common  Library   ''''''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-class doori::Common::Log{
+class Common::Log{
 }
-class doori::Common::Error{
+class Common::Error{
 +Error()
 +Error(Error&& rhs)
 +Error(const Error& rhs)
@@ -55,7 +55,7 @@ enum TnsdTokenId{
 +END
 }
 
-enum doori::CommunicationMember::SOCK_STATUS {
+enum CommunicationMember::SOCK_STATUS {
 +INIT
 +BINDING
 +LISTEN
@@ -64,7 +64,7 @@ enum doori::CommunicationMember::SOCK_STATUS {
 +CLOSED
 }
 
-enum doori::CommunicationMember::SOCK_OPT {
+enum CommunicationMember::SOCK_OPT {
 +REUSE
 +KEEPALIVE
 +LINGER
@@ -79,31 +79,31 @@ enum doori::CommunicationMember::SOCK_OPT {
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '''''''''''''''  Process           ''''''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Interface Application{
+Interface Process::Application{
 #IInterface CreateInterface()
 #IIPC CreateIPC()
 #IDictionary CreateDictionary()
 }
 
-Interface IInterface{
+Interface Process::IInterface{
 #string GetHederPacket()
 #string GetFooterPacket()
 }
 
-class Tnsd{
+class Process::Tnsd{
 +CreateInterface()
 }
 
-class TnsdInterface{
+class Process::TnsdInterface{
 }
 
 
 
-interface IDictionary{
+interface Process::IDictionary{
 #string GetId(Token id)
 }
 
-class TnsdDictionary{
+class Process::TnsdDictionary{
 }
 
 IDictionary <|-- TnsdDictionary
@@ -117,21 +117,21 @@ TnsdInterface <--o Tnsd
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '''''''''   IPC Builder Pattern   '''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
-interface doori::CommunicationMember::IIPC{
+interface CommunicationMember::IIPC{
 void Create(IIPCBuilder& builder)
 }
 
-interface doori::CommunicationMember::IIPCBuilder{
+interface CommunicationMember::IIPCBuilder{
 unique_ptr<IIPCTopology> GetTopology()
 int Establish()
 }
 
-class doori::CommunicationMember::TCP{
+class CommunicationMember::TCP{
 void Create(IIPCBuilder& builder) override
 ..
 }
 
-class doori::CommunicationMember::TCPBuilder{
+class CommunicationMember::TCPBuilder{
 +unique_ptr<IIPCTopology> GetTopology() override
 +int Establish() override
 ..
@@ -156,13 +156,13 @@ class doori::CommunicationMember::TCPBuilder{
 -int BindingClient(Socket& client, string bindingIp, string bindingPort, string remoteIp, string remotePort, int timeout);
 }
 
-interface doori::CommunicationMember::IIPCTopology{
+interface CommunicationMember::IIPCTopology{
 long Send(const string &data)
 long Recv(string &data, uint8_t tilSize)
 int Close()
 }
 
-class doori::CommunicationMember::Socket{
+class CommunicationMember::Socket{
 +Socket();
 +Socket(int fd, SOCK_STATUS status);
 +Socket& operator=(const Socket & rhs)
@@ -182,7 +182,7 @@ class doori::CommunicationMember::Socket{
 -int mStatus
 }
 
-class doori::CommunicationMember::TcpApi{
+class CommunicationMember::TcpApi{
 +TcpApi(Socket& socket)
 +void SetReuseOpt(string ip, string port);
 +void SetReuseOpt(string port);
@@ -198,12 +198,12 @@ class doori::CommunicationMember::TcpApi{
 -Socket& mSocket
 }
 
-struct doori::CommunicationMember::EpollData{
+struct CommunicationMember::EpollData{
 -int mFd;
 -int (*mCallEpollApiProcess)( int fd, int(*userFunc)(Socket) );
 }
 
-class doori::CommunicationMember::EpollApi{
+class CommunicationMember::EpollApi{
 +explicit EpollApi(Socket& socket);
 +void InitEpoll();
 +void RunningForeground(int backlogEventNum, int timeout, int(*delegation)(Socket) );
@@ -217,36 +217,36 @@ class doori::CommunicationMember::EpollApi{
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '''''''''   Stream                '''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
-enum doori::Stream::CODER{
+enum Stream::CODER{
 ASCII
 UTF8
 UTF16
 }
 
-enum doori::Stream::ENDIAN{
+enum Stream::ENDIAN{
 BIG
 LITTLE
 }
 
-enum doori::Stream::DATA_FORMAT{
+enum Stream::DATA_FORMAT{
 SOLID
 JSON
 XML
 CSV
 }
 
-Interface doori::Stream::IStream{
+Interface Stream::IStream{
 virtual long GetLength()
 virtual vector<char> ToStream()
 }
 
-Interface doori::Stream::IHeader{
+Interface Stream::IHeader{
 }
 
-Interface doori::Stream::IBody{
+Interface Stream::IBody{
 }
 
-class doori::Stream::Protocol {
+class Stream::Protocol {
 +Protocol()
 +Protocol(const Protocol& rhs)
 +Protocol& operator=(const Protocol& rhs)
@@ -255,7 +255,7 @@ class doori::Stream::Protocol {
 -char mDataFormat[K_DATAFORMAT_LEN]
 }
 
-Interface doori::Stream::StreamTemplate{
+Interface Stream::StreamTemplate{
 +StreamTemplate(CODER coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b)
 +vector<char> ToStream()
 ---
@@ -274,20 +274,20 @@ Interface doori::Stream::StreamTemplate{
 }
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'''''''''   doori::DataStructure  '''''''''''''''''''''
+'''''''''   DataStructure  '''''''''''''''''''''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
-enum doori::DataStructure::INSERT{
+enum DataStructure::INSERT{
 FORCE, CHECK
 }
 
-class doori::DataStructure::Tree{
+class DataStructure::Tree{
 +Tree()
 +Tree(const Tree& rhs)
 +Tree(Tree&& rhs)
-+auto attachBranch(const IDataKey &dataKey, const Branch<T>& branch, INSERT) noexcept -> bool
-+auto removeBranch(const IDataKey &dataKey) noexcept -> bool
-+auto getBranch(const IDataKey &dataKey) -> Branch<T>&
-+auto attachLeaf(const IDataKey &dataKey, T leaf) -> bool
++auto attachBranch(const ILeafKey &dataKey, const Branch<T>& branch, INSERT) noexcept -> bool
++auto removeBranch(const ILeafKey &dataKey) noexcept -> bool
++auto getBranch(const ILeafKey &dataKey) -> Branch<T>&
++auto attachLeaf(const ILeafKey &dataKey, T leaf) -> bool
 +auto operator=(const Tree& rhs) noexcept -> Tree<T>&
 +auto operator=(Tree<T>&& rhs) noexcept -> Tree<T>&
 +auto RootBranches() noexcept -> std::vector< Branch<T> >&
@@ -298,7 +298,7 @@ class doori::DataStructure::Tree{
 -vector< Branch<T> >   mRootBranches
 }
 
-class doori::DataStructure::Branch{
+class DataStructure::Branch{
 +Branch();
 +Branch(const Branch&) noexcept ;
 +Branch(Branch&&) noexcept ;
@@ -324,8 +324,8 @@ class doori::DataStructure::Branch{
 -vector<T> mLeaves;
 }
 
-interface doori::DataStructure::ILeafKey{
-virtual string GetKeyName() const noexcept = 0;
+interface DataStructure::ILeafKey{
+virtual string GetKey() const noexcept = 0;
 virtual string GetDepthKey(unsigned int depth) const noexcept = 0;
 virtual uint GetDepth() const noexcept = 0;
 }
@@ -334,7 +334,7 @@ virtual uint GetDepth() const noexcept = 0;
 ''''''''''''''''''''''''''''''''''''''''''''
 '''' Tnsd
 ''''''''''''''''''''''''''''''''''''''''''''
-enum doori::Tnsd::PROTOCOL{
+enum Tnsd::PROTOCOL{
 INTERNAL_ERROR
 NOTIFY
 ANWSER
@@ -345,10 +345,10 @@ PUBLISH
 REPORT
 }
 
-class doori::Tnsd::NodeInfo{
+class Tnsd::NodeInfo{
 }
 
-class doori::Tnsd::Header{
+class Tnsd::Header{
 +long GetLength() const override
 +vector<char> ToStream() override
 ---
@@ -358,7 +358,7 @@ class doori::Tnsd::Header{
 -PROTOCOL switchProtocolEnum(string protocol) const
 }
 
-class doori::Tnsd::Body{
+class Tnsd::Body{
 +long GetLength() const override
 +vector<char> ToStream() override
 ---
@@ -374,7 +374,7 @@ class doori::Tnsd::Body{
 -Data::Json mJson
 }
 
-class doori::Tnsd::SubSide{
+class Tnsd::SubSide{
 +void SubSide(string tnsdIp, string tnsdPort, Topic topic)
 +void Notify()
 +void Connect(string PubSideIp, string PubSidePort)
@@ -383,7 +383,7 @@ class doori::Tnsd::SubSide{
 -EpollApi mTnsdSessions
 }
 
-class doori::Tnsd::Topic{
+class Tnsd::Topic{
 +bool set(initializer_list<string>)
 +bool set(const string&)
 +Topic& operator=(const Topic&)
@@ -397,16 +397,16 @@ class doori::Tnsd::Topic{
 ''''''''''''''''''''''''''''''''''''''''''''
 '''' Etc
 ''''''''''''''''''''''''''''''''''''''''''''
-class doori::Etc::Bigdecimal{
+class Etc::Bigdecimal{
 }
 
-class doori::Etc::Regex{
+class Etc::Regex{
 }
 
 ''''''''''''''''''''''''''''''''''''''''''''
 '''' Process
 ''''''''''''''''''''''''''''''''''''''''''''
-class doori::Process::Application{
+class Process::Application{
 +Application();
 +virtual ~Application();
 +virtual int operator()() noexcept
@@ -420,7 +420,7 @@ class doori::Process::Application{
 -std::string mDefaultLogName{"a.out.log"};
 }
 
-class doori::Process::Getopt{
+class Process::Getopt{
 +Getopt() = delete;
 +Getopt(const Getopt&) = default;
 +Getopt(Getopt&&) = delete;
@@ -435,7 +435,7 @@ class doori::Process::Getopt{
 -string mAllCommandLIne;
 }
 
-class doori::Process::Runner{
+class Process::Runner{
 +Runner();
 +~Runner();
 +Runner(const Runner& rhs);
@@ -470,30 +470,30 @@ IIPCBuilder <-o IIPC
 TCPBuilder <-o TCP : 의존 <
 Socket <.. TCP : 생성 <
 
-doori::Process::Application o-- doori::Process::Runner: 참조
+Process::Application o-- Process::Runner: 참조
 
-doori::Stream::IStream <|-- doori::Stream::IHeader: 상속
-doori::Stream::IStream <|-- doori::Stream::IBody: 상속
+Stream::IStream <|-- Stream::IHeader: 상속
+Stream::IStream <|-- Stream::IBody: 상속
 
-doori::Stream::IHeader --o doori::Stream::StreamTemplate: 참조
-doori::Stream::IBody --o doori::Stream::StreamTemplate: 참조
+Stream::IHeader --o Stream::StreamTemplate: 참조
+Stream::IBody --o Stream::StreamTemplate: 참조
 
-doori::Stream::CODER --* doori::Stream::StreamTemplate
-doori::Stream::ENDIAN --* doori::Stream::StreamTemplate
-doori::Stream::DATA_FORMAT --* doori::Stream::StreamTemplate
-doori::Stream::Protocol --* doori::Stream::StreamTemplate
+Stream::CODER --* Stream::StreamTemplate
+Stream::ENDIAN --* Stream::StreamTemplate
+Stream::DATA_FORMAT --* Stream::StreamTemplate
+Stream::Protocol --* Stream::StreamTemplate
 
-doori::Stream::IHeader <|-- doori::Tnsd::Header : 구현/실체화
-doori::Stream::IBody <|-- doori::Tnsd::Body : 구현/실체화
+Stream::IHeader <|-- Tnsd::Header : 구현/실체화
+Stream::IBody <|-- Tnsd::Body : 구현/실체화
 
-doori::Tnsd::PROTOCOL --* doori::Tnsd::Header
-doori::Data::Json --* doori::Tnsd::Body
-doori::Tnsd::NodeInfo -- doori::Tnsd::Body
+Tnsd::PROTOCOL --* Tnsd::Header
+Data::Json --* Tnsd::Body
+Tnsd::NodeInfo -- Tnsd::Body
 
-doori::DataStructure::ILeafKey <|-- doori::Tnsd::Topic :구현/실체화
+DataStructure::ILeafKey <|-- Tnsd::Topic :구현/실체화
 
-doori::DataStructure::Branch <-- doori::DataStructure::Branch
-doori::DataStructure::Branch --* doori::DataStructure::Tree
-doori::DataStructure::ILeafKey -- doori::DataStructure::Tree : 사용
+DataStructure::Branch <-- DataStructure::Branch : 재귀호출
+DataStructure::Branch --* DataStructure::Tree
+DataStructure::ILeafKey -- DataStructure::Tree : 사용
 
 @enduml
