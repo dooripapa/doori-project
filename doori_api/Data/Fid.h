@@ -10,6 +10,15 @@
 #include <algorithm>    // std::sort
 #include "FidSegment.h"
 
+/**
+ * @todo 설계구조 심각한 버그로 이 객체는 사용불가함. 전체를 변경해야 됨.
+ * @note 아래와 같이 변경할것.
+ * ^<fid>,<IFDBSR>=Value| ...$
+ * ^<fid>,<IFDBSR>=Value|<fid>,<IFDBSR>=Value$
+ * ^1,I=[1,2,3,4,5,...]$ --> init type array
+ * ^1,C=[a,2,c,4,d,...]$ --> char array
+ * ^1,R=^23,C=A|24,S=dooripapa$$ --> char array
+ */
 namespace doori::api::Data{
 
 class Fid
