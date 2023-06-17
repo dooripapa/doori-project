@@ -24,12 +24,10 @@
    - TcpApi : linux socket를 설정을 위한 추상객체
    - TCPBuilder : Socket 객체를 생성을 위한 빌더객체
 2. Data
-   - Data 
-   - DataSegment
+   - Fid,FidSegment : 현재사용불가
    - Stream
    - Dictionary : 설정파일 추상객체
-   - Json
-   - Json_value
+   - Json, Json_Value
 3. Data Structure
    - Tree : 데이터집합 추상객체
    - Branch : 데이터집합 작은 단위 추상객체
@@ -46,16 +44,16 @@
    - Application
 6. Common
    - Log
-   - Error
+   - Error : 객체 상태를 관리 객체
    - Util
 7. Stream
    - IHeader(Interface)
    - IBody(Interface)
    - IStream(Interface)
-   - StreamTemplate
+   - StreamTemplate<IHeader,IBody>
 8. Etc
-   - Regex
-   - Bigdecimal
+   - Regex : 정규식 Wrapper객체
+   - Bigdecimal : 부동소수점 Epsilon 문제를 없앤 객체, 무한대 사칙연산
 
 ------------------------------
 
