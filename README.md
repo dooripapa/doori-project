@@ -59,4 +59,4 @@
 
 ## *doori-service*
 
-### [Tnsd](https://github.com/dooripapa/doori-project/Tnsd/README.md) : Topic Naming Service Daemon
+### [Tnsd](https://github.com/dooripapa/doori-project/tree/master/Tnsd) : Topic Naming Service Daemon
