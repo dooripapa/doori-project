@@ -8,13 +8,14 @@
 > 각각의 클래스의 API사용법은 단위테스트폴더 doori_test에서 볼 수 있습니다.
 ------------------------------
 
-## *Software Architecture*
+## *Architecture*
 ![Architecture](https://github.com/dooripapa/doori-project/blob/master/doori_uml/images/doori.png)
 1. doori-api : libraries 집합체
 2. doori-service : doori-api을 이용하여 만들어진 services
    1. Tnsd : Topology를 관리하기 위한, middleware
    1. Tnsdb : Topic Naming Service DB
 3. doori-solution
+   1. Watcher
 ------------------------------
 
 ## *doori-api*
