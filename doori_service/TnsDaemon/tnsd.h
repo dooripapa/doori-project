@@ -22,7 +22,7 @@ namespace doori::service::Tnsd{
         auto ProcessName() noexcept -> std::string override;
         auto Daemonize() noexcept -> bool override ;
         auto LogFile() noexcept -> std::string override;
-        auto LogLevel() noexcept -> Log::LEVEL override;
+        auto LogLevel() noexcept -> Common::Log::LEVEL override;
         auto Terminate() noexcept -> int override;
     private:
         auto walkTree() noexcept -> void;

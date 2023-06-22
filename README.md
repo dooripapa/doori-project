@@ -53,37 +53,10 @@
    - StreamTemplate<IHeader,IBody>
 8. Etc
    - Regex : 정규식 Wrapper객체
-   - Bigdecimal : 부동소수점 Epsilon의 문제를 극복하기 위한 객체, 무한대 사칙연산가능 \
-     [자세한내용 click](https://github.com/dooripapa/bigdecimal)
+   - [Bigdecimal](https://github.com/dooripapa/bigdecimal) : 부동소수점 Epsilon의 문제를 극복하기 위한 객체, 무한대 사칙연산가능
 
 ------------------------------
 
 ## *doori-service*
-### Tnsd : 미들웨어
-> **T**opic **N**aming **S**ervice **D**aemon. => Tnsd
 
-#### Topolgies
-* Tnsd : Publisher와 Subscriber를 연결시켜주는 데몬프로세스(서비스)
-* Publisher : 해당 Topic에 관심있는 Subscriber에게 데이터를 송신하는 프로세스
-* Subscriber : 해당 Topic의 데이터에 관심있는 프로세스
-
-#### Protocol
-* Alive : Tnsd에게 살아있음을 알림.
-
-![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Alive.png)
-
-* Notify : Tnsd에가 Topic에 관심있다는 것을 알림
-
-![Notify Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Subscriber_flow.png)
-
-* Anwser : Topologies에 응답메시지를 보냄
-* Change : Topic관심 있는 Topologies가 변경. 통보, 섹션연결 요청
-
-![Change Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Publisher_flow.png)
-
-* Close : 이제는 Topic에 관심을 두지 않는다는 의미. 섹션종료, 리소스해제
-
-![Close Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Close.png)
-
-* Report : Admin계정을 위한 정보프로토콜
-
+### [Tnsd](https://github.com/dooripapa/doori-project/Tnsd/README.md) : Topic Naming Service Daemon

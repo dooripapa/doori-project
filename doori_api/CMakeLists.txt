@@ -19,27 +19,29 @@ set(DOORI_API_LIBRARY_NAME doori)
 include_directories(SYSTEM .)
 
 set(HEADER_FILES
-		Process/Application.h DataStructure/Branch.h
+		Process/Getopt.h
+		Process/Runner.h
+		Process/Application.h
+		DataStructure/Tree.h
+		DataStructure/Tree.hpp
+		DataStructure/Branch.h
 		DataStructure/Branch.hpp
+		DataStructure/ILeafKey.h
+		Data/Json.h
         Data/Fid.h
 		Data/FidSegment.h
 		Data/FidSegment.hpp
 		Data/Dictionary.h
-		Communication/TCP.h
 		Common/Error.h
-		Process/Getopt.h
 		Common/Log.h
 		Common/Log.hpp
 		Etc/Regex.h
-		Process/Runner.h
+		Etc/Bigdecimal.h
         Tnsd/Topic.h
-        DataStructure/Tree.h
-		DataStructure/Tree.hpp
-		Data/Json.h
+		Communication/TCP.h
 		Communication/IIPCBuilder.h
 		Communication/TCPBuilder.h
 		Communication/IIPCTopology.h
-		Etc/Bigdecimal.h
         )
 
 set(SRC_FILES
@@ -49,12 +51,13 @@ set(SRC_FILES
 		Data/FidSegment.cpp
 		Data/Dictionary.cpp
 		Common/Error.cpp
-		Process/Getopt.cpp
+		Common/Util.h
 		Common/Log.cpp
-		Etc/Regex.cpp
+		Process/Getopt.cpp
 		Process/Runner.cpp
         Tnsd/Topic.cpp
 		Data/Json.cpp
+		Etc/Regex.cpp
 		Etc/Bigdecimal.cpp
 		Communication/TCPBuilder.cpp
 		Communication/TCP.cpp
@@ -67,9 +70,16 @@ set(SRC_FILES
 		Stream/StreamTemplate.h
 		Stream/IHeader.h
 		Stream/IBody.h
+		Stream/IStream.h
 		Tnsd/Body.cpp
 		Tnsd/Body.h
-		Tnsd/Header.cpp Tnsd/Header.h Tnsd/NodeInfo.cpp Tnsd/NodeInfo.h Common/Util.h Stream/IStream.h Tnsd/Header.cpp Tnsd/Header.h DataStructure/ILeafKey.h ../doori_tests/test_Json.cpp)
+		Tnsd/Header.cpp
+		Tnsd/Header.h
+		Tnsd/NodeInfo.cpp
+		Tnsd/NodeInfo.h
+		Tnsd/Header.cpp
+		Tnsd/Header.h
+		)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
