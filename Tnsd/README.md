@@ -15,19 +15,19 @@
 
 ----
 
-![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Alive.png)
+![Alive Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/images/Alive.png)
 
 ----
 
-![Notify Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Subscriber_flow.png)
+![Notify Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/images/Subscriber_flow.png)
 
 ----
 
-![Change Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Publisher_flow.png)
+![Change Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/images/Publisher_flow.png)
 
 ----
 
-![Close Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/Close.png)
+![Close Protocol](https://github.com/dooripapa/doori-project/blob/master/doori_uml/images/Close.png)
 
 ----
 

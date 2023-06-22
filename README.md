@@ -9,8 +9,9 @@
 ------------------------------
 
 ## *Software Architecture*
-1. doori-api : libraries
-2. doori-service : doori-api's libraries 으로 만들어진 daemon 서비스
+![Architecture](https://github.com/dooripapa/doori-project/blob/master/doori_uml/images/doori.png)
+1. doori-api : libraries 집합체
+2. doori-service : doori-api을 이용하여 만들어진 services
    1. Tnsd : Topology를 관리하기 위한, middleware
    1. Tnsdb : Topic Naming Service DB
 3. doori-solution
