@@ -1,11 +1,11 @@
 # **doori-project(version 0.1)**
-> 아들의 태명(doori)으로 시작된 프로젝트
+> 아들의 태명(doori) 프로젝트
 
 > c++20 기반으로 만들어져 있습니다. Concept, Require, Template, Template parameter ... 등 적용되어 있습니다.
-> 디자인패턴도 적용하였으나, 디자인패턴보다 일반적프로그래밍(generic)을 선호합니다.
+> 디자인패턴도 적용하였으나, 가능하다면 디자인패턴보다 일반적프로그래밍(generic)으로 개발합니다. 
 > 컴파일은 cmake 버전 3.15으로 적용되어 있습니다.
-> 해당 프로젝트의 구조를 파악하기 위해서는 doori_uml 폴더에 참고해 주세요. 해당 텍스트는 plantuml[https://plantuml.com/ko]  의 의해서 제작되어 있습니다.
-> 각각의 클래스의 API사용법은 단위테스트폴더 doori_test에서 볼 수 있습니다.
+> 해당 프로젝트의 구조를 파악하기 위해서는 doori_uml 폴더에 참고해 주세요. 해당 텍스트는 plantuml[https://plantuml.com/ko]  의 의해서 제작되었고, 이미지로 자동 그려집니다.
+> 각각의 클래스의 API사용법 및 단위테스트폴더 doori_test에서 볼 수 있습니다.
 ------------------------------
 
 ## *Architecture*
