@@ -86,4 +86,12 @@ namespace doori::api::Tnsd {
 
         mJson = json;
     }
+
+    int Body::FromStream(string buffer) {
+
+        if(!mJson.unserialize(buffer))
+            return -1;
+
+        return 0;
+    }
 } // Tnsd

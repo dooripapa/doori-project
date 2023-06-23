@@ -14,6 +14,7 @@ namespace doori::api::Stream{
     public:
         virtual long GetLength() const = 0;
         virtual vector<char> ToStream() = 0;
+        virtual int FromStream(string buffer) = 0;
     };
 
 }

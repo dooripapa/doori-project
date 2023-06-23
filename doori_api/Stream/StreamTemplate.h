@@ -11,6 +11,7 @@
 #include <vector>
 #include "Common/Error.h"
 #include "Common/Util.h"
+#include "Communication/IIPCTopologyNode.h"
 #include <iostream>
 
 using namespace std;
@@ -69,30 +70,35 @@ namespace doori::api::Stream {
     public:
 
         StreamTemplate(CODER coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b);
+        StreamTemplate(Header& h, Body& b);
         StreamTemplate(const StreamTemplate&) = delete;
         StreamTemplate(StreamTemplate&&) = delete;
         StreamTemplate& operator=(const StreamTemplate&) = delete;
         StreamTemplate& operator=(StreamTemplate&&) = delete;
 
         vector<char> ToStream();
+        void FromStream(const string& buffer);
 
-    private:
-
+        constexpr static int K_STREAM_UTIL_LEN = 8;
         constexpr static int K_CODER_LEN = 8;
         constexpr static int K_ENDIAN_LEN = 8;
         constexpr static int K_DATAFORMAT_LEN = 8;
+        constexpr static int K_STREAM_PROTOCOL_LEN = K_CODER_LEN + K_ENDIAN_LEN + K_DATAFORMAT_LEN;
+
+    private:
 
         string convertCoder();
         string convertEndian();
         string convertDataFormat();
 
-        class Protocol {
+        class StreamProtocol {
         public:
-            Protocol() = default;
-            Protocol(const Protocol& rhs);
-            Protocol(Protocol&&) = delete;
-            Protocol& operator=(const Protocol& rhs);
-            Protocol& operator=(Protocol&&) = delete;
+            StreamProtocol() = default;
+            StreamProtocol(const StreamProtocol& rhs);
+            StreamProtocol(StreamProtocol&&) = delete;
+            StreamProtocol& operator=(const StreamProtocol& rhs);
+            StreamProtocol& operator=(StreamProtocol&&) = delete;
+            void FromStream(string buffer);
         private:
             char mCoder[K_CODER_LEN];
             char mEndian[K_ENDIAN_LEN];
@@ -103,11 +109,23 @@ namespace doori::api::Stream {
         ENDIAN mEndian;
         DATA_FORMAT mDataFormat;
 
-        Protocol mStreamProtocol;
+        StreamProtocol mStreamProtocol;
         Header& mHeader;
         Body& mBody;
 
     };
+
+    template<IHeaderInterface Header, IBodyInterface Body>
+    StreamTemplate<Header, Body>::StreamTemplate(Header &h, Body &b)
+    : mCoder(CODER::ASCII), mEndian(ENDIAN::LITTLE), mDataFormat(DATA_FORMAT::JSON), mHeader(h), mBody(b), Common::Error(0, true){
+    }
+
+    template<IHeaderInterface Header, IBodyInterface Body>
+    void StreamTemplate<Header, Body>::StreamProtocol::FromStream(string buffer) {
+        strncpy(mCoder, buffer.c_str(), K_CODER_LEN);
+        strncpy(mEndian, buffer.c_str()+K_CODER_LEN, K_ENDIAN_LEN);
+        strncpy(mDataFormat, buffer.c_str()+K_CODER_LEN +K_ENDIAN_LEN, K_DATAFORMAT_LEN);
+    }
 
     /**
      * ENUM -> string
@@ -120,16 +138,16 @@ namespace doori::api::Stream {
         ostringstream oss;
         switch (mDataFormat) {
             case DATA_FORMAT::SOLID:
-                oss << setw(K_DATAFORMAT_LEN) << "SOLID";
+                oss << setw(K_DATAFORMAT_LEN) << std::left << "SOLID";
                 break;
             case DATA_FORMAT::JSON:
-                oss << setw(K_DATAFORMAT_LEN) << "JSON";
+                oss << setw(K_DATAFORMAT_LEN) << std::left << "JSON";
                 break;
             case DATA_FORMAT::XML:
-                oss << setw(K_DATAFORMAT_LEN) << "XML";
+                oss << setw(K_DATAFORMAT_LEN) << std::left << "XML";
                 break;
             case DATA_FORMAT::CSV:
-                oss << setw(K_DATAFORMAT_LEN) << "CSV";
+                oss << setw(K_DATAFORMAT_LEN) << std::left << "CSV";
                 break;
         }
         return oss.str();
@@ -146,13 +164,13 @@ namespace doori::api::Stream {
         ostringstream oss;
         switch (mCoder) {
             case CODER::ASCII:
-                oss << setw(K_CODER_LEN) << "ASCII";
+                oss << setw(K_CODER_LEN) << std::left << "ASCII";
                 break;
             case CODER::UTF8:
-                oss << setw(K_CODER_LEN) << "UTF8";
+                oss << setw(K_CODER_LEN) << std::left << "UTF8";
                 break;
             case CODER::UTF16:
-                oss << setw(K_CODER_LEN) << "UTF16";
+                oss << setw(K_CODER_LEN) << std::left << "UTF16";
                 break;
         }
         return oss.str();
@@ -169,10 +187,10 @@ namespace doori::api::Stream {
         ostringstream oss;
         switch (mEndian) {
             case ENDIAN::BIG:
-                oss << setw(K_ENDIAN_LEN) << "BIG";
+                oss << setw(K_ENDIAN_LEN) << std::left << "BIG";
                 break;
             case ENDIAN::LITTLE:
-                oss << setw(K_ENDIAN_LEN) << "LITTLE";
+                oss << setw(K_ENDIAN_LEN) << std::left << "LITTLE";
                 break;
         }
         return oss.str();
@@ -187,12 +205,13 @@ namespace doori::api::Stream {
     template<IHeaderInterface Header, IBodyInterface Body>
     vector<char> StreamTemplate<Header, Body>::ToStream() {
 
-        long bytesLength = K_CODER_LEN + K_ENDIAN_LEN + K_DATAFORMAT_LEN + mHeader.GetLength() + mBody.GetLength();
+        // StreamTemplate 프로토콜, User Protocol[IHeader, IBody]
+        long bytesLength = K_STREAM_PROTOCOL_LEN + mHeader.GetLength() + mBody.GetLength();
 
         vector<char> stream{};
 
-        char acTemp[8];
-        sprintf(acTemp, "%08ld", bytesLength);
+        char acTemp[K_STREAM_UTIL_LEN];
+        snprintf(acTemp, K_STREAM_UTIL_LEN, "%0ld", bytesLength);
 
         // 길이값
         int i = 0;
@@ -225,6 +244,44 @@ namespace doori::api::Stream {
     }
 
     /**
+     * 수신된 데이터를 파싱합니다.
+     * @tparam Header IHeader인터페이스를 상속받은 객체형
+     * @tparam Body IBody인터페이스를 상속받은 객체형
+     * @param buffer 길이값이 정의된 buffer제외한 순수 데이터버퍼
+     */
+    template<IHeaderInterface Header, IBodyInterface Body>
+    void StreamTemplate<Header, Body>::FromStream(const string &buffer) {
+
+
+        string streamProtocolBuffer;
+        string userHeaderBuffer;
+        string userBodyBuffer;
+
+        //StreamTemplate 전용 Protocol를 파싱합니다.
+        streamProtocolBuffer.assign(buffer, 0, K_STREAM_PROTOCOL_LEN);
+        this->mStreamProtocol.FromStream(streamProtocolBuffer);
+
+        //Header 구조체를 파싱합니다.
+        userHeaderBuffer.assign(buffer, K_STREAM_PROTOCOL_LEN, mHeader.GetLength());
+        auto ret = this->mHeader.FromStream(userHeaderBuffer);
+        if(ret < 0) {
+            LoggingByClientError("fail to parsing User's Header ");
+            return;
+        }
+
+
+        //Body 구조체를 파싱합니다.
+        userBodyBuffer.assign(buffer, K_STREAM_PROTOCOL_LEN + mHeader.GetLength(),
+                              buffer.length() - K_STREAM_PROTOCOL_LEN + mHeader.GetLength());
+        ret = this->mBody.FromStream(userBodyBuffer);
+        if(ret < 0) {
+            LoggingByClientError("fail to parsing User's Body");
+            return;
+        }
+
+    }
+
+    /**
      * StreamTemplate 생성자
      * @tparam Header IHeader인터페이스를 상속받은 객체형
      * @tparam Body IBody인터페이스를 상속받은 객체형
@@ -248,7 +305,7 @@ namespace doori::api::Stream {
      * @return
      */
     template<IHeaderInterface Header, IBodyInterface Body>
-    StreamTemplate<Header, Body>::Protocol &StreamTemplate<Header, Body>::Protocol::operator=(const StreamTemplate::Protocol &rhs) {
+    StreamTemplate<Header, Body>::StreamProtocol &StreamTemplate<Header, Body>::StreamProtocol::operator=(const StreamTemplate::StreamProtocol &rhs) {
         if(this == &rhs)
             return *this;
         memcpy(this->mCoder, rhs.mCoder, sizeof(this->mCoder) );
@@ -265,7 +322,7 @@ namespace doori::api::Stream {
      * @param rhs
      */
     template<IHeaderInterface Header, IBodyInterface Body>
-    StreamTemplate<Header, Body>::Protocol::Protocol(const StreamTemplate::Protocol &rhs) {
+    StreamTemplate<Header, Body>::StreamProtocol::StreamProtocol(const StreamTemplate::StreamProtocol &rhs) {
         if(this == &rhs)
             return;
         memcpy(this->mCoder, rhs.mCoder, sizeof(this->mCoder) );

@@ -29,11 +29,15 @@ namespace doori::api::Tnsd {
     class Header : public Stream::IHeader {
 
     public:
-        long GetLength() const override;
+        constexpr long GetLength() const override;
 
         vector<char> ToStream() override;
 
         void SetProtocol(PROTOCOL protocol);
+
+        PROTOCOL GetProtocol();
+
+        int FromStream(string buffer) override;
 
     private:
 

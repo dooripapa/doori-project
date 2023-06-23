@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(doori_service)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(DOORI_API_LIBRARY_NAME doori)
 
@@ -20,12 +20,15 @@ link_libraries (${DOORI_API_LIBRARY_NAME})
 
 
 add_executable(tnsd
+        TnsDaemon/tnsd.h
         TnsDaemon/main.cpp
         TnsDaemon/tnsd.cpp
-        TnsDaemon/tnsd.h
         TnsDaemon/Handler/IProcedure.cpp
         TnsDaemon/Handler/IProcedure.h
-        TnsDaemon/Handler/Recv.h TnsDaemon/Handler/State.h TnsDaemon/Handler/State.cpp TnsDaemon/Handler/Recv.cpp)
+        TnsDaemon/Handler/Recv.h
+        TnsDaemon/Handler/State.h
+        TnsDaemon/Handler/State.cpp
+        TnsDaemon/Handler/Recv.cpp)
 
 add_executable(pub
         publisher/main.cpp

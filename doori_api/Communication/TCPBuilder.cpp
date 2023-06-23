@@ -12,7 +12,7 @@ namespace doori::api::Communication{
 
     }
 
-    unique_ptr<IIPCTopology> TCPBuilder::GetTopology() {
+    unique_ptr<IIPCTopologyNode> TCPBuilder::GetTopology() {
         return make_unique<Socket>( mEstablishSocket );
     }
 

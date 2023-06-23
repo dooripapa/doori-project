@@ -7,7 +7,7 @@
 
 #include "Common/Log.h"
 #include "Common/Error.h"
-#include "IIPCTopology.h"
+#include "IIPCTopologyNode.h"
 #include <sys/socket.h>
 #include <bits/socket.h>
 #include <netinet/in.h>
@@ -48,7 +48,7 @@ namespace doori::api::Communication {
         ,OFF_NAGLE      = 1 << 7      // Nagle 알고리즘을 비활성화하여 지연을 최소화합니다.
     };
 
-    class Socket : public IIPCTopology {
+    class Socket : public IIPCTopologyNode {
     public:
         Socket();
         Socket(int fd, SOCK_STATUS status);
@@ -74,12 +74,12 @@ namespace doori::api::Communication {
 
         [[nodiscard]] int GetFd() const;
 
-        long Send(const string& data);
+        long Send(const string& data) const ;
 
-        long Send(const char* data, uint16_t dataSize);
+        long Send(const char* data, uint16_t dataSize) const;
 
         template<int N>
-        long Send(char const(&data)[N]) {
+        long Send(char const(&data)[N]) const {
             auto ret = send(mFd, data, N-1, 0);
             if(ret == -1) {
                 LOG(ERROR, "send error" );
@@ -88,7 +88,7 @@ namespace doori::api::Communication {
             return ret;
         };
 
-        long Recv(string &container, uint32_t tilDataSize);
+        long Recv(string &container, uint32_t tilDataSize) const;
 
         int Close();
 

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <memory>
-#include "IIPCTopology.h"
+#include "IIPCTopologyNode.h"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ namespace doori::api::Communication{
 
     class IIPCBuilder {
     public:
-        virtual unique_ptr<IIPCTopology> GetTopology() = 0;
+        virtual unique_ptr<IIPCTopologyNode> GetTopology() = 0;
         virtual int Establish() = 0;
     };
 

@@ -12,7 +12,7 @@
 using namespace std;
 using namespace doori;
 
-TEST(StreamTemplate, Usage) {
+TEST(StreamTemplate, Usage_Sending) {
 
     Tnsd::Header header{};
     Tnsd::Body body{};
@@ -51,4 +51,20 @@ TEST(StreamTemplate, Usage) {
     }
     cout<< "] end 2" << endl;
 
+}
+TEST(StreamTemplate, Usage_Receiving) {
+    auto outStream = R"(ASCII   LITTLE  JSON    ALIVE           {"key":"881d6b416a5b83d7"})";
+
+    Tnsd::Header header{};
+    Tnsd::Body body{};
+
+    Stream::StreamTemplate< Tnsd::Header, Tnsd::Body > stream{ header, body};
+
+    stream.FromStream({outStream});
+    EXPECT_EQ(Tnsd::PROTOCOL::ALIVE, header.GetProtocol());
+
+    auto bodyStream = body.ToStream();
+
+    string compareString{begin(bodyStream), end(bodyStream)};
+    EXPECT_EQ(R"({"key":"881d6b416a5b83d7"})", compareString );
 }

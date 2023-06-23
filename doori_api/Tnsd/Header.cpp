@@ -6,7 +6,7 @@
 
 namespace doori::api::Tnsd {
 
-    long Header::GetLength() const {
+    constexpr long Header::GetLength() const {
         return 16;
     }
 
@@ -20,31 +20,31 @@ namespace doori::api::Tnsd {
 
         switch(protocol) {
             case PROTOCOL::INTERNAL_ERROR:
-                oss << setw(16) << "INTERNAL_ERROR";
+                oss << setw(16) << std::left << "INTERNAL_ERROR";
                 break;
             case PROTOCOL::NOTIFY:
-                oss << setw(16) << "NOTIFY";
+                oss << setw(16) << std::left << "NOTIFY";
                 break;
             case PROTOCOL::ANWSER:
-                oss << setw(16) << "ANWSER";
+                oss << setw(16) << std::left << "ANWSER";
                 break;
             case PROTOCOL::CHANGE:
-                oss << setw(16) << "CHANGE";
+                oss << setw(16) << std::left << "CHANGE";
                 break;
             case PROTOCOL::ALIVE:
-                oss << setw(16) << "ALIVE";
+                oss << setw(16) << std::left << "ALIVE";
                 break;
             case PROTOCOL::CLOSE:
-                oss << setw(16) << "CLOSE";
+                oss << setw(16) << std::left << "CLOSE";
                 break;
             case PROTOCOL::PUBLISH:
-                oss << setw(16) << "PUBLISH";
+                oss << setw(16) << std::left << "PUBLISH";
                 break;
             case PROTOCOL::REPORT:
-                oss << setw(16) << "REPORT";
+                oss << setw(16) << std::left << "REPORT";
                 break;
             default:
-                oss << setw(16) << "";
+                oss << setw(16) << std::left << "";
                 break;
         }
         return oss.str();
@@ -66,7 +66,7 @@ namespace doori::api::Tnsd {
         else if(protocol == "PUBLISH") {
             return PROTOCOL::PUBLISH;
         }
-        else if(protocol == "ALIVE") {
+        else if(protocol.compare(0, strlen("ALIVE"), "ALIVE") == 0) {
             return PROTOCOL::ALIVE;
         }
         else if(protocol == "REPORT") {
@@ -82,4 +82,19 @@ namespace doori::api::Tnsd {
         mTnsdProtocol = protocol;
 
     }
+
+    int Header::FromStream(string buffer) {
+
+        mTnsdProtocol = switchProtocolEnum(buffer);
+
+        if(PROTOCOL::INTERNAL_ERROR == mTnsdProtocol)
+            return -1;
+
+        return 0;
+    }
+
+    PROTOCOL Header::GetProtocol() {
+        return mTnsdProtocol;
+    }
+
 } // Tnsd

@@ -35,7 +35,7 @@
    - Branch : 데이터집합 작은 단위 추상객체
    - ILeafKey(Interface) : Branch 의 데이터('Leaf'이라는 추상화) 접근을 위한 Finder Key 추상객체
 4. Tnsd(dedicated)
-   - Protocol : Tnsd 영역의 Topologis Node간 통신프로토콜 정의한 추상객체
+   - StreamProtocol : Tnsd 영역의 Topologis Node간 통신프로토콜 정의한 추상객체
    - Topic : ILeafKey 인터페이스를 상속받은 실체객체
    - Header : 인터페이스 Stream::IHeader 상속받은 Tnsd 영역의 프로토콜 추상객체
    - Body : 인터페이스 Stream::IBody 상속받은 Tnsd 영역의 프로토콜 데이터부분 추상객체

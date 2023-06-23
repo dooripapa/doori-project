@@ -83,6 +83,9 @@ namespace doori::api::Tnsd {
          * @param report 정보성 데이터
          */
         void Report(Data::Json json);
+
+        int FromStream(string buffer) override;
+
     private:
         Data::Json mJson;
     };

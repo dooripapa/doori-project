@@ -41,7 +41,7 @@ set(HEADER_FILES
 		Communication/TCP.h
 		Communication/IIPCBuilder.h
 		Communication/TCPBuilder.h
-		Communication/IIPCTopology.h
+        Communication/IIPCTopologyNode.h
         )
 
 set(SRC_FILES

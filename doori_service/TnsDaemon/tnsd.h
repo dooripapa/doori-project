@@ -1,10 +1,16 @@
 #pragma once
+#include <thread>
+#include <unordered_map>
 #include "DataStructure/Tree.h"
 #include "DataStructure/Branch.h"
 #include "Process/Application.h"
+#include "Communication/TcpApi.h"
+#include "Communication/EpollApi.h"
+#include "Communication/Socket.h"
+#include "Stream/StreamTemplate.h"
 #include "Tnsd/NodeInfo.h"
-#include <thread>
-#include <unordered_map>
+#include "Tnsd/Header.h"
+#include "Tnsd/Body.h"
 
 using namespace doori;
 
@@ -26,13 +32,8 @@ namespace doori::service::Tnsd{
         auto Terminate() noexcept -> int override;
     private:
         auto walkTree() noexcept -> void;
-        auto walkBranches(Branch<Addr>&) noexcept -> void;
-        auto processMessage(int socket, Stream& stream) -> int;
-        auto notify_processing (Protocol& protocol, int) -> int;
-        auto alive_processing  (Protocol& protocol) -> int;
-        auto report_processing (Protocol& protocol) -> int;
-        auto list_processing   (Protocol& protocol) -> int;
-        auto change_Processing (const Topic& topic) -> void;
+        auto walkBranches(DataStructure::Branch<NodeInfo>&) noexcept -> void;
+        auto processMessage(Communication::Socket socket) -> int;
         DataStructure::Tree<NodeInfo> m_PubTree;
         DataStructure::Tree<NodeInfo> m_SubTree;
 

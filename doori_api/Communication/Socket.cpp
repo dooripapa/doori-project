@@ -36,14 +36,14 @@ namespace doori::api::Communication{
         this->mStatus = static_cast<SOCK_STATUS>(this->mStatus | status);
     }
 
-    long Socket::Send(const string &data) {
+    long Socket::Send(const string &data) const {
 
         LOG(DEBUG, "Send() stream:", data);
 
         return Send(data.c_str(), data.length());
     }
 
-    long Socket::Recv(string &container, uint32_t tilDataSize) {
+    long Socket::Recv(string &container, uint32_t tilDataSize) const {
 
         char acTemp[1024] = {0,};
 
@@ -64,7 +64,7 @@ namespace doori::api::Communication{
         return ret;
     }
 
-    long Socket::Send(const char *data, uint16_t dataSize) {
+    long Socket::Send(const char *data, uint16_t dataSize) const {
 
         char acTemp[1024] = {0,};
 

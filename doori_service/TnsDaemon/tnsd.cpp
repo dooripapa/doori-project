@@ -1,8 +1,9 @@
+#include <cassert>
 #include "tnsd.h"
 
 namespace doori::service::Tnsd{
 
-    Tnsd::Tnsd(const Dictionary& dictionary): mDic{dictionary} {
+    Tnsd::Tnsd(const Data::Dictionary& dictionary): mDic{dictionary} {
     }
 
     Tnsd::~Tnsd()
@@ -12,257 +13,117 @@ namespace doori::service::Tnsd{
     auto Tnsd::operator()() noexcept -> int
     {
         mDic.logging();
-        Data          data;
-        Addr          localAddr{mDic.Value(Dictionary::TOKEN_INFO::TNSD_IP), mDic.Value(Dictionary::TOKEN_INFO::TNSD_PORT)};
-        Endpoint      recvAt(localAddr);
-        Connection    conn;
-        conn.setFrom(recvAt);
 
-        EpollEvents  eventContainer;
-        eventContainer.setSize(100);
+        Communication::Socket socket{};
 
-        std::function<int(int,Stream&)> processMessageInstance(std::bind(&Tnsd::processMessage, this, std::placeholders::_1, std::placeholders::_2));
+        Communication::TcpApi tcpApi{socket};
 
-        Epoll epoll(processMessageInstance);
-        if (epoll.Init(conn) == -1)
+        tcpApi.InitEndpoint();
+        if(!tcpApi.Status())
         {
-            LOG(ERROR, "Epoll initConnection error");
+            LOG(ERROR, "fail to initialize Socket{}");
             return -1;
         }
 
-        while (true)
-        {
-            if (epoll.WaitForEvents(eventContainer, 1000 * 10))
-                LOG(DEBUG, "Event!");
-            else
-                LOG(DEBUG, "tnsd, timeout");
+        auto bindingIp = mDic.Value(Data::Dictionary::TOKEN_INFO::TNSD_IP);
+        auto bindingPort = mDic.Value(Data::Dictionary::TOKEN_INFO::TNSD_PORT);
 
-            for(auto it=eventContainer.cbegin();it!=eventContainer.cend();++it)
-            {
-                if (epoll.EqualListner((*it).getFd()))
-                {
-                    LOG(INFO, "from listener socket, add watcher");
-                    epoll.AddWatcherAsConn();
-                }
-                else
-                {
-                    LOG(INFO, "another socket action: ", (*it).getFd() );
-                    // MiddleSide::processMessage private member function이여서, instance없이
-                    // 바로 사용 불가능하다. instance 작업후 사용하도록 변경함
-                    auto iRet = epoll.ExecuteTask((*it).getFd());
-
-                    if( iRet == -2 ) //(*it).getFd() connection lost!
-                        for(auto& i:mMangedMetaAddresses)
-                            if ( i.second == (*it).getFd() ){
-                                mMangedMetaAddresses.erase( i.first );
-                                LOG(DEBUG, "Meta Address remove :", i.first);
-                                break;
-                            }
-                }
-            }
-        }
-    }
-
-///@brief 비정상처리시, 수신된 메시지를 그대로 송신에 보낸다.
-///@note 이 함수에서, processing 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\ ///      에러코드는 리턴값에 따라 처리하도록 한다.
-    auto Tnsd::processMessage(int socket, Stream& stream) -> int
-    {
-        auto ret=0;
-        Data data, responseData;
-        Stream responseStream;
-        Protocol protocol;
-
-        LOG(INFO, "Request Comment[", stream.toByteStream(),"]" );
-        if ( data.fromString( stream.getString() ) == -1 )
-        {
-            LOG(ERROR, "unserialize error, check formated" );
+        tcpApi.SetReuseOpt(bindingIp, bindingPort);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetReuseOpt");
             return -1;
         }
 
-        if (protocol.fromData(data)<0)
-        {
-            LOG(ERROR, "protocol Init error");
+        tcpApi.SetTimeoutOpt(5);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetTimeoutOpt");
             return -1;
         }
 
-        switch(protocol.MsgType())
-        {
-            case Protocol::TYPE::NOTIFY:
-                LOG(DEBUG, Protocol::NOTIFY_MSG);
-                ret = notify_processing(protocol, socket);
-                break;
-            case Protocol::TYPE::ALIVE:
-                LOG(DEBUG, Protocol::ALIVE_MSG);
-                ret = alive_processing(protocol);
-                break;
-            case Protocol::TYPE::REPORT:
-                LOG(DEBUG, Protocol::REPORT_MSG);
-                ret = report_processing(protocol);
-                break;
-            case Protocol::TYPE::LIST:
-                LOG(DEBUG, Protocol::LIST_MSG);
-                ret = list_processing(protocol);
-                break;
-            default:
-                ret = -1;
-                LOG(ERROR, Protocol::UNKOWN_MSG);
-        }
-        protocol.asResponser();
-        if(ret!=0)
-        {
-            LOG(ERROR, "protocol processing error");
-            protocol.MsgCode() = Protocol::STATUS_CODE::ERR;
-        } else{
-            LOG(DEBUG, "message processing completed");
-            protocol.MsgCode() = Protocol::STATUS_CODE::OK;
+        tcpApi.Bind(bindingIp, bindingPort);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to Bind");
+            return -1;
         }
 
-        responseStream.Init(protocol.toData());
-        LOG(DEBUG, "InitEndpoint FD: ", socket, ", Answer Comment[", responseStream.toByteStream(), "]" );
-        if (Connection::sendTo(socket, responseStream) < 0 ) {
-            LOG(ERROR, "sendTo fail");
+        tcpApi.Listen(10);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to Listen");
+            return -1;
+        }
+
+        auto listenSocket = tcpApi.GetSocket();
+
+        Communication::EpollApi epollApi{listenSocket };
+
+        epollApi.InitEpoll();
+        if(!epollApi.Status()) {
+            LOG(ERROR, "fail to InitEpoll()");
+            return -1;
+        }
+
+        int (*ProcessMessage)(Communication::Socket);
+
+        epollApi.RunningForeground(10, 10, ProcessMessage);
+
+    }
+
+    ///@brief 비정상처리시, 수신된 메시지를 그대로 송신에 보낸다.
+    ///@note 이 함수에서, processing 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\
+    ///에러코드는 리턴값에 따라 처리하도록 한다.
+    auto Tnsd::processMessage(Communication::Socket socket) -> int
+    {
+        string lengthBuffer;
+        string container;
+
+        //Tnsd StreamProtocol Header, Body
+        doori::api::Tnsd::Header tnsdHeader{};
+        doori::api::Tnsd::Body tnsdBody{};
+
+        //길이값 8자리를 파싱.
+        auto ret = socket.Recv(lengthBuffer, 8);
+        if(ret <= 0) {
+            LOG(ERROR, "fail to Recv for Length");
+            return -1;
+        }
+
+        auto utilLength = stoi(lengthBuffer, 0, 10);
+
+        //데이터를 끝까지 수신합니다.
+        ret = socket.Recv(container, utilLength);
+        if(ret <= 0) {
+            LOG(ERROR, "fail to Recv til size[", utilLength, "]");
+            return -1;
+        }
+
+        doori::api::Stream::StreamTemplate< doori::api::Tnsd::Header, doori::api::Tnsd::Body > streamTemplate{tnsdHeader, tnsdBody};
+
+        streamTemplate.FromStream(container);
+
+        switch(tnsdHeader.GetProtocol())
+        {
+            case api::Tnsd::PROTOCOL::NOTIFY:
+                break;
+            case api::Tnsd::PROTOCOL::ANWSER:
+                break;
+            case api::Tnsd::PROTOCOL::CHANGE:
+                break;
+            case api::Tnsd::PROTOCOL::ALIVE:
+                break;
+            case api::Tnsd::PROTOCOL::CLOSE:
+                break;
+            case api::Tnsd::PROTOCOL::PUBLISH:
+                break;
+            case api::Tnsd::PROTOCOL::REPORT:
+                break;
+            case api::Tnsd::PROTOCOL::INTERNAL_ERROR:
+            default:
+                LOG(DEBUG, "");
         }
 
         return 0;
     }
 
-
-///@brief Notify 수신후에, CHANGE 프로토콜을 만들어서, 해당 subscriber에게 송신하다.
-    auto Tnsd::notify_processing(Protocol& protocol, int socketfd ) -> int
-    {
-        Topic topic{};
-        Addr  leaf{};
-        Branch<Addr> branch;
-
-        topic          = protocol.TopicAccess();
-        string ip      =protocol.Ip();
-        string port    =protocol.Port();
-
-        LOG(DEBUG, "TopicAccess: ", topic.GetKeyName(), " ", "ip: ", ip, " ", "port: ", port);
-
-        leaf = Addr(ip, port);
-        switch(protocol.TreeAccess())
-        {
-            case Protocol::TREE::PUB:
-                if(!m_PubTree.AttachLeaf(topic, leaf)) {
-                    LOG(WARN, "Pub's Tree, Duplicated Leaf");
-                    protocol.MsgComment() = "duplicated Leaf";
-                } else
-                    protocol.MsgComment() = "register leaf";
-
-                /* CHANGE Protocol_backup Sending Subscribers is interesting that topic.*/
-                LOG(DEBUG, "CHANGE protocol send");
-                change_Processing(topic);
-                break;
-            case Protocol::TREE::SUB:
-                if(!m_SubTree.AttachLeaf(topic, leaf)) {
-                    LOG(WARN, "Sub's Tree, Duplicated Leaf");
-                    protocol.MsgComment() = "duplicated Leaf";
-                } else{
-                    protocol.MsgComment() = "register leaf";
-                    /* Register addressMetas, or not existing element accessed/written */
-                    mMangedMetaAddresses[ip+":"+port] = socketfd;
-                }
-                break;
-            default:
-                protocol.MsgComment() = "unknown Tree's Access-type";
-                return -1;
-        }
-        walkTree();
-        return 0;
-    }
-///@todo if, topic에 해당하는 branch가 아예 존재하지 않을 경우, 에러 처리해야 함.
-    auto Tnsd::alive_processing(Protocol& protocol) -> int
-    {
-        auto iRet = -1;
-        Addr addr(protocol.Ip(), protocol.Port());
-        Protocol::TREE treeType = protocol.TreeAccess();
-
-        switch(treeType)
-        {
-            case Protocol::TREE::PUB:
-                for(auto leaf: m_PubTree.getBranch(protocol.TopicAccess()).GetLeaves())
-                {
-                    if(leaf == addr) {
-                        iRet = 0;
-                        break;
-                    }
-                }
-                break;
-            case Protocol::TREE::SUB:
-                for(auto leaf: m_SubTree.getBranch(protocol.TopicAccess()).GetLeaves())
-                {
-                    if(leaf == addr) {
-                        iRet = 0;
-                        break;
-                    }
-                }
-                break;
-            default:
-                ;
-        }
-        protocol.MsgComment()=Protocol::OK_MSG;
-        return iRet;
-    }
-
-    auto Tnsd::report_processing(Protocol& protocol) -> int
-    {
-        protocol.MsgComment()=Protocol::OK_MSG;
-        return 0;
-    }
-
-    auto Tnsd::list_processing(Protocol& protocol) -> int
-    {
-        int ArrSumCnt = 0;
-        string ip;
-        string port;
-        Topic topic{};
-
-        topic.set(protocol.TopicAccess().GetKeyName());
-
-        switch(protocol.TreeAccess())
-        {
-            case Protocol::TREE::PUB:
-            {
-                auto& findPubBranch = m_PubTree.getBranch(topic);
-                ArrSumCnt = findPubBranch.GetLeaves().size();
-                for(auto it= findPubBranch.GetLeaves().cbegin(); it != findPubBranch.GetLeaves().cend(); ++it)
-                {
-                    ip = (*it).Ip();
-                    port = (*it).Port();
-                    LOG(INFO, "Leaf :: ",ip, " : ", port );
-                    protocol.appendSession(ip,port);
-                }
-            }
-                break;
-            case Protocol::TREE::SUB:
-            {
-                auto& findSubBranch = m_SubTree.getBranch(topic);
-                ArrSumCnt = findSubBranch.GetLeaves().size();
-                for(auto it= findSubBranch.GetLeaves().cbegin(); it != findSubBranch.GetLeaves().cend(); ++it)
-                {
-                    ip = (*it).Ip();
-                    port = (*it).Port();
-                    LOG(INFO, "Leaf :: ",ip, " : ", port );
-                    protocol.appendSession(ip,port);
-                }
-            }
-                break;
-            default:
-                protocol.MsgComment() = Protocol::FATAL_ERR_MSG;
-                return -1;
-        }
-        protocol.completeSession();
-
-        if(ArrSumCnt == 0)
-            protocol.MsgComment()="list it Nothing";
-        else
-            protocol.MsgComment()=Protocol::OK_MSG;
-
-        return 0;
-    }
-
-///@brief debugging
     auto Tnsd::walkTree() noexcept -> void
     {
         LOG(DEBUG, "Pub Tree --------");
@@ -279,8 +140,7 @@ namespace doori::service::Tnsd{
         LOG(DEBUG, "Sub Tree ---END-----");
     }
 
-///@brief debugging
-    auto Tnsd::walkBranches(Branch< Addr>& branch) noexcept -> void
+    auto Tnsd::walkBranches(DataStructure::Branch< api::Tnsd::NodeInfo >& branch) noexcept -> void
     {
         LOG(DEBUG, "TopicAccess ---- : ", branch.GetName());
         for(auto& m: branch.GetLinkBranches())
@@ -288,7 +148,7 @@ namespace doori::service::Tnsd{
             walkBranches(m);
             for(auto& i : m.GetLeaves())
             {
-                LOG(DEBUG, i.Ip(), " : ", i.Port() );
+                LOG(DEBUG, i.GetIp(), " : ", i.GetPort() );
             }
         }
     }
@@ -308,17 +168,17 @@ namespace doori::service::Tnsd{
     }
 
     auto Tnsd::LogFile() noexcept -> std::string {
-        if(!mDic.Value(Dictionary::TOKEN_INFO::LOG_NAME).empty()
-           && !mDic.Value(Dictionary::TOKEN_INFO::LOG_PATH).empty() )
+        if(!mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_NAME).empty()
+           && !mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_PATH).empty() )
         {
-            return (mDic.Value(Dictionary::TOKEN_INFO::LOG_PATH) + mDic.Value(Dictionary::TOKEN_INFO::LOG_NAME));
+            return (mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_PATH) + mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_NAME));
         } else
             return Application::LogFile();
     }
 
-    auto Tnsd::LogLevel() noexcept -> Log::LEVEL {
-        if(!mDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
-            return Log::convertToLevel(mDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
+    auto Tnsd::LogLevel() noexcept -> Common::Log::LEVEL {
+        if(!mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
+            return Common::Log::convertToLevel(mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_LEVEL));
 
         return Application::LogLevel();
     }
@@ -327,51 +187,6 @@ namespace doori::service::Tnsd{
     auto Tnsd::Terminate() noexcept -> int {
         LOG(INFO, "MiddleSide is terminated");
         return 0;
-    }
-
-///@brief Notify protocol 요청이 들어옴. 해당 Topic을 관심있는 Sub에게 Change가 되었다는 알려줌
-///@todo doori_connection::sendTo(), loop error 처리를 어떻게 할 것인가 고민할덧.
-    auto Tnsd::change_Processing(const Topic &topic) -> void{
-        string      strTopic;
-        Topic depTopic;
-        Stream    responseStream;
-        Protocol  protocol;
-        for(auto i=0;i< topic.GetDepth(); ++i)
-        {
-            if(i>0) {
-                strTopic += ".";
-                strTopic += topic.GetDepthKey(i);
-            } else
-                strTopic = topic.GetDepthKey(i);
-
-            depTopic.set(strTopic);
-            auto branch = m_SubTree.getBranch( depTopic );
-
-            for( const Addr& leaf : branch.GetLeaves() ) {
-                // 이렇게 operator[] 호출되면, insert가 되면서, element 초기화되면서, 0을 리턴.
-                //auto sockfd = mMangedMetaAddresses[leaf.Ip()+":"+leaf.Port()];
-
-                LOG(DEBUG, "Change protocol send Address :", leaf.Ip(), ":", leaf.Port() );
-                auto got = mMangedMetaAddresses.find(leaf.Ip()+":"+leaf.Port());
-                if(got==mMangedMetaAddresses.end())
-                {
-                    LOG(DEBUG, "Not find in Managed MetaAddresses");
-                    for(const auto& i:mMangedMetaAddresses)
-                        LOG(DEBUG, "Change protocol :: ",i.first,":" ,i.second);
-                }
-                else
-                {
-                    auto sockFd = got->second;
-                    protocol.asSender();
-                    protocol.asChange( Protocol::TREE::PUB, depTopic );
-                    responseStream.Init(protocol.toData());
-                    LOG(DEBUG, "SubSide[", sockFd,"]","<<-- ::" , responseStream.toByteStream(), "]" );
-                    if (Connection::sendTo(sockFd, responseStream) < 0 ) {
-                        LOG(ERROR, "fail to send CHANGE protocol fd[", sockFd, "]");
-                    }
-                }
-            }
-        }
     }
 }
 
