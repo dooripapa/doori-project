@@ -100,9 +100,23 @@ namespace doori::service::Tnsd{
 
         streamTemplate.FromStream(container);
 
+        auto json = tnsdBody.GetJson();
+
+        odeInfo(Topic topic, SIDE side, string ip, string port);
+        auto topic = json["topic"].ToString();
+        auto side = json["side"].ToString();
+        auto ip = json["ip"].ToString();
+        auto port = json["port"].ToString();
+
+        Topic topic1;
+        topic1.
+        NodeInfo nodeInfo{ topic,side,ip,port };
+
         switch(tnsdHeader.GetProtocol())
         {
             case api::Tnsd::PROTOCOL::NOTIFY:
+                nodeInfo.Unserialize(tnsdBody.);
+                notify();
                 break;
             case api::Tnsd::PROTOCOL::ANWSER:
                 break;
@@ -152,8 +166,7 @@ namespace doori::service::Tnsd{
             }
         }
     }
-///@todo make_unique 적절히 사용했는지 체크해야 함.\
-/// make_unique<MiddleSide>(*this) *this 복사가 맞는지 확인할것.
+
     auto Tnsd::clone() const noexcept -> std::unique_ptr<Application> {
         return std::make_unique<Tnsd>(*this);
     }
@@ -183,9 +196,24 @@ namespace doori::service::Tnsd{
         return Application::LogLevel();
     }
 
-///@todo MiddleSide 종료시 이 함수 호촐되어야 한다. 현재 호출되지 않고 있음.
     auto Tnsd::Terminate() noexcept -> int {
         LOG(INFO, "MiddleSide is terminated");
+        return 0;
+    }
+
+    int Tnsd::notify(SIDE side, Topic topic) {
+
+        switch(side)
+        {
+            // Pub이면, 해당 Topic에 관심이 있는 개발 Sub에게 Change 송신
+            case SIDE::PUB:
+                // 우선 등록
+                m_PubTree.attachLeaf(topic, )
+                break;
+            case SIDE::SUB:
+                break;
+        }
+
         return 0;
     }
 }

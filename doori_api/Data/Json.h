@@ -12,6 +12,8 @@
 #include <vector>
 #include <unordered_map>
 
+using namespace std;
+
 namespace doori::api::Data{
     class Json;
 
@@ -26,30 +28,31 @@ namespace doori::api::Data{
             ARRAY,
             JSON
         }TYPE;
-        /**
-         * 기본생성자
-         */
+
         Json_value();
-        /**
-         * 복사생성자
-         * @param rhs
-         */
         Json_value(const Json_value &rhs);
-        /**
-         * 이동생성자
-         * @param rhs
-         */
         Json_value(Json_value &&rhs);
+        Json_value(const Json& value);
+        Json_value(Json&& value);
+
+        auto operator=(const Json_value& rhs) noexcept -> Json_value&;
+        auto operator=(const Json& value) noexcept -> Json_value&;
+
+        auto operator=(Json_value&& rhs) noexcept -> Json_value&;
+        auto operator=(Json &&value) noexcept -> Json_value&;
+
         /**
          * int32 초기화
          * @param value int32
          */
         Json_value(int32_t value);
+
         /**
          * string 초기화
-         * @param value
+         * @param value string
          */
         Json_value(std::string value);
+
         /**
          * C스타일 리터럴 문자열로 초기화
          * @tparam N
@@ -57,26 +60,19 @@ namespace doori::api::Data{
          */
         template <int N>
         Json_value(char const(&value)[N]){mStr=std::string(value),TYPE=STRING;};
+
         /**
          * float 초기화
          * @param value float
          */
         Json_value(float value);
+
         /**
          * bool 초기화
          * @param value bool
          */
         Json_value(bool value);
-        /**
-         * Json 으로 초기화(복사)
-         * @param value const Json&
-         */
-        Json_value(const Json& value);
-        /**
-         * Json 으로 초기화(이동)
-         * @param value Json&&
-         */
-        Json_value(Json&& value);
+
         /**
          * Json_value 형식으로 초기화(복사)
          * @param rhs
@@ -97,6 +93,7 @@ namespace doori::api::Data{
          * @param value
          */
         auto set(std::string value) -> void;
+
         /**
          * C스타일 리터럴 문자열로 초기화
          * @tparam N
@@ -105,55 +102,39 @@ namespace doori::api::Data{
          */
         template <int N>
         auto set(char const(&value)[N]){mStr=std::string(value),TYPE=STRING;};
+
         /**
          * float 초기화
          * @param value  float
          */
         auto set(float value) -> void;
+
         /**
          * bool 초기화
          * @param value bool
          */
         auto set(bool value) -> void;
+
         /**
          * Json 초기화
          * @param value Json
          */
         auto set(Json value) -> void;
-        /**
-         * 문자열로 출력
-         * @return std::string
-         */
-        [[nodiscard]] auto toString() const -> std::string;
+
         /**
          * 배열형식으로 추가하기
          * @param value const Json_value&
          */
         auto append(const Json_value & value) -> void;
-        /**
-         * 복사 대입연산자
-         * @param rhs const Json_value&
-         * @return 자기자신의 참조값
-         */
-        auto operator=(const Json_value& rhs) noexcept -> Json_value&;
-        /**
-         * 이동 대입연산자
-         * @param rhs  Json_value&&
-         * @return 자기자신의 참조값
-         */
-        auto operator=(Json_value&& rhs) noexcept -> Json_value&;
-        /**
-         * 복사 대입연산자
-         * @param value const Json&
-         * @return 자기자신의 참조값
-         */
-        auto operator=(const Json& value) noexcept -> Json_value&;
-        /**
-         * 이동 대입연산자
-         * @param value Json&&
-         * @return 자기자신의 참조값
-         */
-        auto operator=(Json &&value) noexcept -> Json_value&;
+
+        bool IntoInt(int32_t& container) const;
+        bool IntoFloat(float& container) const;
+        bool IntoBool(bool& container) const;
+        bool IntoString(string& container) const;
+        bool IntoJson(Json& container) const;
+        bool IntoArray(vector<Json_value>& container) const;
+        [[nodiscard]] auto ToString() const -> std::string;
+
         /**
          * Json array형식의 문자열을 Json_value의 Array형식으로 변경
          * "Json, {Json, ... }, Json, ..."
@@ -162,6 +143,12 @@ namespace doori::api::Data{
          */
         auto parserJsonArray(const std::string& str) -> bool;
     private:
+        friend Json;
+        /**
+         * Json_value 타입에 상관없이 문자열 출력
+         * @return std::string
+         */
+        [[nodiscard]] auto toString() const -> std::string;
         auto copyFrom(const Json_value &rhs) noexcept -> void;
         int32_t     mInt;
         std::string mStr;
@@ -173,22 +160,13 @@ namespace doori::api::Data{
 
     class Json {
     public:
-        /**
-         * 기본생성자
-         */
+
         Json();
-        /**
-         * 이동생성자
-         * @param rhs
-         */
         Json(Json&& rhs);
-        /**
-         * 복사생성자
-         * @param rhs
-         */
         Json(const Json& rhs);
+
         /**
-         * Json 하나를 구성한다. Key : Json_value
+         * Json 구성한다. Key : Json_value
          * @param jsonKey const char*
          * @param jsonValue const Json_value&
          */

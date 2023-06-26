@@ -722,4 +722,109 @@ namespace doori::api::Data{
         TYPE=Json_value::ARRAY;
         return true;
     }
+
+    bool Json_value::IntoInt(int32_t &container) const {
+        switch (TYPE) {
+            case INT32S:
+                container = mInt;
+                return true;
+            default:
+                container = 0;
+                return false;
+        }
+    }
+
+    bool Json_value::IntoFloat(float &container) const {
+        switch (TYPE) {
+            case FLOAT:
+                container = mFloat;
+                return true;
+            default:
+                container = 0;
+                return false;
+        }
+    }
+
+    bool Json_value::IntoBool(bool &container) const {
+        switch (TYPE) {
+            case BOOL:
+                container = mBool;
+                return true;
+            default:
+                container = 0;
+                return false;
+        }
+    }
+
+    bool Json_value::IntoString(string &container) const {
+        switch (TYPE) {
+            case STRING:
+                container = mStr;
+                return true;
+            default:
+                container = "";
+                return false;
+        }
+    }
+
+    bool Json_value::IntoJson(Json &container) const {
+        container.clear();
+        switch (TYPE) {
+            case JSON:
+                container = *mJson;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    bool Json_value::IntoArray(vector<Json_value> &container) const {
+        container.clear();
+        switch (TYPE) {
+            case JSON:
+                container = mArray;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    auto Json_value::ToString() const -> std::string {
+        std::ostringstream jsonV(std::ostringstream::ate);
+        switch(TYPE)
+        {
+            case Json_value::BOOL:
+                return(mBool?"true":"false");
+            case Json_value::FLOAT:
+                jsonV<<mFloat;
+                return jsonV.str();
+            case Json_value::INT32S:
+                jsonV<<mInt;
+                return jsonV.str();
+            case Json_value::STRING:
+                jsonV<<"\"";
+                for(auto&i:mStr) {
+                    if (i=='"')
+                        jsonV<<"\\";
+                    jsonV<<i;
+                }
+                jsonV<<"\"";
+                return jsonV.str();
+            case Json_value::ARRAY:
+                jsonV<<"[";
+                for(auto it=mArray.begin();it!=mArray.end();++it) {
+                    jsonV<<it->toString();
+                    if( it+1 == mArray.end() );
+                    else jsonV<<",";
+                }
+                jsonV<<"]";
+                return jsonV.str();
+            case Json_value::JSON:
+                return mJson->serialize();
+            case Json_value::NIL:
+            default:
+                abort();
+        }
+    }
+
 }

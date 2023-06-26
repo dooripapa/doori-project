@@ -86,6 +86,8 @@ namespace doori::api::Tnsd {
 
         int FromStream(string buffer) override;
 
+        [[nodiscard]] const Data::Json& GetJson() const;
+
     private:
         Data::Json mJson;
     };

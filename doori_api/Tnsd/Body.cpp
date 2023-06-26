@@ -94,4 +94,8 @@ namespace doori::api::Tnsd {
 
         return 0;
     }
+
+    const Data::Json &Body::GetJson() const {
+        return mJson;
+    }
 } // Tnsd

@@ -9,6 +9,7 @@
 #include "IHeader.h"
 #include "IBody.h"
 #include <vector>
+#include <string>
 #include "Common/Error.h"
 #include "Common/Util.h"
 #include "Communication/IIPCTopologyNode.h"
@@ -42,9 +43,10 @@ namespace doori::api::Stream {
      * @tparam T
      */
     template<typename T>
-    concept IHeaderInterface = requires(T obj) {
+    concept IHeaderInterface = requires(T obj, string str) {
         { obj.GetLength() } -> std::same_as<long>;
         { obj.ToStream() } -> std::same_as<vector<char>>;
+        { obj.FromStream(str) } -> std::same_as<int>;
     };
     /**
      * 컨셉을 정의 합니다. StreamTemplate<Header, Body>에서
@@ -52,9 +54,10 @@ namespace doori::api::Stream {
      * @tparam T
      */
     template<typename T>
-    concept IBodyInterface = requires(T obj) {
+    concept IBodyInterface = requires(T obj, string str) {
         { obj.GetLength() } -> std::same_as<long>;
         { obj.ToStream() } -> std::same_as<vector<char>>;
+        { obj.FromStream(str) } -> std::same_as<int>;
     };
 
     /**
@@ -252,7 +255,6 @@ namespace doori::api::Stream {
     template<IHeaderInterface Header, IBodyInterface Body>
     void StreamTemplate<Header, Body>::FromStream(const string &buffer) {
 
-
         string streamProtocolBuffer;
         string userHeaderBuffer;
         string userBodyBuffer;
@@ -268,7 +270,6 @@ namespace doori::api::Stream {
             LoggingByClientError("fail to parsing User's Header ");
             return;
         }
-
 
         //Body 구조체를 파싱합니다.
         userBodyBuffer.assign(buffer, K_STREAM_PROTOCOL_LEN + mHeader.GetLength(),

@@ -10,30 +10,46 @@ using namespace doori::api;
 
 TEST(Json_value, ConstructTest)
 {
+    int intContainer;
     Data::Json_value value{1111};
-    EXPECT_EQ("1111", value.toString());
+    value.IntoInt(intContainer);
+    EXPECT_EQ(1111, intContainer);
+    EXPECT_EQ("1111", value.ToString());
 
+    string strContainer;
     Data::Json_value value1{"const char*"};
-    EXPECT_EQ("\"const char*\"", value1.toString());
+    value1.IntoString(strContainer);
+    EXPECT_EQ("const char*", strContainer);
+    EXPECT_EQ("\"const char*\"", value1.ToString());
 
     std::string str{"std::string"};
     Data::Json_value value2{str};
-    EXPECT_EQ("\"std::string\"", value2.toString());
+    value2.IntoString(strContainer);
+    EXPECT_EQ("std::string", strContainer);
+    EXPECT_EQ("\"std::string\"", value2.ToString());
 
-    Data::Json_value value3{"const char*"};
-    EXPECT_EQ("\"const char*\"", value3.toString());
 
+    float floatContainer;
     Data::Json_value value4{0.1234f};
-    EXPECT_EQ("0.1234", value4.toString());
+    value4.IntoFloat(floatContainer);
+    EXPECT_FLOAT_EQ(0.1234, floatContainer);
+    EXPECT_EQ("0.1234", value4.ToString());
 
-    Data::Json_value value5{Data::Json_value{2222}};
-    EXPECT_EQ("2222", value5.toString());
+    Data::Json_value value5{ Data::Json_value{2222} };
+    value5.IntoInt(intContainer);
+    EXPECT_EQ(2222, intContainer);
+    EXPECT_EQ("2222", value5.ToString());
 
     Data::Json_value value6{ value };
-    EXPECT_EQ("1111", value6.toString());
+    value6.IntoInt(intContainer);
+    EXPECT_EQ(1111, intContainer);
+    EXPECT_EQ("1111", value6.ToString());
 
+    bool boolContainer;
     Data::Json_value value7{ true };
-    EXPECT_EQ("true", value7.toString());
+    value7.IntoBool(boolContainer);
+    EXPECT_EQ(true, boolContainer);
+    EXPECT_EQ("true", value7.ToString());
 }
 
 TEST(Json_value, ArrayTest)
@@ -45,7 +61,7 @@ TEST(Json_value, ArrayTest)
     value.append({true});
 
     auto result=R"([1111,"name",0.2,true])";
-    EXPECT_EQ(result,value.toString() );
+    EXPECT_EQ(result,value.ToString() );
 
     Data::Json json;
     json["1"] = 1234;
@@ -53,36 +69,36 @@ TEST(Json_value, ArrayTest)
 
     value.append(json);
     auto result2=R"([1111,"name",0.2,true,{"1":1234,"2":"name"}])";
-    EXPECT_EQ(result2,value.toString() );
+    EXPECT_EQ(result2,value.ToString() );
 }
 
 TEST(Json_value, SetTest)
 {
     Data::Json_value   value;
     value.set(1111);
-    EXPECT_EQ("1111", value.toString());
+    EXPECT_EQ("1111", value.ToString());
 
     value.set("const char*");
-    EXPECT_EQ("\"const char*\"", value.toString());
+    EXPECT_EQ("\"const char*\"", value.ToString());
 
     value.set("const\"name");
-    EXPECT_EQ("\"const\\\"name\"", value.toString());
+    EXPECT_EQ("\"const\\\"name\"", value.ToString());
 
     std::string str{"std::string"};
     value.set(str);
-    EXPECT_EQ("\"std::string\"", value.toString());
+    EXPECT_EQ("\"std::string\"", value.ToString());
 
     value.set(0.1234f);
-    EXPECT_EQ("0.1234", value.toString());
+    EXPECT_EQ("0.1234", value.ToString());
 
     value.set(Data::Json_value{2222});
-    EXPECT_EQ("2222", value.toString());
+    EXPECT_EQ("2222", value.ToString());
 
     value.set( value );
-    EXPECT_EQ("2222", value.toString());
+    EXPECT_EQ("2222", value.ToString());
 
     value.set(true);
-    EXPECT_EQ("true", value.toString());
+    EXPECT_EQ("true", value.ToString());
 }
 
 TEST(Json, OperatorTest)
@@ -139,8 +155,21 @@ TEST(Json, ParserTest)
     auto literalString2=R"({"1":",:1","2":{"2":"2"}})";
     Data::Json json;
     json.unserialize(literalString);
-
     EXPECT_EQ(literalString2, json.serialize());
+
+    json.clear();
+    literalString2=R"({"1":",:1","2":{"2":2}})";
+    json.unserialize(literalString2);
+    auto value = json["1"];
+    EXPECT_EQ(value.TYPE, value.STRING);
+
+    auto value1 = json["2"];
+    EXPECT_EQ(value1.TYPE, value1.JSON);
+    EXPECT_EQ(value1.ToString(), R"({"2":2})");
+    Data::Json another;
+    another.unserialize(value1.ToString());
+
+    EXPECT_EQ("2", another["2"].ToString());
 
     json.clear();
     auto l1=R"({"name":{"2":"2"},"1":11111})";
