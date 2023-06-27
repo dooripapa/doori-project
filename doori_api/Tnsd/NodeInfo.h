@@ -27,6 +27,7 @@ namespace doori::api::Tnsd {
     /**
      * Tnsd node정보를 정의하는 객체입니다.
      */
+    template<typename T>
     class NodeInfo : public Common::Error{
     public:
         NodeInfo() = default;
@@ -35,18 +36,7 @@ namespace doori::api::Tnsd {
         NodeInfo& operator=(const NodeInfo& rhs) = default;
         NodeInfo& operator=(NodeInfo&& rhs) = default;
 
-        /**
-         * Bytes 스트림으로 출력한다.
-         * @return
-         */
-        vector<char> Serialize();
-
-        /**
-         * Bytes 스트림을 입력받아서, NodeInfo로 변환한다.
-         * @param stream
-         * @return
-         */
-        static NodeInfo Unserialize(vector<char> stream);
+        bool operator==(const NodeInfo &rhs);
 
         string GetTopic() const;
 
@@ -56,20 +46,18 @@ namespace doori::api::Tnsd {
 
         string GetPort() const;
 
-    private:
-        struct _solid{
-            char topic[64];
-            char side[8];
-            in_addr_t ip;
-            in_port_t port;
-        };
+        T GetIPC() const;
 
+        void SetIPC(T t);
+
+    private:
         string switchSideString() const;
 
         Topic mTopic;
         SIDE mSide;
         string mIp;
         string mPort;
+        T mIPC;
     };
 
 } // Tnsd

@@ -51,15 +51,7 @@ namespace doori::service::Tnsd{
 
         std::unordered_map<std::string, int> mMangedMetaAddresses;
 
-        /**
-         * 내부처리
-         * Pub이면, 해당 Topic에 관심이 있는 개발 Sub에게 Change 송신
-         * Sub이면, Publisher list와 Token 정보를 보냄.
-         * @param side Publisher, Subscriber
-         * @param topic
-         * @return
-         */
-        int notify(SIDE side, Topic topic);
+        long processNotifyProtocol(Data::Json json, Communication::Socket socket);
     };
 };
 

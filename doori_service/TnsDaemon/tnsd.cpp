@@ -102,21 +102,10 @@ namespace doori::service::Tnsd{
 
         auto json = tnsdBody.GetJson();
 
-        odeInfo(Topic topic, SIDE side, string ip, string port);
-        auto strTopic = json["topic"].ToString();
-        auto strSide = json["side"].ToString();
-        auto strIp = json["ip"].ToString();
-        auto strPort = json["port"].ToString();
-
-        Topic topic{strTopic};
-        SIDE side{strSide};
-        NodeInfo nodeInfo{ topic,side,ip,port };
-
         switch(tnsdHeader.GetProtocol())
         {
             case api::Tnsd::PROTOCOL::NOTIFY:
-                nodeInfo.Unserialize(tnsdBody.);
-                notify();
+                ret=processNotifyProtocol(json, socket);
                 break;
             case api::Tnsd::PROTOCOL::ANWSER:
                 break;
@@ -133,6 +122,11 @@ namespace doori::service::Tnsd{
             case api::Tnsd::PROTOCOL::INTERNAL_ERROR:
             default:
                 LOG(DEBUG, "");
+        }
+
+        if(ret) {
+            LOG(ERROR, "error[", ret, "]");
+            return -1;
         }
 
         return 0;
@@ -201,14 +195,68 @@ namespace doori::service::Tnsd{
         return 0;
     }
 
-    int Tnsd::notify(SIDE side, Topic topic) {
 
-        switch(side)
+    /**
+     * Pub이면, 해당 Topic에 관심이 있는 개발 Sub에게 Change 송신
+     * Sub이면, Publisher list와 Token 정보를 보냄.
+     * @param side Publisher, Subscriber
+     * @param topic
+     * @return
+     */
+    long Tnsd::processNotifyProtocol(Data::Json json, Communication::Socket socket) {
+
+        SIDE side;
+
+        auto strTopic = json["topic"].ToString();
+        auto strSide = json["side"].ToString();
+        auto strIp = json["ip"].ToString();
+        auto strPort = json["port"].ToString();
+
+        Topic topic{strTopic};
+
+        if( strSide ==  "PUB") {
+            side = SIDE::PUB;
+        }
+        else if ( strSide ==  "SUB"){
+            side = SIDE::SUB;
+        }
+        else
         {
-            // Pub이면, 해당 Topic에 관심이 있는 개발 Sub에게 Change 송신
+            LOG(ERROR, "Notify");
+            return -1;
+        }
+
+        NodeInfo<Communication::Socket> nodeInfo{topic, side, strIp, strPort};
+
+        nodeInfo.SetIPC(socket);
+
+        bool canAttach = false;
+        //등록
+        switch (side) {
             case SIDE::PUB:
-                // 우선 등록
-                m_PubTree.attachLeaf(topic, )
+                canAttach = m_PubTree.attachLeaf(topic, nodeInfo);
+                break;
+            case SIDE::SUB:
+                canAttach = m_SubTree.attachLeaf(topic, nodeInfo);
+                break;
+        }
+
+        if(!canAttach) {
+            LOG(ERROR, "fail to attach ILeaf");
+            return -1;
+        }
+
+        // PUB이면 Sub Tree에서 해당되는 Leaf에게 Change를 보낸다.
+        switch (side) {
+            case SIDE::PUB:
+                auto branch = m_SubTree.getBranch(topic);
+                if(branch.GetLeaves().size() > 0)
+                {
+                    for(auto leaf :branch.GetLeaves())
+                    {
+
+                    }
+                }
                 break;
             case SIDE::SUB:
                 break;

@@ -56,7 +56,7 @@ TEST(TcpApi, Usage) {
     ASSERT_TRUE(tcpApi.Status()) << "Accept() error" ;
 
     auto ret = tcpApi.GetSocket();
-    ASSERT_FALSE(ret.GetFd() == fd ) << "Accept() fd:"<< fd << "  Socket fd:" << ret.GetFd();
+    ASSERT_FALSE(ret.GetFd() == fd ) << "Accept() mFd:"<< fd << "  Socket mFd:" << ret.GetFd();
 
 
     Socket acceptSocket{fd, SOCK_STATUS::ESTABLISED};

@@ -6,91 +6,24 @@
 #include "NodeInfo.h"
 
 namespace doori::api::Tnsd {
-    NodeInfo::NodeInfo(Topic topic, SIDE side, string ip, string port) : mTopic{topic}, mSide{side}, mIp{ip}, mPort{port}{
+
+    template<typename T>
+    NodeInfo<T>::NodeInfo(Topic topic, SIDE side, string ip, string port) : mTopic{topic}, mSide{side}, mIp{ip}, mPort{port}, mFd(0){
 
     }
 
-    vector<char> NodeInfo::Serialize() {
-
-        struct _solid solidStruct;
-
-        memset(&solidStruct, 0x20, sizeof(struct _solid));
-
-        switch (mSide) {
-            case SIDE::PUB:
-                strncpy(solidStruct.side, "PUB", 3);
-                break;
-            case SIDE::SUB:
-                strncpy(solidStruct.side, "SUB", 3);
-                break;
-        }
-
-        char *endPtr;
-        solidStruct.ip = inet_addr(mIp.c_str());
-        solidStruct.port = std::strtoul( mPort.c_str(), &endPtr, 10 );
-        if (endPtr == mIp.c_str() || *endPtr != '\0') {
-            LoggingByClientError("Error: Invalid input string");
-            return vector<char>{};
-        }
-
-        if (solidStruct.port > UINT16_MAX) {
-            LoggingByClientError("Error: Value exceeds the maximum range of in_port_t");
-            return vector<char>{};
-        }
-
-        auto length = mTopic.GetKey().length();
-        length = length > 64 ?64 : length;
-
-        strncpy(solidStruct.topic, mTopic.GetKey().c_str(), length);
-
-        this->AsSuccess();
-
-        return Common::ToBytes(solidStruct);
-    }
-
-    NodeInfo NodeInfo::Unserialize(vector<char> stream) {
-
-        struct _solid solidStruct{};
-        struct in_addr addr{};
-
-        NodeInfo nodeInfo{};
-
-        memcpy(&solidStruct, stream.data(), sizeof(struct _solid));
-
-        //Topic
-        nodeInfo.mTopic.set({solidStruct.topic});
-
-        //SIDE
-        if(strncmp(solidStruct.side, "PUB", 3) == 0) {
-            nodeInfo.mSide = SIDE::PUB;
-        }
-        else if(strncmp(solidStruct.side, "SUB", 3) == 0) {
-            nodeInfo.mSide = SIDE::SUB;
-        }
-        else {
-            return nodeInfo;
-        }
-
-        //IP
-        addr.s_addr = solidStruct.ip;
-        auto cIp = inet_ntoa(addr);
-        nodeInfo.mIp = string(cIp);
-
-        //PORT
-        nodeInfo.mPort = to_string(solidStruct.port);
-
-        return nodeInfo;
-    }
-
-    string NodeInfo::GetTopic() const {
+    template<typename T>
+    string NodeInfo<T>::GetTopic() const {
         return mTopic.GetKey();
     }
 
-    string NodeInfo::GetSide() const {
+    template<typename T>
+    string NodeInfo<T>::GetSide() const {
         return switchSideString();
     }
 
-    string NodeInfo::switchSideString() const {
+    template<typename T>
+    string NodeInfo<T>::switchSideString() const {
         switch (mSide) {
             case SIDE::PUB:
                 return string{"PUB"};
@@ -100,11 +33,32 @@ namespace doori::api::Tnsd {
         return {"ERR"};
     }
 
-    string NodeInfo::GetIp() const {
+    template<typename T>
+    string NodeInfo<T>::GetIp() const {
         return mIp;
     }
 
-    string NodeInfo::GetPort() const {
+    template<typename T>
+    string NodeInfo<T>::GetPort() const {
         return mPort;
+    }
+
+    template<typename T>
+    bool NodeInfo<T>::operator==(const NodeInfo &rhs) {
+        if(this == &rhs)
+            return true;
+
+        return this->mTopic == rhs.mTopic && this->mSide == rhs.mSide && this->mIp == rhs.mIp &&
+               this->mPort == rhs.mPort;
+    }
+
+    template<typename T>
+    T NodeInfo<T>::GetIPC() const {
+        return mIPC;
+    }
+
+    template<typename T>
+    void NodeInfo<T>::SetIPC(T ipc) {
+        this->mIPC = ipc;
     }
 } // Tnsd
