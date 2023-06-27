@@ -103,13 +103,13 @@ namespace doori::service::Tnsd{
         auto json = tnsdBody.GetJson();
 
         odeInfo(Topic topic, SIDE side, string ip, string port);
-        auto topic = json["topic"].ToString();
-        auto side = json["side"].ToString();
-        auto ip = json["ip"].ToString();
-        auto port = json["port"].ToString();
+        auto strTopic = json["topic"].ToString();
+        auto strSide = json["side"].ToString();
+        auto strIp = json["ip"].ToString();
+        auto strPort = json["port"].ToString();
 
-        Topic topic1;
-        topic1.
+        Topic topic{strTopic};
+        SIDE side{strSide};
         NodeInfo nodeInfo{ topic,side,ip,port };
 
         switch(tnsdHeader.GetProtocol())
