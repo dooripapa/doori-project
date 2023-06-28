@@ -71,7 +71,7 @@ set(SRC_FILES
 		Stream/IHeader.h
 		Stream/IBody.h
 		Stream/IStream.h
-		Tnsd/Body.cpp
+		Tnsd/Body.hpp
 		Tnsd/Body.h
 		Tnsd/Header.cpp
 		Tnsd/Header.h

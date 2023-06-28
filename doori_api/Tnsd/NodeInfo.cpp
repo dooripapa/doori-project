@@ -8,29 +8,8 @@
 namespace doori::api::Tnsd {
 
     template<typename T>
-    NodeInfo<T>::NodeInfo(Topic topic, SIDE side, string ip, string port) : mTopic{topic}, mSide{side}, mIp{ip}, mPort{port}, mFd(0){
+    NodeInfo<T>::NodeInfo(Topic topic, SIDE side, string ip, string port) : mIp{ip}, mPort{port}, mIPC(0){
 
-    }
-
-    template<typename T>
-    string NodeInfo<T>::GetTopic() const {
-        return mTopic.GetKey();
-    }
-
-    template<typename T>
-    string NodeInfo<T>::GetSide() const {
-        return switchSideString();
-    }
-
-    template<typename T>
-    string NodeInfo<T>::switchSideString() const {
-        switch (mSide) {
-            case SIDE::PUB:
-                return string{"PUB"};
-            case SIDE::SUB:
-                return string{"SUB"};
-        }
-        return {"ERR"};
     }
 
     template<typename T>
@@ -53,12 +32,12 @@ namespace doori::api::Tnsd {
     }
 
     template<typename T>
-    T NodeInfo<T>::GetIPC() const {
+    T NodeInfo<T>::GetIPCTopoloyNode() const {
         return mIPC;
     }
 
     template<typename T>
-    void NodeInfo<T>::SetIPC(T ipc) {
+    void NodeInfo<T>::SetIPCTopologyNode(T ipc) {
         this->mIPC = ipc;
     }
 } // Tnsd

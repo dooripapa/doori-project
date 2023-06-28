@@ -22,13 +22,8 @@ link_libraries (${DOORI_API_LIBRARY_NAME})
 add_executable(tnsd
         TnsDaemon/tnsd.h
         TnsDaemon/main.cpp
-        TnsDaemon/tnsd.cpp
-        TnsDaemon/Handler/IProcedure.cpp
-        TnsDaemon/Handler/IProcedure.h
-        TnsDaemon/Handler/Recv.h
-        TnsDaemon/Handler/State.h
-        TnsDaemon/Handler/State.cpp
-        TnsDaemon/Handler/Recv.cpp)
+        TnsDaemon/tnsd.hpp
+        )
 
 add_executable(pub
         publisher/main.cpp

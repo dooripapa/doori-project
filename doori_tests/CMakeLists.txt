@@ -35,7 +35,7 @@ set(TEST_FILES
 		../doori_api/Tnsd/Header.h
 		../doori_api/Tnsd/Header.cpp
 		../doori_api/Tnsd/Body.h
-		../doori_api/Tnsd/Body.cpp
+        ../doori_api/Tnsd/Body.hpp
 		../doori_api/Tnsd/NodeInfo.h
 		../doori_api/Tnsd/NodeInfo.cpp
 		../doori_api/Tnsd/Topic.h

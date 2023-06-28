@@ -14,6 +14,7 @@ using namespace doori;
 
 namespace doori::api::Tnsd {
 
+    template<typename T>
     class Body : public Stream::IBody {
     public:
 
@@ -33,7 +34,7 @@ namespace doori::api::Tnsd {
          * @param tnsdNode Tnsd의 node
          * @param myNodeInfo  subscriber 또는 publisher의 Tnsd에게 자신의 정보를 알립니다.
          */
-        void Notify(const NodeInfo& myNodeInfo);
+        void Notify(string topic, string side, string ip, string port);
 
         /**
          * Anwser protocol
@@ -41,34 +42,28 @@ namespace doori::api::Tnsd {
          * @param hash16  정보의 유일성을 체크할 수 있는 해쉬값
          */
         void Anwser(string hash16);
-
-        /**
-         * Tnsd -> Subscriber
-         * @param subNode subscriber node
-         * @param publisherList 특정 Topic에 publish하는 publisher의 집합
-         */
-        void Anwser(vector<NodeInfo> publisherList);
+        void Anwser(string hash16, string info);
 
         /**
          * Change protocol
          * @param iipcTopology subscriber Topology
          * @param publisher 특정 Topic에 publish하는 a publisher의 정보
          */
-        void Change(NodeInfo publisher);
+        void Change(string topic, string side, string ip, string port);
 
         /**
          * Close protocol
          * @param iipcTopology  Tnsd의 Topology
          * @param myNodeInfo 자신의 정보
          */
-        void Close(NodeInfo myNodeInfo);
+        void Close(string topic, string side, string ip, string port);
 
         /**
          * Publish protocol
          * @param iipcTopology subsriber Topology
          * @param json publish하기 위한 데이터
          */
-        void Publish(Data::Json json);
+        void Publish(T data);
 
         /**
          * Alive protocol
@@ -82,15 +77,18 @@ namespace doori::api::Tnsd {
          * @param iipcTopology Admin Topology
          * @param report 정보성 데이터
          */
-        void Report(Data::Json json);
+        void Report(T json);
 
         int FromStream(string buffer) override;
 
-        [[nodiscard]] const Data::Json& GetJson() const;
+        [[nodiscard]] const T& GetBody() const;
 
     private:
-        Data::Json mJson;
+        T mData;
     };
+
 } // Tnsd
+
+#include "Body.hpp"
 
 #endif //DOORI_PROJECT_BODY_H

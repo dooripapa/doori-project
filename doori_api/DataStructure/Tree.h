@@ -26,7 +26,7 @@ namespace doori::api::DataStructure{
      */
     enum class INSERT{FORCE, CHECK};
 
-    template <typename T> //T:Leaf object
+    template <typename T>
     class Tree
     {
     public:

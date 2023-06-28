@@ -16,6 +16,7 @@ using namespace doori;
 
 namespace doori::service::Tnsd{
 
+    template<typename T_IPCTopologyNode>
     class Tnsd : public Process::Application
     {
     public:
@@ -42,10 +43,10 @@ namespace doori::service::Tnsd{
         auto Terminate() noexcept -> int override;
     private:
         auto walkTree() noexcept -> void;
-        auto walkBranches(DataStructure::Branch<NodeInfo>&) noexcept -> void;
+        auto walkBranches(DataStructure::Branch< NodeInfo<T_IPCTopologyNode> >&) noexcept -> void;
         auto processMessage(Communication::Socket socket) -> int;
-        DataStructure::Tree<NodeInfo> m_PubTree;
-        DataStructure::Tree<NodeInfo> m_SubTree;
+        DataStructure::Tree< NodeInfo<T_IPCTopologyNode> > m_PubTree;
+        DataStructure::Tree< NodeInfo<T_IPCTopologyNode> > m_SubTree;
 
         Data::Dictionary mDic;
 
@@ -55,4 +56,6 @@ namespace doori::service::Tnsd{
     };
 };
 
+
+#include "tnsd.hpp"
 

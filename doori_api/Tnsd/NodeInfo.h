@@ -38,23 +38,17 @@ namespace doori::api::Tnsd {
 
         bool operator==(const NodeInfo &rhs);
 
-        string GetTopic() const;
-
-        string GetSide() const;
-
         string GetIp() const;
 
         string GetPort() const;
 
-        T GetIPC() const;
+        T GetIPCTopoloyNode() const;
 
-        void SetIPC(T t);
+        void SetIPCTopologyNode(T t);
 
     private:
         string switchSideString() const;
 
-        Topic mTopic;
-        SIDE mSide;
         string mIp;
         string mPort;
         T mIPC;

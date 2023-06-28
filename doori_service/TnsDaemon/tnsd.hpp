@@ -3,14 +3,17 @@
 
 namespace doori::service::Tnsd{
 
-    Tnsd::Tnsd(const Data::Dictionary& dictionary): mDic{dictionary} {
+    template<typename T_IPCTopologyNode>
+    Tnsd<T_IPCTopologyNode>::Tnsd(const Data::Dictionary& dictionary): mDic{dictionary} {
     }
 
-    Tnsd::~Tnsd()
+    template<typename T_IPCTopologyNode>
+    Tnsd<T_IPCTopologyNode>::~Tnsd()
     {
     }
 
-    auto Tnsd::operator()() noexcept -> int
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::operator()() noexcept -> int
     {
         mDic.logging();
 
@@ -71,14 +74,15 @@ namespace doori::service::Tnsd{
     ///@brief 비정상처리시, 수신된 메시지를 그대로 송신에 보낸다.
     ///@note 이 함수에서, processing 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\
     ///에러코드는 리턴값에 따라 처리하도록 한다.
-    auto Tnsd::processMessage(Communication::Socket socket) -> int
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::processMessage(Communication::Socket socket) -> int
     {
         string lengthBuffer;
         string container;
 
         //Tnsd StreamProtocol Header, Body
-        doori::api::Tnsd::Header tnsdHeader{};
-        doori::api::Tnsd::Body tnsdBody{};
+        api::Tnsd::Header tnsdHeader{};
+        api::Tnsd::Body<Data::Json> tnsdBody{};
 
         //길이값 8자리를 파싱.
         auto ret = socket.Recv(lengthBuffer, 8);
@@ -96,11 +100,11 @@ namespace doori::service::Tnsd{
             return -1;
         }
 
-        doori::api::Stream::StreamTemplate< doori::api::Tnsd::Header, doori::api::Tnsd::Body > streamTemplate{tnsdHeader, tnsdBody};
+        api::Stream::StreamTemplate< api::Tnsd::Header, api::Tnsd::Body<Data::Json> > streamTemplate{tnsdHeader, tnsdBody};
 
         streamTemplate.FromStream(container);
 
-        auto json = tnsdBody.GetJson();
+        auto json = tnsdBody.GetBody();
 
         switch(tnsdHeader.GetProtocol())
         {
@@ -132,7 +136,8 @@ namespace doori::service::Tnsd{
         return 0;
     }
 
-    auto Tnsd::walkTree() noexcept -> void
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::walkTree() noexcept -> void
     {
         LOG(DEBUG, "Pub Tree --------");
         for(auto& branch:m_PubTree.RootBranches())
@@ -148,7 +153,8 @@ namespace doori::service::Tnsd{
         LOG(DEBUG, "Sub Tree ---END-----");
     }
 
-    auto Tnsd::walkBranches(DataStructure::Branch< api::Tnsd::NodeInfo >& branch) noexcept -> void
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::walkBranches(DataStructure::Branch< api::Tnsd::NodeInfo<T_IPCTopologyNode> >& branch) noexcept -> void
     {
         LOG(DEBUG, "TopicAccess ---- : ", branch.GetName());
         for(auto& m: branch.GetLinkBranches())
@@ -161,20 +167,24 @@ namespace doori::service::Tnsd{
         }
     }
 
-    auto Tnsd::clone() const noexcept -> std::unique_ptr<Application> {
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::clone() const noexcept -> std::unique_ptr<Application> {
         return std::make_unique<Tnsd>(*this);
     }
 
 
-    auto Tnsd::ProcessName() noexcept -> std::string{
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::ProcessName() noexcept -> std::string{
         return string("tnsd");
     }
 
-    auto Tnsd::Daemonize() noexcept -> bool {
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::Daemonize() noexcept -> bool {
         return false;
     }
 
-    auto Tnsd::LogFile() noexcept -> std::string {
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::LogFile() noexcept -> std::string {
         if(!mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_NAME).empty()
            && !mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_PATH).empty() )
         {
@@ -183,14 +193,16 @@ namespace doori::service::Tnsd{
             return Application::LogFile();
     }
 
-    auto Tnsd::LogLevel() noexcept -> Common::Log::LEVEL {
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::LogLevel() noexcept -> Common::Log::LEVEL {
         if(!mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
             return Common::Log::convertToLevel(mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_LEVEL));
 
         return Application::LogLevel();
     }
 
-    auto Tnsd::Terminate() noexcept -> int {
+    template<typename T_IPCTopologyNode>
+    auto Tnsd<T_IPCTopologyNode>::Terminate() noexcept -> int {
         LOG(INFO, "MiddleSide is terminated");
         return 0;
     }
@@ -203,7 +215,8 @@ namespace doori::service::Tnsd{
      * @param topic
      * @return
      */
-    long Tnsd::processNotifyProtocol(Data::Json json, Communication::Socket socket) {
+    template<typename T_IPCTopologyNode>
+    long Tnsd<T_IPCTopologyNode>::processNotifyProtocol(Data::Json json, Communication::Socket socket) {
 
         SIDE side;
 
@@ -226,11 +239,12 @@ namespace doori::service::Tnsd{
             return -1;
         }
 
-        NodeInfo<Communication::Socket> nodeInfo{topic, side, strIp, strPort};
+        NodeInfo<T_IPCTopologyNode> nodeInfo{topic, side, strIp, strPort};
 
-        nodeInfo.SetIPC(socket);
+        nodeInfo.SetIPCTopologyNode(socket);
 
-        bool canAttach = false;
+        bool canAttach = true;
+
         //등록
         switch (side) {
             case SIDE::PUB:
@@ -246,19 +260,66 @@ namespace doori::service::Tnsd{
             return -1;
         }
 
-        // PUB이면 Sub Tree에서 해당되는 Leaf에게 Change를 보낸다.
+        api::Tnsd::Header tnsdHeader{};
+        api::Tnsd::Body<Data::Json> tnsdBody{};
+
+        api::Stream::StreamTemplate< api::Tnsd::Header, api::Tnsd::Body<Data::Json> > streamTemplate{tnsdHeader, tnsdBody};
+
+        // PUB이면 Sub Tree에서 해당되는 Leaf에게 Change Protocol 를 보낸다.
+        // SUB이면 Pub Tree로부터 접속정보수집 후. Answer Protocol를 보낸다. Subscriber들은 각자 연결 요청을 한다.
+        api::DataStructure::Branch< NodeInfo<T_IPCTopologyNode> > branch;
+
+        api::Data::Json publisher;
+        api::Data::Json_value jsonArray;
+
         switch (side) {
             case SIDE::PUB:
-                auto branch = m_SubTree.getBranch(topic);
-                if(branch.GetLeaves().size() > 0)
-                {
-                    for(auto leaf :branch.GetLeaves())
-                    {
+                branch = m_SubTree.getBranch(topic);
+                if(branch.GetLeaves().size() > 0) {
 
+                    for(const auto& leaf :branch.GetLeaves()) {
+                        auto subNode = leaf.GetIPCToplogyNode();
+
+                        tnsdBody.Change(topic, "PUB", leaf.GetIP(), leaf.GetPort());
+
+                        auto changeProtocolBytes = streamTemplate.ToStream();
+
+                        subNode.Send({begin(changeProtocolBytes), end(changeProtocolBytes)});
                     }
                 }
                 break;
             case SIDE::SUB:
+                branch = m_PubTree.getBranch(topic);
+                if(branch.GetLeaves().size() > 0) {
+
+                    for(const auto& leaf :branch.GetLeaves()) {
+                        publisher["ip"] = leaf.GetIP();
+                        publisher["port"] = leaf.GetIP();
+
+                        // [
+                        //  {"ip":"...", "port":"..."}
+                        // ,{"ip":"...", "port":"..."}
+                        // ,{"ip":"...", "port":"..."}
+                        // ...
+                        // ]
+                        jsonArray.append(publisher);
+                    }
+
+                    auto publisherArrayListInfo = jsonArray.ToString();
+
+                    std::size_t hashValue = std::hash<std::string>{}(publisherArrayListInfo);
+
+                    std::ostringstream oss;
+
+                    oss << std::hex << hashValue;
+
+                    tnsdBody.Anwser(oss.str(), publisherArrayListInfo);
+
+                    auto answerProtocolBytes = streamTemplate.ToStream();
+
+                    socket.Send({begin(answerProtocolBytes), end(answerProtocolBytes)});
+
+                }
                 break;
         }
 

@@ -17,7 +17,7 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    service::Tnsd::Tnsd tnsd(dictionary);
+    service::Tnsd::Tnsd< Communication::Socket > tnsd(dictionary);
 
     Process::Runner runner( std::move(tnsd) );
 
