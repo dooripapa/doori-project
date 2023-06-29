@@ -24,7 +24,7 @@ namespace doori::api::Tnsd {
 
         /**
          * 처리중 에러가 발생되었습니다. 해당 에러를 보냅니다.
-         * @param node subscriber 또는 publisher node
+         * @param node Subscriber 또는 Publisher node
          * @param error 에러내용
          */
         void InternalError(string error);
@@ -32,13 +32,13 @@ namespace doori::api::Tnsd {
         /**
          * Notify protocol
          * @param tnsdNode Tnsd의 node
-         * @param myNodeInfo  subscriber 또는 publisher의 Tnsd에게 자신의 정보를 알립니다.
+         * @param myNodeInfo  Subscriber 또는 publisher의 Tnsd에게 자신의 정보를 알립니다.
          */
         void Notify(string topic, string side, string ip, string port);
 
         /**
          * Anwser protocol
-         * @param node  subscriber 또는 publisher Topology
+         * @param node  Subscriber 또는 Publisher Topology
          * @param hash16  정보의 유일성을 체크할 수 있는 해쉬값
          */
         void Anwser(string hash16);
@@ -46,7 +46,7 @@ namespace doori::api::Tnsd {
 
         /**
          * Change protocol
-         * @param iipcTopology subscriber Topology
+         * @param iipcTopology Subscriber Topology
          * @param publisher 특정 Topic에 publish하는 a publisher의 정보
          */
         void Change(string topic, string side, string ip, string port);
@@ -67,7 +67,7 @@ namespace doori::api::Tnsd {
 
         /**
          * Alive protocol
-         * @param iipcTopology subscriber 또는 publisher Topology
+         * @param iipcTopology Subscriber 또는 Publisher Topology
          * @param hash16  정보의 유일성을 체크할 수 있는 해쉬값
          */
         void Alive(string hash16);

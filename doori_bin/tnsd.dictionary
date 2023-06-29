@@ -1,0 +1,8 @@
+#Tnsd Address
+$|1,S=127.0.0.1|$
+$|2,S=8888|$
+
+#Log Info
+$|11,S=tnsd.log|$
+$|12,S=/home/jaeseong/|$
+$|13,S=INFO|$

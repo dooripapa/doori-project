@@ -26,15 +26,15 @@ add_executable(tnsd
         )
 
 add_executable(pub
-        publisher/main.cpp
-        publisher/Pub.cpp
-        publisher/Pub.h
+        Publisher/main.cpp
+        Publisher/Pub.cpp
+        Publisher/Pub.h
         )
 
 add_executable(sub
-        subscription/main.cpp
-        subscription/Sub.cpp
-        subscription/Sub.h
+        Subscriber/main.cpp
+        Subscriber/Sub.cpp
+        Subscriber/Sub.h
         )
 
 install(TARGETS tnsd pub sub DESTINATION "${DOORI_PROJECT}/bin")

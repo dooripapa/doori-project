@@ -87,8 +87,8 @@ namespace doori::api::Data{
         return true;
     }
 
-    auto Dictionary::Value(const TOKEN_INFO id) noexcept -> const string& {
-        return mWords[id];
+    auto Dictionary::Value(uint index) noexcept -> const string& {
+        return mWords[index];
     }
 
 
@@ -116,19 +116,8 @@ namespace doori::api::Data{
         return *this;
     }
 
-    ///@brief pretty print
-    auto Dictionary::logging() noexcept -> void {
-        LOG(INFO, "TNSD_INFO::VER:", mWords[TOKEN_INFO::VERSION] );
-        LOG(INFO, "TNSD_INFO::TNSD_IP:", mWords[TOKEN_INFO::TNSD_IP] );
-        LOG(INFO, "TNSD_INFO::TNSD_PORT:", mWords[TOKEN_INFO::TNSD_PORT] );
-        LOG(INFO, "TNSD_INFO::BINDING_IP_FOR_TNSD:", mWords[TOKEN_INFO::BINDING_IP_FOR_TNSD] );
-        LOG(INFO, "TNSD_INFO::BINDING_PORT_FOR_TNSD:", mWords[TOKEN_INFO::BINDING_PORT_FOR_TNSD] );
-        LOG(INFO, "TNSD_INFO::BINDING_IP_FOR_MULTISESSION:", mWords[TOKEN_INFO::BINDING_IP_FOR_MULTISESSION] );
-        LOG(INFO, "TNSD_INFO::BINDING_PORT_FOR_MULTISESSION:", mWords[TOKEN_INFO::BINDING_PORT_FOR_MULTISESSION] );
-        LOG(INFO, "TNSD_INFO::LOG_NAME:", mWords[TOKEN_INFO::LOG_NAME] );
-        LOG(INFO, "TNSD_INFO::LOG_PATH:", mWords[TOKEN_INFO::LOG_PATH] );
-        LOG(INFO, "TNSD_INFO::LOG_LEVEL:", mWords[TOKEN_INFO::LOG_LEVEL] );
-        LOG(INFO, "TNSD_INFO::MY_TOPIC:", mWords[TOKEN_INFO::MY_TOPIC] );
+    auto Dictionary::logging(string content, uint index) noexcept -> void {
+        LOG(INFO, content , " : [", mWords[index],"]" );
     }
 
 }//namespace doori

@@ -1,7 +1,7 @@
 #include <cassert>
 #include "tnsd.h"
 
-namespace doori::service::Tnsd{
+namespace doori::service::TnsDaemon{
 
     template<typename T_IPCTopologyNode>
     Tnsd<T_IPCTopologyNode>::Tnsd(const Data::Dictionary& dictionary): mDic{dictionary} {
@@ -15,8 +15,6 @@ namespace doori::service::Tnsd{
     template<typename T_IPCTopologyNode>
     auto Tnsd<T_IPCTopologyNode>::operator()() noexcept -> int
     {
-        mDic.logging();
-
         Communication::Socket socket{};
 
         Communication::TcpApi tcpApi{socket};
@@ -28,8 +26,8 @@ namespace doori::service::Tnsd{
             return -1;
         }
 
-        auto bindingIp = mDic.Value(Data::Dictionary::TOKEN_INFO::TNSD_IP);
-        auto bindingPort = mDic.Value(Data::Dictionary::TOKEN_INFO::TNSD_PORT);
+        auto bindingIp = mDic.Value(Tnsd::TNSD_IP);
+        auto bindingPort = mDic.Value(Tnsd::TNSD_PORT);
 
         tcpApi.SetReuseOpt(bindingIp, bindingPort);
         if(!tcpApi.Status()) {
@@ -185,18 +183,18 @@ namespace doori::service::Tnsd{
 
     template<typename T_IPCTopologyNode>
     auto Tnsd<T_IPCTopologyNode>::LogFile() noexcept -> std::string {
-        if(!mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_NAME).empty()
-           && !mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_PATH).empty() )
+        if(!mDic.Value(Tnsd::LOG_NAME).empty()
+           && !mDic.Value(Tnsd::LOG_PATH).empty() )
         {
-            return (mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_PATH) + mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_NAME));
+            return (mDic.Value(Tnsd::LOG_PATH) + mDic.Value(Tnsd::LOG_NAME));
         } else
             return Application::LogFile();
     }
 
     template<typename T_IPCTopologyNode>
     auto Tnsd<T_IPCTopologyNode>::LogLevel() noexcept -> Common::Log::LEVEL {
-        if(!mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
-            return Common::Log::convertToLevel(mDic.Value(Data::Dictionary::TOKEN_INFO::LOG_LEVEL));
+        if(!mDic.Value(Tnsd::LOG_LEVEL).empty() )
+            return Common::Log::convertToLevel(mDic.Value(Tnsd::LOG_LEVEL));
 
         return Application::LogLevel();
     }

@@ -17,7 +17,13 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    service::Tnsd::Tnsd< Communication::Socket > tnsd(dictionary);
+    dictionary.logging("Tnsd IP", service::TnsDaemon::Tnsd<Communication::Socket>::TNSD_IP);
+    dictionary.logging("Tnsd Port", service::TnsDaemon::Tnsd<Communication::Socket>::TNSD_PORT);
+    dictionary.logging("Log Name", service::TnsDaemon::Tnsd<Communication::Socket>::LOG_NAME);
+    dictionary.logging("Log Path", service::TnsDaemon::Tnsd<Communication::Socket>::LOG_PATH);
+    dictionary.logging("Log Level", service::TnsDaemon::Tnsd<Communication::Socket>::LOG_LEVEL);
+
+    service::TnsDaemon::Tnsd< Communication::Socket > tnsd(dictionary);
 
     Process::Runner runner( std::move(tnsd) );
 

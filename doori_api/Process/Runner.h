@@ -17,7 +17,10 @@ class Runner {
 public:
     Runner();
     ~Runner();
-    Runner(const Runner& rhs);
+    Runner(const Runner& rhs) = delete;
+    Runner(Runner&& rhs);
+    Runner& operator=(const Runner& rhs) = delete;
+    Runner& operator=(Runner&& rhs);
     explicit Runner(Application&& app );
     auto run() -> void;
 private:

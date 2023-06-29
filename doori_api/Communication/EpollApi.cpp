@@ -150,4 +150,7 @@ namespace doori::api::Communication{
         return 0;
     }
 
+    void EpollApi::RunningBackground(int backlogEventNum, int timeout, int (*delegation)(Socket)) {
+    }
+
 } // Communication

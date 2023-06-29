@@ -14,7 +14,7 @@
 
 using namespace doori;
 
-namespace doori::service::Tnsd{
+namespace doori::service::TnsDaemon{
 
     template<typename T_IPCTopologyNode>
     class Tnsd : public Process::Application
@@ -41,6 +41,14 @@ namespace doori::service::Tnsd{
          * @return
          */
         auto Terminate() noexcept -> int override;
+
+        enum {
+            TNSD_IP = 1
+            ,TNSD_PORT = 2
+            ,LOG_NAME = 11
+            ,LOG_PATH = 12
+            ,LOG_LEVEL = 13
+        };
     private:
         auto walkTree() noexcept -> void;
         auto walkBranches(DataStructure::Branch< NodeInfo<T_IPCTopologyNode> >&) noexcept -> void;
