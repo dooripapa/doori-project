@@ -58,6 +58,12 @@ namespace doori::api::Communication {
          * 그 외는 음수는 에러처리가 된다. 내부에서 자동으로 소켓을 닫고, 할당된 메모리를 해제한다.
          */
         void RunningBackground(int backlogEventNum, int timeout, int(*delegation)(Socket));
+
+        /**
+         * RunningBackground() 함수를 호출 후에, 백그라운드가 종료될 때까지 기다린다.
+         */
+        void JoinBackground();
+
     private:
         int AddFdInEpollList();
 
@@ -65,6 +71,8 @@ namespace doori::api::Communication {
 
         int    mEpollRoot;
         Socket & mListenSocket;
+
+        thread mBackground;
     };
 
 } // Communication

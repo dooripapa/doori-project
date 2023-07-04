@@ -92,5 +92,9 @@ TEST(Epoll, Usage) {
      * 바로, 접속시도를 막기위해서*/
     std::thread t(RunClient);
 
-    epollApi.RunningForeground(10, 10, ProcessMessage);
+    epollApi.RunningBackground(10, 10, ProcessMessage);
+
+    LOG(INFO,"Background processing...");
+
+    epollApi.JoinBackground();
 }
