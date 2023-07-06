@@ -79,7 +79,7 @@ set(SRC_FILES
 		Tnsd/NodeInfo.h
 		Tnsd/Header.cpp
 		Tnsd/Header.h
-		)
+        Data/Yaml.cpp Data/Yaml.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

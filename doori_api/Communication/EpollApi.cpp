@@ -3,6 +3,7 @@
 //
 
 #include <memory>
+#include <thread>
 #include "EpollApi.h"
 #include "TcpApi.h"
 
@@ -151,6 +152,23 @@ namespace doori::api::Communication{
     }
 
     void EpollApi::RunningBackground(int backlogEventNum, int timeout, int (*delegation)(Socket)) {
+
+        std::function< void(int, int, int (*)(Socket) ) > threadFunction = [this](int backlogEventNum, int timeout, int (*delegation)(Socket)) {
+            this->RunningForeground(backlogEventNum, timeout, delegation);
+        };
+
+        //쓰레드 초기화합니다.
+        thread t{ threadFunction, backlogEventNum, timeout, delegation };
+
+        //관리가능하도록 멤버변수로 저장함.
+        mBackground.swap(t);
+
+    }
+
+    void EpollApi::JoinBackground() {
+
+        mBackground.join();
+
     }
 
 } // Communication
