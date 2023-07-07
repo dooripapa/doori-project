@@ -7,6 +7,7 @@
 
 #include "Common/Error.h"
 #include "Socket.h"
+#include <thread>
 
 namespace doori::api::Communication {
 
@@ -64,10 +65,13 @@ namespace doori::api::Communication {
          */
         void JoinBackground();
 
-    private:
-        int AddFdInEpollList();
 
-        static int CallEpollApiProcess( int fd, int(*userFunc)(Socket socket)  );
+        int AddFdIntoEpollList(Socket socket);
+
+    private:
+        int addFdInEpollList();
+
+        static int callEpollApiProcess(int fd, int(*userFunc)(Socket socket)  );
 
         int    mEpollRoot;
         Socket & mListenSocket;

@@ -80,8 +80,8 @@ namespace doori::api::Communication{
                 if( structP->mFd == mListenSocket.GetFd() ) {
                     LOG(DEBUG, "Listen,  Process to add Epoll List ");
 
-                    if( AddFdInEpollList() == -1 ) {
-                        LoggingByClientError("AddFdInEpollList error");
+                    if(addFdInEpollList() == -1 ) {
+                        LoggingByClientError("addFdInEpollList error");
                         throw system_error();
                     }
                 }
@@ -104,7 +104,7 @@ namespace doori::api::Communication{
         }//while
     }
 
-    int EpollApi::CallEpollApiProcess( int fd, int(*userFunc)(Socket socket) ) {
+    int EpollApi::callEpollApiProcess(int fd, int(*userFunc)(Socket socket) ) {
 
         Socket socket = Socket{fd, static_cast<enum SOCK_STATUS>(SOCK_STATUS::INIT | SOCK_STATUS::ESTABLISED) };
 
@@ -123,7 +123,7 @@ namespace doori::api::Communication{
         return 0;
     }
 
-    int EpollApi::AddFdInEpollList( ) {
+    int EpollApi::addFdInEpollList( ) {
 
         TcpApi tcpApi{mListenSocket};
 
@@ -138,7 +138,7 @@ namespace doori::api::Communication{
         auto p = malloc(sizeof(struct EpollData));
         auto structP = (struct EpollData*)p;
         structP->mFd = requestToConnect;
-        structP->mCallEpollApiProcess = EpollApi::CallEpollApiProcess;
+        structP->mCallEpollApiProcess = EpollApi::callEpollApiProcess;
 
         struct epoll_event ev{};
         ev.events = EPOLLIN;
@@ -169,6 +169,28 @@ namespace doori::api::Communication{
 
         mBackground.join();
 
+    }
+
+    int EpollApi::AddFdIntoEpollList(Socket socket) {
+
+        auto fd = socket.GetFd();
+
+        LOG(INFO, "Register FD[", fd, "]");
+
+        auto p = malloc(sizeof(struct EpollData));
+        auto structP = (struct EpollData*)p;
+        structP->mFd = fd;
+        structP->mCallEpollApiProcess = EpollApi::callEpollApiProcess;
+
+        struct epoll_event ev{};
+        ev.events = EPOLLIN;
+        ev.data.ptr = p;
+        if (epoll_ctl(mEpollRoot, EPOLL_CTL_ADD, fd, &ev) == -1) {
+            LoggingBySystemcallError("epoll_ctl() for adding FD");
+            return  -1;
+        }
+
+        return 0;
     }
 
 } // Communication

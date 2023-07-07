@@ -10,3 +10,4 @@ $|13,S=INFO|$
 #Publisher Binding Address
 $|111,S=127.0.0.1|$
 $|112,S=9999|$
+$|113,S=doori-project|$

@@ -3,6 +3,10 @@
 //
 
 #pragma once
+#include "Tnsd/Header.h"
+#include "Tnsd/Body.h"
+#include "Stream/StreamTemplate.h"
+#include "Data/Json.h"
 #include "Process/Application.h"
 #include "Data/Dictionary.h"
 #include "Communication/Socket.h"
@@ -15,7 +19,7 @@ namespace doori::service::Publisher{
 class Pub : public api::Process::Application{
 public:
     Pub() = delete;
-    explicit Pub(const api::Data::Dictionary& dic);
+    explicit Pub(api::Data::Dictionary dic);
     virtual auto operator()() noexcept -> int;
     [[nodiscard]] virtual auto clone() const noexcept -> std::unique_ptr<Application> override;
     auto ProcessName() noexcept -> std::string override;
@@ -24,7 +28,7 @@ public:
     auto LogLevel() noexcept -> api::Common::Log::LEVEL override;
     auto Terminate() noexcept -> int override;
 
-    auto processMessage(api::Communication::Socket socket) -> int;
+
     enum {
         TNSD_IP = 1
         ,TNSD_PORT = 2
@@ -33,9 +37,19 @@ public:
         ,LOG_LEVEL= 13
         ,PUB_IP = 111
         ,PUB_PORT = 112
+        ,TOPIC = 113
     };
 private:
+
+    int sendNotifyProtocol();
+
+    int connectTnsd();
+
+    auto processMessage(api::Communication::Socket socket) -> int;
+
     api::Data::Dictionary mPubDic;
+
+    api::Communication::Socket mTnsdSocket;
 };
 
 }//namespace doori

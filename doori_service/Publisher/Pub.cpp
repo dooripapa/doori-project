@@ -4,6 +4,8 @@
 
 #include "Pub.h"
 
+#include <utility>
+
 namespace doori::service::Publisher{
 
     auto Pub::operator()() noexcept -> int {
@@ -58,8 +60,22 @@ namespace doori::service::Publisher{
 
         int (*processMessage)(api::Communication::Socket);
 
-        epollApi.RunningForeground(10, 10, processMessage);
+        //for Subscriber
+        epollApi.RunningBackground(10, 10, processMessage);
 
+        //Tnsd 연결요청
+        if(connectTnsd() < 0){
+            LOG(ERROR,"Error");
+            return -1;
+        }
+
+        //Tnsd 연결요청을 Epoll List에 등록
+        epollApi.AddFdIntoEpollList(mTnsdSocket);
+
+        //Tnsd Notify Protocol 송신
+
+        //Epoll background 종료될때까지 대기.
+        epollApi.JoinBackground();
     }
 
     auto Pub::clone() const noexcept -> std::unique_ptr<api::Process::Application> {
@@ -90,7 +106,7 @@ namespace doori::service::Publisher{
         }
     }
 
-    Pub::Pub(const api::Data::Dictionary &dic) : mPubDic(dic){
+    Pub::Pub(api::Data::Dictionary dic) : mPubDic(std::move(dic)){
     }
 
     auto Pub::Terminate() noexcept -> int {
@@ -99,6 +115,121 @@ namespace doori::service::Publisher{
     }
 
     auto Pub::processMessage(api::Communication::Socket socket) -> int {
+
+        Tnsd::Header header;
+        Tnsd::Body<Data::Json> body;
+
+        //StreamTemplate Header, Body로 구성됨.
+        Stream::StreamTemplate< api::Tnsd::Header, api::Tnsd::Body<api::Data::Json> > streamTemplate{header, body};
+
+        string container;
+
+        socket.Recv(container, 8);
+
+        auto tilDataSize = stoi(container, 0, 10 );
+
+        socket.Recv(container, tilDataSize);
+
+        streamTemplate.FromStream(container);
+
+        auto json = body.GetBody();
+
+        switch(header.GetProtocol())
+        {
+            case api::Tnsd::PROTOCOL::NOTIFY:
+                LOG(INFO,"Notify");
+                break;
+            case api::Tnsd::PROTOCOL::ANWSER:
+                LOG(INFO,"Anwser");
+                break;
+            case api::Tnsd::PROTOCOL::CHANGE:
+                LOG(INFO,"Change");
+                break;
+            case api::Tnsd::PROTOCOL::ALIVE:
+                LOG(INFO,"Alive");
+                break;
+            case api::Tnsd::PROTOCOL::CLOSE:
+                LOG(INFO,"Close");
+                break;
+            case api::Tnsd::PROTOCOL::PUBLISH:
+                LOG(INFO,"Publish");
+                break;
+            case api::Tnsd::PROTOCOL::REPORT:
+                LOG(INFO,"Report");
+                break;
+            case api::Tnsd::PROTOCOL::INTERNAL_ERROR:
+            default:
+                LOG(ERROR,"Internal Error");
+                return -1;
+        }
+
+
+        return 0;
+    }
+
+    int Pub::connectTnsd() {
+
+        auto tnsdDestinationIp = mPubDic.Value(Pub::TNSD_IP);
+        auto tnsdDestinationPort = mPubDic.Value(Pub::TNSD_PORT);
+
+        LOG(INFO,"Tnsd IP:",tnsdDestinationIp, " Tnsd Port:",tnsdDestinationPort);
+
+        //Tnsd 연결시도
+
+        api::Communication::TcpApi tcpApi{mTnsdSocket};
+
+        tcpApi.InitEndpoint();
+        if(!tcpApi.Status())
+        {
+            LOG(ERROR, "fail to initialize Socket{}");
+            return -1;
+        }
+
+        tcpApi.SetReuseOpt(tnsdDestinationIp, tnsdDestinationPort);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetReuseOpt");
+            return -1;
+        }
+
+        tcpApi.SetTimeoutOpt(5);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetTimeoutOpt");
+            return -1;
+        }
+
+        tcpApi.Connect(tnsdDestinationIp, tnsdDestinationPort, 10);
+        if(!tcpApi.Status()) {
+            LOG(ERROR,"fail to connect tnsd");
+            return -1;
+        }
+
+        return 0;
+    }
+
+    int Pub::sendNotifyProtocol() {
+
+        auto myTopic = mPubDic.Value(Pub::TOPIC);
+        auto myBindingIp = mPubDic.Value(Pub::PUB_IP);
+        auto myBindingPort = mPubDic.Value(Pub::PUB_PORT);
+
+        LOG(INFO,"TOPIC:",myTopic);
+
+        Tnsd::Header header;
+        Tnsd::Body<Data::Json> body;
+
+        //StreamTemplate Header, Body로 구성됨.
+        Stream::StreamTemplate< Tnsd::Header, Tnsd::Body<Data::Json> > streamTemplate{header, body};
+
+        header.SetProtocol(Tnsd::PROTOCOL::NOTIFY);
+        body.Notify(myTopic, "PUB", myBindingIp, myBindingPort);
+
+        auto byteStream = streamTemplate.ToStream();
+
+        if(mTnsdSocket.Send({begin(byteStream), end(byteStream)}) < 0) {
+            LOG(ERROR,"fail to Send()");
+            return -1;
+        }
+
         return 0;
     }
 
