@@ -28,7 +28,6 @@ public:
     auto LogLevel() noexcept -> api::Common::Log::LEVEL override;
     auto Terminate() noexcept -> int override;
 
-
     enum {
         TNSD_IP = 1
         ,TNSD_PORT = 2
@@ -39,6 +38,7 @@ public:
         ,PUB_PORT = 112
         ,TOPIC = 113
     };
+
 private:
 
     int sendNotifyProtocol();

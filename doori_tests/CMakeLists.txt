@@ -37,7 +37,7 @@ set(TEST_FILES
 		../doori_api/Tnsd/Body.h
         ../doori_api/Tnsd/Body.hpp
 		../doori_api/Tnsd/NodeInfo.h
-		../doori_api/Tnsd/NodeInfo.cpp
+        ../doori_api/Tnsd/NodeInfo.hpp
 		../doori_api/Tnsd/Topic.h
 		../doori_api/Tnsd/Topic.cpp
         ../doori_api/Etc/Bigdecimal.cpp

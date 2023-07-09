@@ -75,7 +75,7 @@ set(SRC_FILES
 		Tnsd/Body.h
 		Tnsd/Header.cpp
 		Tnsd/Header.h
-		Tnsd/NodeInfo.cpp
+		Tnsd/NodeInfo.hpp
 		Tnsd/NodeInfo.h
 		Tnsd/Header.cpp
 		Tnsd/Header.h

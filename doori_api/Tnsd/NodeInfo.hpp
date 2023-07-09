@@ -8,7 +8,7 @@
 namespace doori::api::Tnsd {
 
     template<typename T>
-    NodeInfo<T>::NodeInfo(Topic topic, SIDE side, string ip, string port) : mIp{ip}, mPort{port}, mIPC(0){
+    NodeInfo<T>::NodeInfo(string ip, string port) : mIp{ip}, mPort{port}, mIPC{} {
 
     }
 
@@ -27,12 +27,11 @@ namespace doori::api::Tnsd {
         if(this == &rhs)
             return true;
 
-        return this->mTopic == rhs.mTopic && this->mSide == rhs.mSide && this->mIp == rhs.mIp &&
-               this->mPort == rhs.mPort;
+        return this->mIp == rhs.mIp && this->mPort == rhs.mPort;
     }
 
     template<typename T>
-    T NodeInfo<T>::GetIPCTopoloyNode() const {
+    T NodeInfo<T>::GetIPCTopologyNode() const {
         return mIPC;
     }
 

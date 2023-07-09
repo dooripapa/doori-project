@@ -32,7 +32,7 @@ namespace doori::api::Tnsd {
     public:
         NodeInfo() = default;
         NodeInfo(const NodeInfo& rhs) = default;
-        NodeInfo(Topic topic, SIDE side, string ip, string port);
+        NodeInfo(string ip, string port);
         NodeInfo& operator=(const NodeInfo& rhs) = default;
         NodeInfo& operator=(NodeInfo&& rhs) = default;
 
@@ -42,7 +42,7 @@ namespace doori::api::Tnsd {
 
         string GetPort() const;
 
-        T GetIPCTopoloyNode() const;
+        T GetIPCTopologyNode() const;
 
         void SetIPCTopologyNode(T t);
 
@@ -55,5 +55,7 @@ namespace doori::api::Tnsd {
     };
 
 } // Tnsd
+
+#include "NodeInfo.hpp"
 
 #endif //DOORI_PROJECT_NODEINFO_H

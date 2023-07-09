@@ -57,15 +57,16 @@ namespace doori::service::TnsDaemon{
 
         Communication::EpollApi epollApi{listenSocket };
 
-        epollApi.InitEpoll();
+        std::function<int(api::Communication::Socket)> ProcessMessage = std::bind(&Tnsd<T_IPCTopologyNode>::processMessage, this,
+                                                              std::placeholders::_1);
+
+        epollApi.InitEpoll(ProcessMessage);
         if(!epollApi.Status()) {
             LOG(ERROR, "fail to InitEpoll()");
             return -1;
         }
 
-        int (*ProcessMessage)(Communication::Socket);
-
-        epollApi.RunningForeground(10, 10, ProcessMessage);
+        epollApi.RunningForeground(10, 10);
 
     }
 
@@ -237,7 +238,7 @@ namespace doori::service::TnsDaemon{
             return -1;
         }
 
-        NodeInfo<T_IPCTopologyNode> nodeInfo{topic, side, strIp, strPort};
+        NodeInfo<T_IPCTopologyNode> nodeInfo{strIp, strPort};
 
         nodeInfo.SetIPCTopologyNode(socket);
 
@@ -276,9 +277,9 @@ namespace doori::service::TnsDaemon{
                 if(branch.GetLeaves().size() > 0) {
 
                     for(const auto& leaf :branch.GetLeaves()) {
-                        auto subNode = leaf.GetIPCToplogyNode();
+                        auto subNode = leaf.GetIPCTopologyNode();
 
-                        tnsdBody.Change(topic, "PUB", leaf.GetIP(), leaf.GetPort());
+                        tnsdBody.Change(topic.GetKey(), "PUB", leaf.GetIp(), leaf.GetPort());
 
                         auto changeProtocolBytes = streamTemplate.ToStream();
 
@@ -291,8 +292,8 @@ namespace doori::service::TnsDaemon{
                 if(branch.GetLeaves().size() > 0) {
 
                     for(const auto& leaf :branch.GetLeaves()) {
-                        publisher["ip"] = leaf.GetIP();
-                        publisher["port"] = leaf.GetIP();
+                        publisher["ip"] = leaf.GetIp();
+                        publisher["port"] = leaf.GetPort();
 
                         // [
                         //  {"ip":"...", "port":"..."}
