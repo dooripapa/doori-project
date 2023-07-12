@@ -196,7 +196,16 @@ namespace doori::api::Communication{
 
     void TcpApi::Connect(const string &ip, const string &port) {
 
-        auto cPort = stoi(port);
+        std::size_t pos{};
+
+        int cPort;
+        try{
+            cPort = std::stoi(port, &pos);
+        } catch (const std::exception &ex ){
+            LOG(ERROR,"stoi exception:", ex.what());
+            LoggingByClientError("stoi exception");
+            return;
+        }
 
         if( 65535 < cPort ) {
             LoggingByClientError("port range over > 65535");

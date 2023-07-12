@@ -33,10 +33,9 @@ namespace doori::api::Communication{
         pEpollData->mFd = mListenSocket.GetFd();
         pEpollData->mCallEpollApiProcess = nullptr;
 
-        mUserFunction = std::move(delegator);
+        mUserFunction = delegator;
 
         struct epoll_event ev{};
-
         ev.events = EPOLLIN ;
         ev.data.ptr = pEpollData;
         if (epoll_ctl(mEpollRoot, EPOLL_CTL_ADD, mListenSocket.GetFd(), &ev) == -1) {
@@ -120,14 +119,13 @@ namespace doori::api::Communication{
 
         LOG(INFO, "Accepted FD[", requestToConnect, "]");
 
-        auto p = malloc(sizeof(struct EpollData));
-        auto structP = (struct EpollData*)p;
+        auto structP = new (struct EpollData);
         structP->mFd = requestToConnect;
         structP->mCallEpollApiProcess = mUserFunction;
 
         struct epoll_event ev{};
         ev.events = EPOLLIN;
-        ev.data.ptr = p;
+        ev.data.ptr = structP;
         if (epoll_ctl(mEpollRoot, EPOLL_CTL_ADD, requestToConnect, &ev) == -1) {
             LoggingBySystemcallError("epoll_ctl() for adding FD");
             return  -1;
@@ -141,6 +139,8 @@ namespace doori::api::Communication{
         std::function< void(int, int) > threadFunction = [this](int backlogEventNum, int timeout) {
             this->RunningForeground(backlogEventNum, timeout);
         };
+
+//        std::function< void(int, int) > threadFunction = std::bind{&EpollApi::RunningForeground, this, std::placeholders::_1, std::placeholders::_2};
 
         //쓰레드 초기화합니다.
         thread t{ threadFunction, backlogEventNum, timeout};

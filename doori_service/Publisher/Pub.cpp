@@ -52,16 +52,17 @@ namespace doori::service::Publisher{
 
         api::Communication::EpollApi epollApi{listenSocket };
 
-        epollApi.InitEpoll();
+        std::function<int(api::Communication::Socket)> process = std::bind(&Pub::processMessage, this,
+                                                                                  std::placeholders::_1);
+
+        epollApi.InitEpoll(process);
         if(!epollApi.Status()) {
             LOG(ERROR, "fail to InitEpoll()");
             return -1;
         }
 
-        int (*processMessage)(api::Communication::Socket);
-
         //for Subscriber
-        epollApi.RunningBackground(10, 10, processMessage);
+        epollApi.RunningBackground(10, 10);
 
         //Tnsd 연결요청
         if(connectTnsd() < 0){
@@ -70,12 +71,14 @@ namespace doori::service::Publisher{
         }
 
         //Tnsd 연결요청을 Epoll List에 등록
-        epollApi.AddFdIntoEpollList(mTnsdSocket);
+        epollApi.AddFdIntoEpollList(mTnsdSocket, process);
 
         //Tnsd Notify Protocol 송신
 
         //Epoll background 종료될때까지 대기.
         epollApi.JoinBackground();
+
+        return 0;
     }
 
     auto Pub::clone() const noexcept -> std::unique_ptr<api::Process::Application> {
