@@ -23,7 +23,15 @@ namespace doori::api::Communication{
             return;
         }
 
-        auto cPort = stoi(port);
+        int cPort;
+        std::size_t pos{};
+        try{
+            cPort = std::stoi(port, &pos);
+        } catch (const std::exception &ex ){
+            LOG(ERROR,"stoi exception:", ex.what());
+            LoggingByClientError("stoi exception");
+            return;
+        }
 
         struct sockaddr_in sockaddrIn{};
         sockaddrIn.sin_family = AF_INET;
@@ -46,7 +54,15 @@ namespace doori::api::Communication{
             return;
         }
 
-        auto cPort = stoi(port);
+        int cPort;
+        std::size_t pos{};
+        try{
+            cPort = std::stoi(port, &pos);
+        } catch (const std::exception &ex ){
+            LOG(ERROR,"stoi exception:", ex.what());
+            LoggingByClientError("stoi exception");
+            return;
+        }
 
         struct sockaddr_in sockaddrIn{};
         sockaddrIn.sin_family = AF_INET;
@@ -75,7 +91,15 @@ namespace doori::api::Communication{
             return;
         }
 
-        auto cPort = stoi(port);
+        int cPort;
+        std::size_t pos{};
+        try{
+            cPort = std::stoi(port, &pos);
+        } catch (const std::exception &ex ){
+            LOG(ERROR,"stoi exception:", ex.what());
+            LoggingByClientError("stoi exception");
+            return;
+        }
 
         struct sockaddr_in sockaddrIn{};
         sockaddrIn.sin_family = AF_INET;
@@ -98,7 +122,15 @@ namespace doori::api::Communication{
             return;
         }
 
-        auto cPort = stoi(port);
+        int cPort;
+        std::size_t pos{};
+        try{
+            cPort = std::stoi(port, &pos);
+        } catch (const std::exception &ex ){
+            LOG(ERROR,"stoi exception:", ex.what());
+            LoggingByClientError("stoi exception");
+            return;
+        }
 
         struct sockaddr_in sockaddrIn{};
         sockaddrIn.sin_family = AF_INET;
@@ -232,12 +264,22 @@ namespace doori::api::Communication{
 
         auto ret = connect(mSocket.GetFd(), (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
         if (ret < 0) {
-            LoggingBySystemcallError("connect() error");
-            return;
+
+            int errorValue = 0;
+            socklen_t len = sizeof(errorValue);
+            if( getsockopt(mSocket.GetFd(), SOL_SOCKET, SO_ERROR, &errorValue, &len ) < 0 ) {
+                LoggingBySystemcallError("connect() error");
+                return;
+            }
+
+            if (errorValue != 0) {
+                LOG(ERROR,"Error Value:", errorValue);
+                LoggingByClientError("connect() error");
+                return;
+            }
         }
 
         LOG(INFO, "connected Socket[", mSocket.GetFd(), "]" );
-
     }
 
     void TcpApi::SetTimeoutOpt(std::uint8_t timeout) {

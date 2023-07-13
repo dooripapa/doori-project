@@ -74,6 +74,9 @@ namespace doori::service::Publisher{
         epollApi.AddFdIntoEpollList(mTnsdSocket, process);
 
         //Tnsd Notify Protocol 송신
+        if( sendNotifyProtocol() < 0) {
+            return -1;
+        }
 
         //Epoll background 종료될때까지 대기.
         epollApi.JoinBackground();
