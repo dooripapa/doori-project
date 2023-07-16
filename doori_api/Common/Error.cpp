@@ -55,30 +55,6 @@ namespace doori::api::Common{
         mCause = cause;
     }
 
-    void Error::LoggingBySystemcallError(const string &loggingCause) noexcept {
-        mErrno = errno;
-        if( mErrno > 0 ) {
-            mStatus = false;
-
-            char errorStr[1024] = {0};
-            auto p = strerror_r(errno, errorStr, sizeof(errorStr) );
-
-            mCause = p;
-
-            LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
-        }
-        else {
-            AsSuccess();
-        }
-    }
-
-    void Error::LoggingByClientError(const string &cause) noexcept {
-        mErrno = -1;
-        mStatus = false;
-        mCause = cause;
-        LOG(ERROR, cause);
-    }
-
     Error::Error(int errnum , bool status ) : mErrno{errnum}, mStatus{status} {
 
     }

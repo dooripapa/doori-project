@@ -15,6 +15,7 @@ namespace doori::api::Common {
 
     class Error {
 
+
     public:
 
         explicit Error(int errnum = -1, bool status = false);
@@ -76,11 +77,12 @@ namespace doori::api::Common {
          * Error 객체를 상태를 셋팅한다.
          */
         void InjectedBySystemcallError() noexcept;
-        void LoggingBySystemcallError(const string& loggingCause) noexcept;
 
-        template<int N>
-        void LoggingBySystemcallError(char const(&loggingCause)[N]) noexcept;
+        template<typename FILENAME, typename FUNCNAME, typename LINE, int N>
+        void loggingBySystemcallError(FILENAME, FUNCNAME, LINE, char const(&loggingCause)[N]) noexcept;
 
+        template<typename FILENAME, typename FUNCNAME, typename LINE, typename STRING_CAUSE>
+        void loggingBySystemcallError(FILENAME filename, FUNCNAME funcname, LINE line, STRING_CAUSE stringCause) noexcept;
 
         /**
          * 호출자의 의한 에러 셋팅.
@@ -88,13 +90,15 @@ namespace doori::api::Common {
          * @param cause
          */
         inline void InjectedByClientError(const string &cause) noexcept;
-        inline void LoggingByClientError(const string& cause) noexcept;
 
         template<int N>
         auto InjectedByClientError(char const(&value)[N]) noexcept -> void;
 
-        template<int N>
-        void LoggingByClientError(char const(&loggingCause)[N]) noexcept;
+        template<typename FILENAME, typename FUNCNAME, typename LINE, int N>
+        void loggingByClientError(FILENAME, FUNCNAME, LINE, char const(&loggingCause)[N]) noexcept;
+
+        template<typename FILENAME, typename FUNCNAME, typename LINE, typename STRING_CAUSE>
+        void loggingByClientError(FILENAME filename, FUNCNAME funcname, LINE line, STRING_CAUSE stringCause) noexcept;
 
     private:
         bool mStatus;
@@ -117,16 +121,36 @@ namespace doori::api::Common {
         mCause = std::string(value);
     }
 
-    template<int N>
-    void Error::LoggingByClientError(const char (&loggingCause)[N]) noexcept  {
+    /**
+     * 명명규칙을 통일하기 위해서, loggingByClientError 함수는 LoggingByClientError 호출함.
+     * 함수 호출 시 __FILE__, __FUNCTION__, __LINE__ 자동으로 입력처리되도록 하기 위해서 한번 더 템플릿 및 define문으로 감싼다.
+     */
+    // const char* 인경우
+    template<typename FILENAME, typename FUNCNAME, typename LINE, int N>
+    void Error::loggingByClientError(FILENAME filename, FUNCNAME funcname, LINE line, char const(&loggingCause)[N]) noexcept  {
         mErrno = -1;
         mStatus = false;
         mCause = std::string(loggingCause);
-        LOG(ERROR, loggingCause);
+        doori::api::Common::Log::logging().writeLog(doori::api::Common::Log::LEVEL::E, filename, funcname, line, loggingCause);
     }
 
-    template<int N>
-    void Error::LoggingBySystemcallError(const char (&loggingCause)[N]) noexcept {
+    // string 인 경우
+    template<typename FILENAME, typename FUNCNAME, typename LINE, typename STRING_CAUSE>
+    void Error::loggingByClientError(FILENAME filename, FUNCNAME funcname, LINE line, STRING_CAUSE stringCause) noexcept  {
+        mErrno = -1;
+        mStatus = false;
+        mCause = stringCause;
+        doori::api::Common::Log::logging().writeLog(doori::api::Common::Log::LEVEL::E, filename, funcname, line, stringCause);
+    }
+
+#define LoggingByClientError(...) loggingByClientError <const char*, const char*, int, decltype(__VA_ARGS__)> (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+    /**
+     * 명명규칙을 통일하기 위해서, loggingBySystemcallError 함수는 LoggingBySystemcallError 호출함.
+     * 함수 호출 시 __FILE__, __FUNCTION__, __LINE__ 자동으로 입력처리되도록 하기 위해서 한번 더 템플릿 및 define문으로 감싼다.
+     */
+    template<typename FILENAME, typename FUNCNAME, typename LINE, int N>
+    void Error::loggingBySystemcallError(FILENAME filename, FUNCNAME funcname, LINE line, char const(&loggingCause)[N]) noexcept {
         mErrno = errno;
         if( mErrno > 0 ) {
             mStatus = false;
@@ -136,10 +160,31 @@ namespace doori::api::Common {
 
             mCause = p;
 
-            LOG(ERROR, loggingCause, ", errno:", mErrno, ", cause:", mCause);
+            doori::api::Common::Log::logging().writeLog(doori::api::Common::Log::LEVEL::F, filename, funcname, line, loggingCause, ", errno:", mErrno, ", cause:", mCause);
         }
         else {
             AsSuccess();
         }
     }
+
+    template<typename FILENAME, typename FUNCNAME, typename LINE, typename STRING_CAUSE>
+    void Error::loggingBySystemcallError(FILENAME filename, FUNCNAME funcname, LINE line, STRING_CAUSE stringCause) noexcept {
+        mErrno = errno;
+        if( mErrno > 0 ) {
+            mStatus = false;
+
+            char errorStr[1024] = {0};
+            auto p = strerror_r(errno, errorStr, sizeof(errorStr) );
+
+            mCause = p;
+
+            doori::api::Common::Log::logging().writeLog(doori::api::Common::Log::LEVEL::F, filename, funcname, line, stringCause, ", errno:", mErrno, ", cause:", mCause);
+        }
+        else {
+            AsSuccess();
+        }
+    }
+
+#define LoggingBySystemcallError(...) loggingBySystemcallError <const char*, const char*, int, decltype(__VA_ARGS__)> (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
 } //doori

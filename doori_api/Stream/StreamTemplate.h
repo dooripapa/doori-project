@@ -267,7 +267,7 @@ namespace doori::api::Stream {
         userHeaderBuffer.assign(buffer, K_STREAM_PROTOCOL_LEN, mHeader.GetLength());
         auto ret = this->mHeader.FromStream(userHeaderBuffer);
         if(ret < 0) {
-            LoggingByClientError("fail to parsing User's Header ");
+            LoggingByClientError("fail to parsing User's Header");
             return;
         }
 
