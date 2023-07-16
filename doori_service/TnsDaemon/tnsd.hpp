@@ -124,7 +124,7 @@ namespace doori::service::TnsDaemon{
                 break;
             case api::Tnsd::PROTOCOL::INTERNAL_ERROR:
             default:
-                LOG(DEBUG, "");
+                LOG(DEBUG, "don't know Protocol");
         }
 
         if(ret) {

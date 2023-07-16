@@ -47,7 +47,8 @@ namespace doori::api::Communication{
 
         char acTemp[1024] = {0,};
 
-        auto p = make_unique<char[]>(tilDataSize);
+        // 1 null space
+        auto p = make_unique<char[]>(tilDataSize+1);
         if(p == nullptr) {
             assert("malloc error");
         }

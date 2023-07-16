@@ -213,12 +213,12 @@ namespace doori::api::Stream {
 
         vector<char> stream{};
 
-        char acTemp[K_STREAM_UTIL_LEN];
-        snprintf(acTemp, K_STREAM_UTIL_LEN, "%0ld", bytesLength);
+        char acTemp[K_STREAM_UTIL_LEN+1]={0,};
+        snprintf(acTemp, K_STREAM_UTIL_LEN+1, "%0.*ld", K_STREAM_UTIL_LEN, bytesLength);
 
         // 길이값
         int i = 0;
-        for (i = 0; i < sizeof(acTemp); i++)
+        for (i = 0; i < K_STREAM_UTIL_LEN; i++)
             stream.push_back(acTemp[i]);
 
         // Coder값
