@@ -85,6 +85,8 @@ namespace doori::api::Tnsd {
 
     int Header::FromStream(string buffer) {
 
+        buffer.erase(std::remove_if(buffer.begin(), buffer.end(), [](unsigned char x){return std::isspace(x);}), buffer.end());
+
         mTnsdProtocol = switchProtocolEnum(buffer);
 
         if(PROTOCOL::INTERNAL_ERROR == mTnsdProtocol)

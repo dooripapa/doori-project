@@ -64,14 +64,16 @@ namespace doori::service::Publisher{
         //for Subscriber
         epollApi.RunningBackground(10, 10);
 
+        //Tnsd 연결요청을 Epoll List에 등록
+        epollApi.AddFdIntoEpollList(mTnsdSocket, process);
+
         //Tnsd 연결요청
         if(connectTnsd() < 0){
             LOG(ERROR,"Error");
             return -1;
         }
 
-        //Tnsd 연결요청을 Epoll List에 등록
-        epollApi.AddFdIntoEpollList(mTnsdSocket, process);
+        sleep(10);
 
         //Tnsd Notify Protocol 송신
         if( sendNotifyProtocol() < 0) {
