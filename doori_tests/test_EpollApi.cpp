@@ -20,6 +20,7 @@ auto ProcessMessage(Socket socket) -> int
     if(ret==0)
     {
         LOG(DEBUG, "Socket closed");
+        return -1;
     }
 
     LOG(DEBUG, "Recv[", container,"]");
@@ -38,7 +39,7 @@ static void RunClient() {
 
     Socket socket{};
 
-    sleep(1);
+    sleep(2);
     LOG( DEBUG, "RunClient ");
 
     TcpApi tcpApi{socket};
@@ -53,6 +54,7 @@ static void RunClient() {
     while( i++ < 5 )
     {
         auto ret = tcpApi.GetSocket().Send("1234567890");
+        LOG( DEBUG, "@@@@@@@@@@@@@@ i[%d]", i);
         ASSERT_TRUE(ret > 0);
     }
 
@@ -84,7 +86,7 @@ TEST(Epoll, Usage) {
 
     EpollApi epollApi{tcpApi.GetSocket()};
 
-    epollApi.InitEpoll();
+    epollApi.InitEpoll(ProcessMessage);
     ASSERT_TRUE(epollApi.Status());
 
     /* 클라이언트 접속 프로그램 기동,
@@ -92,7 +94,7 @@ TEST(Epoll, Usage) {
      * 바로, 접속시도를 막기위해서*/
     std::thread t(RunClient);
 
-    epollApi.RunningBackground(10, 10, ProcessMessage);
+    epollApi.RunningBackground(10, 10);
 
     LOG(INFO,"Background processing...");
 

@@ -70,6 +70,7 @@ TEST(Branch, Usage)
     cout << boolalpha << r.Link(r3) << endl ;
 
     vector<Branch<int>>::iterator iter{};
+    // 조회되지 않음. FindLinkBranches의 함수는, 자식의 Branch를 탐색함.
     auto result = r.FindLinkBranches("main branch", iter);
     if (result)
     {
