@@ -802,13 +802,11 @@ namespace doori::api::Data{
                 jsonV<<mInt;
                 return jsonV.str();
             case Json_value::STRING:
-                jsonV<<"\"";
                 for(auto&i:mStr) {
                     if (i=='"')
                         jsonV<<"\\";
                     jsonV<<i;
                 }
-                jsonV<<"\"";
                 return jsonV.str();
             case Json_value::ARRAY:
                 jsonV<<"[";

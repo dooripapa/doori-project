@@ -20,13 +20,13 @@ TEST(Json_value, ConstructTest)
     Data::Json_value value1{"const char*"};
     value1.IntoString(strContainer);
     EXPECT_EQ("const char*", strContainer);
-    EXPECT_EQ("\"const char*\"", value1.ToString());
+    EXPECT_EQ("const char*", value1.ToString());
 
     std::string str{"std::string"};
     Data::Json_value value2{str};
     value2.IntoString(strContainer);
     EXPECT_EQ("std::string", strContainer);
-    EXPECT_EQ("\"std::string\"", value2.ToString());
+    EXPECT_EQ("std::string", value2.ToString());
 
 
     float floatContainer;
@@ -79,14 +79,14 @@ TEST(Json_value, SetTest)
     EXPECT_EQ("1111", value.ToString());
 
     value.set("const char*");
-    EXPECT_EQ("\"const char*\"", value.ToString());
+    EXPECT_EQ("const char*", value.ToString());
 
     value.set("const\"name");
-    EXPECT_EQ("\"const\\\"name\"", value.ToString());
+    EXPECT_EQ("const\\\"name", value.ToString());
 
     std::string str{"std::string"};
     value.set(str);
-    EXPECT_EQ("\"std::string\"", value.ToString());
+    EXPECT_EQ("std::string", value.ToString());
 
     value.set(0.1234f);
     EXPECT_EQ("0.1234", value.ToString());
