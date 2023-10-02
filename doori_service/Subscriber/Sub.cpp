@@ -4,92 +4,240 @@
 
 #include "Sub.h"
 
-namespace doori{
+#include <utility>
 
-Sub::Sub(const Dictionary &dic) : mSubDic(dic){
-}
+namespace doori::service::Subscriber{
 
-auto Sub::operator()() noexcept -> int {
-    Subscriber subscriber(
-    [](int fd, Stream& stream)
-                {
-                    LOG(DEBUG, "From FD :", fd);
-                    LOG(DEBUG, "Fid stream :", stream.toByteStream() );
-                    return 0;
-                }
-    );
+    auto Sub::operator()() noexcept -> int {
 
-    Connection tnsdConnection;
-    Addr tns(mSubDic.Value(Dictionary::TOKEN_INFO::TNSD_IP),
-             mSubDic.Value(Dictionary::TNSD_PORT));
-    Addr sourceAddr(mSubDic.Value(Dictionary::TOKEN_INFO::BINDING_IP_FOR_TNSD),
-                    mSubDic.Value(Dictionary::TOKEN_INFO::BINDING_PORT_FOR_TNSD));
+        api::Communication::Socket socket{};
 
-    Endpoint tnsd; tnsd.setAddress(tns);
-    Endpoint sourcer; sourcer.setAddress(sourceAddr);
-    tnsdConnection.setFrom(sourcer);
-    tnsdConnection.setTo(tnsd);
+        api::Communication::TcpApi tcpApi{socket};
 
-    Connection subConnection;
-    Endpoint subEndpoint{{mSubDic.Value(Dictionary::TOKEN_INFO::BINDING_IP_FOR_MULTISESSION),
-                                 mSubDic.Value(Dictionary::BINDING_PORT_FOR_MULTISESSION)} };
-    subConnection.setFrom(subEndpoint);
+        tcpApi.InitEndpoint();
+        if(!tcpApi.Status())
+        {
+            LOG(ERROR, "fail to initialize Socket{}");
+            return -1;
+        }
 
-    Topic topic;
-    topic.set(mSubDic.Value(Dictionary::TOKEN_INFO::MY_TOPIC));
-    if(!subscriber.Init(tnsdConnection, topic, Protocol::TREE::SUB))
-    {
-        LOG(ERROR, "failed to connect to MiddleSide");
-        return -1;
+        auto bindingIp = mSubDic.Value(Sub::SUB_IP);
+        auto bindingPort = mSubDic.Value(Sub::SUB_PORT);
+
+        tcpApi.SetReuseOpt(bindingIp, bindingPort);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetReuseOpt");
+            return -1;
+        }
+
+        tcpApi.SetTimeoutOpt(5);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetTimeoutOpt");
+            return -1;
+        }
+
+        tcpApi.Bind(bindingIp, bindingPort);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to Bind");
+            return -1;
+        }
+
+        tcpApi.Listen(10);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to Listen");
+            return -1;
+        }
+
+        auto listenSocket = tcpApi.GetSocket();
+
+        api::Communication::EpollApi epollApi{listenSocket };
+
+        std::function<int(api::Communication::Socket)> process = std::bind(&Sub::processMessage, this,
+                                                                           std::placeholders::_1);
+
+        epollApi.InitEpoll(process);
+        if(!epollApi.Status()) {
+            LOG(ERROR, "fail to InitEpoll()");
+            return -1;
+        }
+
+        //for Subscriber
+        epollApi.RunningBackground(10, 10);
+
+        //Tnsd 연결요청
+        if(connectTnsd() < 0){
+            LOG(ERROR,"Error");
+            return -1;
+        }
+
+        //Tnsd Notify Protocol 송신
+        if( sendNotifyProtocol() < 0) {
+            LOG(ERROR, "failed to send NOTIFY-PROTOCOL");
+            return -1;
+        }
+
+        //Tnsd 연결요청을 Epoll List에 등록
+        epollApi.AddFdIntoEpollList(mTnsdSocket, process);
+
+        //Epoll background 종료될때까지 대기.
+        epollApi.JoinBackground();
+
+        return 0;
     }
-    subscriber.startSubscriber(subConnection );
 
-    /*Tnsd에 나의 관심대상을 등록한다.*/
-    if( !subscriber.sendNotifyProtocolToTnsd() ) {
-        LOG(DEBUG, "fail to list up");
-        return -1;
+    auto Sub::clone() const noexcept -> std::unique_ptr<api::Process::Application> {
+        return std::make_unique<Sub>(*this);
     }
 
-    subscriber.sendListProtocolToTnsd();
-    LOG(DEBUG, "Knock TopicAccess! : ", topic.GetKeyName() );
+    auto Sub::ProcessName() noexcept -> std::string {
+        return "Sub";
+    }
 
-    // Never, Terminated.
-    subscriber.onSubscribing();
+    auto Sub::Daemonize() noexcept -> bool {
+        return false;
+    }
 
-    return 0;
-}
+    auto Sub::LogFile() noexcept -> std::string {
+        if(!mSubDic.Value( Sub::LOG_NAME).empty() && !mSubDic.Value( Sub::LOG_PATH).empty() ) {
+            return (mSubDic.Value( Sub::LOG_PATH ) + mSubDic.Value( Sub::LOG_NAME ));
+        } else
+            return api::Process::Application::LogFile();
+    }
 
-auto Sub::clone() const noexcept -> std::unique_ptr<Application> {
-    return std::make_unique<Sub>(*this);
-}
+    auto Sub::LogLevel() noexcept -> api::Common::Log::LEVEL {
+        if(!mSubDic.Value(Sub::LOG_LEVEL).empty()) {
+            return api::Common::Log::convertToLevel(mSubDic.Value(Sub::LOG_LEVEL));
+        }
+        else {
+            return api::Process::Application::LogLevel();
+        }
+    }
 
-auto Sub::ProcessName() noexcept -> std::string {
-    return "Sub";
-}
+    Sub::Sub(api::Data::Dictionary dic) : mSubDic(std::move(dic)){
+    }
 
-auto Sub::Daemonize() noexcept -> bool {
-    return true;
-}
+    auto Sub::Terminate() noexcept -> int {
+        LOG(INFO, "Pub is terminated");
+        return 0;
+    }
 
-auto Sub::LogFile() noexcept -> std::string {
-    if(!mSubDic.Value(Dictionary::TOKEN_INFO::LOG_NAME).empty()
-       && !mSubDic.Value(Dictionary::TOKEN_INFO::LOG_PATH).empty() )
-    {
-        return (mSubDic.Value(Dictionary::TOKEN_INFO::LOG_PATH) + mSubDic.Value(Dictionary::TOKEN_INFO::LOG_NAME));
-    } else
-        return Application::LogFile();
-}
+    auto Sub::processMessage(api::Communication::Socket socket) -> int {
 
-auto Sub::LogLevel() noexcept -> Log::LEVEL {
-    if(!mSubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL).empty() )
-        return Log::convertToLevel(mSubDic.Value(Dictionary::TOKEN_INFO::LOG_LEVEL));
+        Tnsd::Header header;
+        Tnsd::Body<Data::Json> body;
 
-    return Application::LogLevel();
-}
+        //StreamTemplate Header, Body로 구성됨.
+        Stream::StreamTemplate< api::Tnsd::Header, api::Tnsd::Body<api::Data::Json> > streamTemplate{header, body};
 
-auto Sub::Terminate() noexcept -> int {
-    LOG(INFO, "Sub is terminated");
-    return 0;
-}
+        string container;
+
+        socket.Recv(container, 8);
+
+        auto tilDataSize = stoi(container, 0, 10 );
+
+        socket.Recv(container, tilDataSize);
+
+        streamTemplate.FromStream(container);
+
+        auto json = body.GetBody();
+
+        switch(header.GetProtocol())
+        {
+            case api::Tnsd::PROTOCOL::NOTIFY:
+                LOG(INFO,"Notify");
+                break;
+            case api::Tnsd::PROTOCOL::ANWSER:
+                LOG(INFO,"Anwser");
+                break;
+            case api::Tnsd::PROTOCOL::CHANGE:
+                LOG(INFO,"Change");
+                break;
+            case api::Tnsd::PROTOCOL::ALIVE:
+                LOG(INFO,"Alive");
+                break;
+            case api::Tnsd::PROTOCOL::CLOSE:
+                LOG(INFO,"Close");
+                break;
+            case api::Tnsd::PROTOCOL::PUBLISH:
+                LOG(INFO,"Publish");
+                break;
+            case api::Tnsd::PROTOCOL::REPORT:
+                LOG(INFO,"Report");
+                break;
+            case api::Tnsd::PROTOCOL::INTERNAL_ERROR:
+            default:
+                LOG(ERROR,"Internal Error");
+                return -1;
+        }
+
+
+        return 0;
+    }
+
+    int Sub::connectTnsd() {
+
+        auto tnsdDestinationIp = mSubDic.Value(Sub::TNSD_IP);
+        auto tnsdDestinationPort = mSubDic.Value(Sub::TNSD_PORT);
+
+        LOG(INFO,"Tnsd IP:",tnsdDestinationIp, " Tnsd Port:",tnsdDestinationPort);
+
+        //Tnsd 연결시도
+
+        api::Communication::TcpApi tcpApi{mTnsdSocket};
+
+        tcpApi.InitEndpoint();
+        if(!tcpApi.Status())
+        {
+            LOG(ERROR, "fail to initialize Socket{}");
+            return -1;
+        }
+
+        tcpApi.SetReuseOpt(tnsdDestinationIp, tnsdDestinationPort);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetReuseOpt");
+            return -1;
+        }
+
+        tcpApi.SetTimeoutOpt(5);
+        if(!tcpApi.Status()) {
+            LOG(ERROR, "fail to SetTimeoutOpt");
+            return -1;
+        }
+
+        tcpApi.Connect(tnsdDestinationIp, tnsdDestinationPort, 10);
+        if(!tcpApi.Status()) {
+            LOG(ERROR,"fail to connect tnsd");
+            return -1;
+        }
+
+        return 0;
+    }
+
+    int Sub::sendNotifyProtocol() {
+
+        auto myTopic = mSubDic.Value(Sub::TOPIC);
+        auto myBindingIp = mSubDic.Value(Sub::SUB_IP);
+        auto myBindingPort = mSubDic.Value(Sub::SUB_PORT);
+
+        LOG(INFO,"TOPIC:",myTopic);
+
+        Tnsd::Header header;
+        Tnsd::Body<Data::Json> body;
+
+        //StreamTemplate Header, Body로 구성됨.
+        Stream::StreamTemplate< Tnsd::Header, Tnsd::Body<Data::Json> > streamTemplate{header, body};
+
+        header.SetProtocol(Tnsd::PROTOCOL::NOTIFY);
+        body.Notify(myTopic, "SUB", myBindingIp, myBindingPort);
+
+        auto byteStream = streamTemplate.ToStream();
+
+        if(mTnsdSocket.Send({begin(byteStream), end(byteStream)}) < 0) {
+            LOG(ERROR,"fail to Send()");
+            return -1;
+        }
+
+        return 0;
+    }
 
 }//namespace doori

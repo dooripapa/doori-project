@@ -3,11 +3,11 @@ $|1,S=127.0.0.1|$
 $|2,S=8888|$
 
 #Log Info
-$|11,S=Publisher.log|$
+$|11,S=Sublisher.log|$
 $|12,S=/home/jaeseong/|$
 $|13,S=DEBUG|$
 
-#Publisher Binding Address
+#Sublisher Binding Address
 $|111,S=127.0.0.1|$
-$|112,S=9999|$
+$|112,S=7777|$
 $|113,S=doori-project|$

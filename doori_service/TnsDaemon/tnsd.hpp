@@ -224,7 +224,15 @@ namespace doori::service::TnsDaemon{
         auto strIp = json["ip"].ToString();
         auto strPort = json["port"].ToString();
 
-        Topic topic{strTopic};
+        LOG(DEBUG, "Topic:", strTopic);
+        LOG(DEBUG, "Side:" , strSide);
+        LOG(DEBUG, "IP:"   , strIp);
+        LOG(DEBUG, "Port:" , strPort);
+
+        Topic topic{};
+
+        // . 구분자값이 들어간 string을 topic객체로 구조화합니다.
+        topic.set(strTopic);
 
         if( strSide ==  "PUB") {
             side = SIDE::PUB;
@@ -273,22 +281,30 @@ namespace doori::service::TnsDaemon{
 
         switch (side) {
             case SIDE::PUB:
+                LOG(INFO, "PUB FD[",socket.GetFd(),"] Topic[",topic.GetKey(),"]");
                 branch = m_SubTree.getBranch(topic);
+
+                LOG(INFO, "Branch's Leaves cnt[",branch.GetLeaves().size(),"]");
                 if(branch.GetLeaves().size() > 0) {
 
                     for(const auto& leaf :branch.GetLeaves()) {
                         auto subNode = leaf.GetIPCTopologyNode();
 
+                        // CHANGE-Protocol
                         tnsdBody.Change(topic.GetKey(), "PUB", leaf.GetIp(), leaf.GetPort());
 
                         auto changeProtocolBytes = streamTemplate.ToStream();
 
+                        //send CHANGE-Protocol bytestream
                         subNode.Send({begin(changeProtocolBytes), end(changeProtocolBytes)});
                     }
                 }
                 break;
             case SIDE::SUB:
+                LOG(INFO, "SUB FD[",socket.GetFd(),"] Topic[",topic.GetKey(),"]");
                 branch = m_PubTree.getBranch(topic);
+
+                LOG(INFO, "Branch's Leaves cnt[",branch.GetLeaves().size(),"]");
                 if(branch.GetLeaves().size() > 0) {
 
                     for(const auto& leaf :branch.GetLeaves()) {
@@ -312,12 +328,13 @@ namespace doori::service::TnsDaemon{
 
                     oss << std::hex << hashValue;
 
+                    //ANWSER-Protocol
                     tnsdBody.Anwser(oss.str(), publisherArrayListInfo);
 
                     auto answerProtocolBytes = streamTemplate.ToStream();
 
+                    //send ANSWER-Protocol bytestream
                     socket.Send({begin(answerProtocolBytes), end(answerProtocolBytes)});
-
                 }
                 break;
         }

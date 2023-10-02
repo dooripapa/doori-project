@@ -1,22 +1,27 @@
 #include "Sub.h"
-#include "ProcessSupport/Runner.h"
 
 int main(int argc, char** argv)
 {
-    doori::Dictionary dic;
+    api::Data::Dictionary dic;
 
-    doori::Getopt getopt(argc, argv);
+    api::Process::Getopt getopt(argc, argv);
 
     if (!dic.load(getopt.getOptValue("--file"))) {
-        cout<< "Pub error" << endl;
+        cout<< "Sub error" << endl;
         exit(-1);
     }
 
-    dic.logging();
+    dic.logging("Tnsd IP", service::Subscriber::Sub::TNSD_IP);
+    dic.logging("Tnsd Port", service::Subscriber::Sub::TNSD_PORT);
+    dic.logging("Log Name", service::Subscriber::Sub::LOG_NAME);
+    dic.logging("Log Path", service::Subscriber::Sub::LOG_PATH);
+    dic.logging("Log Level", service::Subscriber::Sub::LOG_LEVEL);
+    dic.logging("Binding IP", service::Subscriber::Sub::SUB_IP);
+    dic.logging("Binding Port", service::Subscriber::Sub::SUB_PORT);
 
-    doori::Sub sub(dic);
+    service::Subscriber::Sub sub(dic);
 
-    doori::Runner runner( std::move(sub) );
+    api::Process::Runner runner( std::move(sub) );
 
     runner.run();
 
