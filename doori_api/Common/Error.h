@@ -78,8 +78,23 @@ namespace doori::api::Common {
          */
         void InjectedBySystemcallError() noexcept;
 
-        template<typename FILENAME, typename FUNCNAME, typename LINE, int N>
-        void loggingBySystemcallError(FILENAME, FUNCNAME, LINE, char const(&loggingCause)[N]) noexcept;
+		
+		/**
+		 * @brief 시스템 호출을 사용하여 오류 메시지를 기록합니다.
+		 * 
+		 * 이 함수는 파일 이름, 함수 이름, 라인 번호 및 오류 원인을 포함하는 문자열을 사용하여 오류 메시지를 기록합니다. 그런 다음 시스템 호출을 사용하여 오류 메시지를 기록합니다.
+		 * 
+		 * @tparam FILENAME 오류가 발생한 파일의 이름입니다.
+		 * @tparam FUNCNAME 오류가 발생한 함수의 이름입니다.
+		 * @tparam LINE 오류가 발생한 라인 번호입니다.
+		 * @tparam N 오류 원인을 포함하는 문자열의 크기입니다.
+		 * @param FILENAME 오류가 발생한 파일의 이름입니다.
+		 * @param FUNCNAME 오류가 발생한 함수의 이름입니다.
+		 * @param LINE 오류가 발생한 라인 번호입니다.
+		 * @param loggingCause 오류 원인을 포함하는 문자열입니다.
+		 */
+		template<typename FILENAME, typename FUNCNAME, typename LINE, int N>
+		void loggingBySystemcallError(FILENAME, FUNCNAME, LINE, char const(&loggingCause)[N]) noexcept;
 
         template<typename FILENAME, typename FUNCNAME, typename LINE, typename STRING_CAUSE>
         void loggingBySystemcallError(FILENAME filename, FUNCNAME funcname, LINE line, STRING_CAUSE stringCause) noexcept;
