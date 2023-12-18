@@ -14,8 +14,7 @@ namespace doori::api::Common{
     template<typename T>
     concept StructConcept = std::is_class_v<T> && !std::is_pointer_v<T>;
 
-    template<typename T>
-    requires StructConcept<T>
+    template<StructConcept T>
     std::vector<char> ToBytes(const T& t) {
 
         //메모리 할당
