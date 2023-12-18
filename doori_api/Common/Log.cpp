@@ -18,15 +18,19 @@ namespace doori::api::Common{
 
     auto Log::setLogEnv(const string& path, LEVEL level) -> void
     {
-        mlevel = level;
+        mLevel = level;
+
+		ofstream *pOf = new std::ofstream();
 
         try{
-            mLogfile.open(path, ofstream::out|ofstream::app);
+			pOf->open(path, ofstream::out|ofstream::app);
         }
         catch (...){
             cout << "fail to open " << path << endl;
             std::abort();
         }
+
+		mLogfile = dynamic_cast<std::ostream*>(pOf); 
     }
 
     auto Log::logging() -> Log&
@@ -34,32 +38,35 @@ namespace doori::api::Common{
         return Log::instance;
     }
 
-    auto Log::_writeLog( LEVEL level ) -> void
+    auto Log::log( LEVEL level ) -> void
     {
-        if (!mLogfile)
-            _writeLogLevel(reinterpret_cast<ofstream&>(cout), level);
-        else
-            _writeLogLevel(mLogfile, level);
+        switch( level )
+        {
+            case LEVEL::D:
+                *mLogfile << "D^ ";
+                break;
+            case LEVEL::I:
+                *mLogfile << "I^ ";
+                break;
+            case LEVEL::W:
+                *mLogfile << "W^ ";
+                break;
+            case LEVEL::E:
+                *mLogfile << "E^ ";
+                break;
+            case LEVEL::F:
+                *mLogfile << "F^ ";
+                break;
+        }
     }
 
     auto Log::_writeLineLog( ) -> void
     {
-        !mLogfile? cout<<endl : mLogfile<<endl;
+        *mLogfile<<std::endl;
     }
 
     Log::~Log()
     {
-        if(!mLogfile)
-        {
-            ;
-        }
-        else
-        {
-            if( mLogfile.is_open() )
-            {
-                mLogfile.close();
-            }
-        }
     }
 
     ///@note 허가 되지 않는 문자열 입력시 프로세스 다운
@@ -88,31 +95,13 @@ namespace doori::api::Common{
         }
     }
 
-    Log::Log() : mlevel(Log::LEVEL::D) {
-        //초기화
-        mLogfile.close();
-    }
-
-    auto Log::_writeLogLevel(ofstream& of, Log::LEVEL level) -> void {
-
-        switch( level )
-        {
-            case LEVEL::D:
-                of << "D^ ";
-                break;
-            case LEVEL::I:
-                of << "I^ ";
-                break;
-            case LEVEL::W:
-                of << "W^ ";
-                break;
-            case LEVEL::E:
-                of << "E^ ";
-                break;
-            case LEVEL::F:
-                of << "F^ ";
-                break;
-        }
+	/**
+	 * 기본출력으로는 std::cout으로 설정함.
+	 * Log::LEVEL는 기본적으로 DEBUG
+	 */
+    Log::Log() {
+		mLogfile = new std::ostream(std::cout.rdbuf());
+		mLevel   = Log::LEVEL::D;
     }
 
 }//namespace doori

@@ -21,10 +21,20 @@ namespace doori::api::Common{
     class Log
     {
     public:
-        enum class LEVEL:unsigned int{D=1,I=2,W=3,E=4,F=5};
+        enum class LEVEL
+		{
+			D=0,
+			I=1,
+			W=2,
+			E=3,
+			F=4
+		};
+
         auto static convertToLevel(const string& level) -> LEVEL;
         auto static logging() -> Log&;
         auto setLogEnv(const string& path, LEVEL level) -> void;
+
+		auto log(LEVEL level) -> void;
 
         template<typename T>
         auto log(T value) -> void;
@@ -32,40 +42,25 @@ namespace doori::api::Common{
         template<typename T, typename... Tlist>
         auto log(T arg, Tlist ... args) -> void;
 
-        template<typename T>
+        template<typename... Tlist>
         auto writeLog(LEVEL level
                     ,const char *fileName
                     ,const char *funcName
                     ,int codeLine
-                    ,T arg) -> void;
-
-        template<typename T, typename... Tlist>
-        auto writeLog(LEVEL level
-                    ,const char *fileName
-                    ,const char *funcName
-                    ,int codeLine
-                    ,T arg, Tlist ... args) -> void;
+                    ,Tlist ... args) -> void;
 
     private:
-        ofstream	mLogfile;
-        LEVEL	    mlevel;
+        ostream	    *mLogfile;
+        LEVEL	    mLevel;
         mutex		_logMutex;
-        static Log instance;
+        static Log instance;   //singleton
 
-        Log();
+		Log();
         ~Log();
 
         auto _writeLog( LEVEL level ) -> void;
-        template<typename T>
-        auto _writeLog(T t) -> void
-        {
-            if(!mLogfile)
-                cout<<t;
-            else
-                mLogfile<<t;
-        };
+
         auto _writeLineLog() -> void;
-        auto _writeLogLevel(ofstream& of, LEVEL level) -> void;
     };
 
 }//namespace doori
@@ -80,8 +75,3 @@ namespace doori::api::Common{
 
 #define LOG_CREATE(PATH, LEVEL) doori::api::Common::Log::logging().setLogEnv(PATH, LEVEL);
 #define LOG(LEVEL, ...) doori::api::Common::Log::logging().writeLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
-
-#ifdef TRACKING
-	#define TRACE doori::api::Common::Log::logging().writeLog(DEBUG, __FILE__, __PRETTY_FUNCTION__, __LINE__,"TRACKING");
-#endif
-
