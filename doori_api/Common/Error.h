@@ -78,7 +78,6 @@ namespace doori::api::Common {
          */
         void InjectedBySystemcallError() noexcept;
 
-		
 		/**
 		 * @brief 시스템 호출을 사용하여 오류 메시지를 기록합니다.
 		 * 

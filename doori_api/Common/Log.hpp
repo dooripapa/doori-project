@@ -8,11 +8,42 @@
 #include "Log.h"
 
 namespace doori::api::Common{
-	
+
+
     template<typename T>
     auto Log::log(T t) -> void
     {
 		*mLogfile<<t;
+    }
+
+    template<int N, typename... Tlist>
+    auto Log::log(char const(&pStr)[N], Tlist... args) -> void
+    {
+        int argsIndex=0;
+        auto argsTuple = std::make_tuple(args...);
+        bool isSpecifier = false;
+        bool isPercent = false;
+        for(int i=0;i<N-1;++i)
+        {
+            char c = pStr[i];
+
+            isSpecifier = (isPercent && (c == 'd' || c == 'f'));
+            isPercent = (c == '%');
+
+            if( isSpecifier ) {
+                if(argsIndex >= sizeof...(Tlist)) {
+
+                }
+                *mLogfile << argsTuple[argsIndex];
+                ++argsIndex;
+            }
+
+            if(isPercent && !isSpecifier)
+                *mLogfile << pStr[i-1];
+            else if( !isPercent && !isSpecifier)
+                *mLogfile << pStr[i];
+
+        }
     }
 
     template<typename T, typename... Tlist>
