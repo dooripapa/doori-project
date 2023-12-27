@@ -24,5 +24,5 @@ TEST(Log, OutputTest) {
 
     Myclass s;
 
-    LOG(DEBUG, "leejaeseong %t", s);
+    PRINT(DEBUG, "leejaeseong %t", s);
 }
