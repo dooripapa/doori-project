@@ -20,9 +20,26 @@ private:
     string name{"Myclass"};
 };
 
+void ErrorOutput() {
+    Myclass s;
+
+    PRINT(DEBUG, "Insufficient argumets, You are missing one parameter.  {%t} [%t] (%t)", s, 100);
+}
+
+
 TEST(Log, OutputTest) {
 
     Myclass s;
 
-    PRINT(DEBUG, "leejaeseong %t", s);
+    auto a = 9999;
+
+    PRINT(DEBUG, "doori-project %t %t %t", s, 100, "doori-project");
+
+    PRINT(DEBUG, "doori-project {%t} [%t] (%t)", s, 100, a);
+}
+
+TEST(Log, ExceptionCheck) {
+
+    ASSERT_THROW(ErrorOutput(), runtime_error);
+
 }

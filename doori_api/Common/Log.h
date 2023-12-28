@@ -41,8 +41,10 @@ namespace doori::api::Common{
         template<typename T>
         auto log(T value) -> void;
 
-        template<int N, typename... Tlist>
-        auto plog(char const(&pStr)[N], Tlist... args) -> void;
+        auto plog(const char *format) -> void;
+
+        template<typename T, typename... Args>
+        auto plog(const char* format, const T& value, const Args&... args) -> void;
 
         template<typename T, typename... Tlist>
         auto log(T arg, Tlist ... args) -> void;
@@ -54,13 +56,14 @@ namespace doori::api::Common{
                     ,int codeLine
                     ,Tlist ... args) -> void;
 
-        template<int N, typename... Tlist>
+        template<typename T, typename... Args>
         auto printLog(LEVEL level
                 ,const char *fileName
                 ,const char *funcName
                 ,int codeLine
-                ,char const(&pStr)[N]
-               ,Tlist... args) -> void;
+                ,const char* format
+                ,const T& value
+                ,const Args&... args) -> void;
 
     private:
         ostream	    *mLogfile;
@@ -86,6 +89,6 @@ namespace doori::api::Common{
 
 #define LOG_CREATE(PATH, LEVEL) doori::api::Common::Log::logging().setLogEnv(PATH, LEVEL);
 #define LOG(LEVEL, ...) doori::api::Common::Log::logging().writeLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
-#define PRINT(LEVEL, ...) doori::api::Common::Log::logging().printLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define PRINT(LEVEL, format, ...) doori::api::Common::Log::logging().printLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, format, __VA_ARGS__)
 
 #pragma clang diagnostic pop

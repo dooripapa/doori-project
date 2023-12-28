@@ -16,40 +16,19 @@ namespace doori::api::Common{
 		*mLogfile<<t;
     }
 
-    template<int N, typename... Tlist>
-    auto Log::plog(char const(&pStr)[N], Tlist... args) -> void
+    template<typename T, typename... Args>
+    auto Log::plog(const char* format, const T& value, const Args&... args) -> void
     {
-        int argsIndex=0;
-        bool isSpecifier = false;
-        bool isPercent = false;
-        const char cPercnt = '%';
-        char cBeforeChar = ' ';
-        for(int i=0;i<N-1;++i)
-        {
-            char c = pStr[i];
-
-            isSpecifier = (isPercent && (c == 't'));
-            isPercent = (c == cPercnt);
-
-            if( isSpecifier ) {
-                if(argsIndex >= sizeof...(Tlist)) {
-
-                }
-                *mLogfile << std::get<argsIndex>(std::tie(args...));
-                ++argsIndex;
-            } else {
-
-                if (isPercent) {
-                    cBeforeChar = cPercnt;
-                }
-                else {
-                    if (cBeforeChar == cPercnt) {
-                        *mLogfile << cBeforeChar;
-                    }
-                    *mLogfile << c;
-                }
+        while (*format) {
+            if (*format == '%' && *(format + 1) == 't') {
+                log(value);
+                format += 2;
+                plog(format, args...);
+                return;
             }
+            *mLogfile << *format++;
         }
+        throw std::runtime_error("Excess arguments provided");
     }
 
     template<typename T, typename... Tlist>
@@ -108,13 +87,14 @@ namespace doori::api::Common{
         _writeLineLog();
     }
 
-    template<int N, typename... Tlist>
+    template<typename T, typename... Args>
     auto Log::printLog(LEVEL level
             ,const char *fileName
             ,const char *funcName
-            ,const int codeLine
-            ,char const(&pStr)[N]
-            ,Tlist... args) -> void
+            ,int codeLine
+            ,const char* format
+            ,const T& value
+            ,const Args&... args) -> void
     {
         if( mLevel > level )
             return;
@@ -153,7 +133,7 @@ namespace doori::api::Common{
         *mLogfile << '|' << setfill(' ') << setw( 5) << std::right << codeLine ;
         *mLogfile << '|';
 
-        plog( pStr, args... );
+        plog( format, value, args... );
 
         _writeLineLog();
     }

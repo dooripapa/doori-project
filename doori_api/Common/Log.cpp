@@ -104,4 +104,19 @@ namespace doori::api::Common{
 		mLevel   = Log::LEVEL::D;
     }
 
+    /**
+     * Log.hpp에 선언던, plog의 overload 함수
+     * @param format
+     */
+    auto Log::plog(const char *format) -> void
+    {
+        while (*format) {
+            if(*format == '%' && *(format+1) == 't') {
+                throw std::runtime_error("Insufficient argumets for format symbol");
+            }
+            *mLogfile<< *format++;
+        }
+    }
+
+
 }//namespace doori
