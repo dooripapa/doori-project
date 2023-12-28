@@ -24,7 +24,7 @@ void ErrorOutput() {
 
     Myclass s;
 
-    PRINT(DEBUG, "Insufficient argumets, You are missing one parameter.  {%t} [%t] (%t)", s, 100);
+    TLOG(DEBUG, "Insufficient argumets, You are missing one parameter.  {%t} [%t] (%t)", s, 100);
 }
 
 
@@ -34,9 +34,9 @@ TEST(Log, OutputTest) {
 
     auto a = 9999;
 
-    PRINT(DEBUG, "doori-project %t %t %t", s, 100, "doori-project");
+    TLOG(DEBUG, "doori-project %t %t %t", s, 100, "doori-project");
 
-    PRINT(DEBUG, "doori-project {%t} [%t] (%t)", s, 100, a);
+    TLOG(DEBUG, "doori-project {%t} [%t] (%t)", s, 100, a);
 }
 
 TEST(Log, ExceptionCheck) {
