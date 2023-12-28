@@ -21,6 +21,7 @@ private:
 };
 
 void ErrorOutput() {
+
     Myclass s;
 
     PRINT(DEBUG, "Insufficient argumets, You are missing one parameter.  {%t} [%t] (%t)", s, 100);
