@@ -19,22 +19,16 @@ using namespace std;
 
 namespace doori::api::Stream {
 
-    enum struct CODER{
-        ASCII
-        ,UTF8
-        ,UTF16
+    enum struct ENCODING_TYPE{
+        ASCII ,UTF8 ,UTF16
     };
 
     enum struct ENDIAN{
-        BIG
-        ,LITTLE
+        BIG ,LITTLE
     };
 
     enum struct DATA_FORMAT{
-        SOLID
-        ,JSON
-        ,XML
-        ,CSV
+        SOLID ,JSON ,XML ,CSV
     };
 
     /**
@@ -72,7 +66,7 @@ namespace doori::api::Stream {
     class StreamTemplate : Common::Error{
     public:
 
-        StreamTemplate(CODER coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b);
+        StreamTemplate(ENCODING_TYPE coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b);
         StreamTemplate(Header& h, Body& b);
         StreamTemplate(const StreamTemplate&) = delete;
         StreamTemplate(StreamTemplate&&) = delete;
@@ -108,7 +102,7 @@ namespace doori::api::Stream {
             char mDataFormat[K_DATAFORMAT_LEN];
         };
 
-        CODER mCoder;
+        ENCODING_TYPE mEncodingType;
         ENDIAN mEndian;
         DATA_FORMAT mDataFormat;
 
@@ -120,7 +114,7 @@ namespace doori::api::Stream {
 
     template<IHeaderInterface Header, IBodyInterface Body>
     StreamTemplate<Header, Body>::StreamTemplate(Header &h, Body &b)
-    : mCoder(CODER::ASCII), mEndian(ENDIAN::LITTLE), mDataFormat(DATA_FORMAT::JSON), mHeader(h), mBody(b), Common::Error(0, true){
+    : mEncodingType(ENCODING_TYPE::ASCII), mEndian(ENDIAN::LITTLE), mDataFormat(DATA_FORMAT::JSON), mHeader(h), mBody(b), Common::Error(0, true){
     }
 
     template<IHeaderInterface Header, IBodyInterface Body>
@@ -165,14 +159,14 @@ namespace doori::api::Stream {
     template<IHeaderInterface Header, IBodyInterface Body>
     string StreamTemplate<Header, Body>::convertCoder() {
         ostringstream oss;
-        switch (mCoder) {
-            case CODER::ASCII:
+        switch (mEncodingType) {
+            case ENCODING_TYPE::ASCII:
                 oss << setw(K_CODER_LEN) << std::left << "ASCII";
                 break;
-            case CODER::UTF8:
+            case ENCODING_TYPE::UTF8:
                 oss << setw(K_CODER_LEN) << std::left << "UTF8";
                 break;
-            case CODER::UTF16:
+            case ENCODING_TYPE::UTF16:
                 oss << setw(K_CODER_LEN) << std::left << "UTF16";
                 break;
         }
@@ -286,15 +280,15 @@ namespace doori::api::Stream {
      * StreamTemplate 생성자
      * @tparam Header IHeader인터페이스를 상속받은 객체형
      * @tparam Body IBody인터페이스를 상속받은 객체형
-     * @param coder Stream::CODER::ASCII
+     * @param coder Stream::ENCODING_TYPE::ASCII
      * @param endian Stream::ENDIAN::LITTLE
      * @param dataFormat Stream::ENDIAN::DATA_FORMAT
      * @param h IHeader인터페이스를 상속받은 구상객체
      * @param b IBody인터페이스를 상속받은 구상객체
      */
     template<IHeaderInterface Header, IBodyInterface Body>
-    StreamTemplate<Header, Body>::StreamTemplate(CODER coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b)
-    : mCoder(coder), mEndian(endian), mDataFormat(dataFormat), mHeader(h), mBody(b), Common::Error(0, true){
+    StreamTemplate<Header, Body>::StreamTemplate(ENCODING_TYPE coder, ENDIAN endian, DATA_FORMAT dataFormat, Header& h, Body& b)
+    : mEncodingType(coder), mEndian(endian), mDataFormat(dataFormat), mHeader(h), mBody(b), Common::Error(0, true){
 
     }
 
