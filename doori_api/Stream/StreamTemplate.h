@@ -95,11 +95,11 @@ namespace doori::api::Stream {
             StreamProtocol(StreamProtocol&&) = delete;
             StreamProtocol& operator=(const StreamProtocol& rhs);
             StreamProtocol& operator=(StreamProtocol&&) = delete;
-            void FromStream(string buffer);
+            void FromStream(const string& buffer);
         private:
-            char mCoder[K_CODER_LEN];
-            char mEndian[K_ENDIAN_LEN];
-            char mDataFormat[K_DATAFORMAT_LEN];
+            char mCoder[K_CODER_LEN]{};
+            char mEndian[K_ENDIAN_LEN]{};
+            char mDataFormat[K_DATAFORMAT_LEN]{};
         };
 
         ENCODING_TYPE mEncodingType;
@@ -118,7 +118,7 @@ namespace doori::api::Stream {
     }
 
     template<IHeaderInterface Header, IBodyInterface Body>
-    void StreamTemplate<Header, Body>::StreamProtocol::FromStream(string buffer) {
+    void StreamTemplate<Header, Body>::StreamProtocol::FromStream(const string& buffer) {
         strncpy(mCoder, buffer.c_str(), K_CODER_LEN);
         strncpy(mEndian, buffer.c_str()+K_CODER_LEN, K_ENDIAN_LEN);
         strncpy(mDataFormat, buffer.c_str()+K_CODER_LEN +K_ENDIAN_LEN, K_DATAFORMAT_LEN);

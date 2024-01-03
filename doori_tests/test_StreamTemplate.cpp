@@ -31,7 +31,7 @@ TEST(StreamTemplate, Usage_Sending) {
      * 참조로 Tnsd Header, Tnsd Body을 StreamTemplate 구성함.
      * 그래서, header, body를 변경이 발생되면, ToStream의 출력값이 변경됨.
      */
-    Stream::StreamTemplate< Tnsd::Header, Tnsd::Body<Data::Json> > stream{Stream::CODER::ASCII, Stream::ENDIAN::LITTLE, Stream::DATA_FORMAT::JSON, header, body};
+    Stream::StreamTemplate< Tnsd::Header, Tnsd::Body<Data::Json> > stream{Stream::ENCODING_TYPE::ASCII, Stream::ENDIAN::LITTLE, Stream::DATA_FORMAT::JSON, header, body};
     auto ret = stream.ToStream();
     cout<< "start 1:[";
     for(const auto& m: ret)

@@ -6,7 +6,7 @@
 
 namespace doori::api::Tnsd {
 
-    constexpr long Header::GetLength() const {
+    long Header::GetLength() const {
         return 16;
     }
 
@@ -15,7 +15,7 @@ namespace doori::api::Tnsd {
         return vector<char>{begin(value), end(value)};
     }
 
-    std::string Header::switchProtocolName(PROTOCOL protocol) const {
+    std::string Header::switchProtocolName(PROTOCOL protocol) {
         ostringstream oss;
 
         switch(protocol) {
@@ -50,7 +50,7 @@ namespace doori::api::Tnsd {
         return oss.str();
     }
 
-    PROTOCOL Header::switchProtocolEnum(string protocol) const {
+    PROTOCOL Header::switchProtocolEnum(const string& protocol) {
         if(protocol == "NOTIFY") {
             return PROTOCOL::NOTIFY;
         }
@@ -83,11 +83,13 @@ namespace doori::api::Tnsd {
 
     }
 
-    int Header::FromStream(string buffer) {
+    int Header::FromStream(const string& buffer) {
 
-        buffer.erase(std::remove_if(buffer.begin(), buffer.end(), [](unsigned char x){return std::isspace(x);}), buffer.end());
+        string copyBuffer = buffer;
 
-        mTnsdProtocol = switchProtocolEnum(buffer);
+        copyBuffer.erase(std::remove_if(copyBuffer.begin(), copyBuffer.end(), [](unsigned char x){return std::isspace(x);}), copyBuffer.end());
+
+        mTnsdProtocol = switchProtocolEnum(copyBuffer);
 
         if(PROTOCOL::INTERNAL_ERROR == mTnsdProtocol)
             return -1;

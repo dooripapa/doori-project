@@ -10,7 +10,7 @@ using namespace doori::api;
 
 class Myclass{
 public:
-    friend ostream& operator<<(ostream& os, Myclass ob)
+    friend ostream& operator<<(ostream& os, const Myclass& ob)
     {
         os << "Myclass.a=[" << ob.a << "] name[" << ob.name << "]";
         return os;
@@ -24,7 +24,7 @@ void ErrorOutput() {
 
     Myclass s;
 
-    TLOG(DEBUG, "Insufficient argumets, You are missing one parameter.  {%t} [%t] (%t)", s, 100);
+    PLOG(DEBUG, "Insufficient argumets, You are missing one parameter.  {%t} [%t] (%t)", s, 100);
 }
 
 
@@ -34,9 +34,9 @@ TEST(Log, OutputTest) {
 
     auto a = 9999;
 
-    TLOG(DEBUG, "doori-project %t %t %t", s, 100, "doori-project");
+    PLOG(DEBUG, "doori-project %t %t %t", s, 100, "doori-project");
 
-    TLOG(DEBUG, "doori-project {%t} [%t] (%t)", s, 100, a);
+    PLOG(DEBUG, "doori-project {%t} [%t] (%t)", s, 100, a);
 }
 
 TEST(Log, ExceptionCheck) {

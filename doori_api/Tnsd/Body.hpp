@@ -91,7 +91,7 @@ namespace doori::api::Tnsd {
     }
 
     template<typename T>
-    int Body<T>::FromStream(string buffer) {
+    int Body<T>::FromStream(const string& buffer) {
 
         if(!mData.unserialize(buffer))
             return -1;

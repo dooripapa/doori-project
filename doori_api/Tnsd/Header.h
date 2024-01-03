@@ -29,23 +29,23 @@ namespace doori::api::Tnsd {
     class Header : public Stream::IHeader {
 
     public:
-        constexpr long GetLength() const override;
+        [[nodiscard]] long GetLength() const override;
 
-        vector<char> ToStream() override;
+        [[nodiscard]] vector<char> ToStream() override;
 
         void SetProtocol(PROTOCOL protocol);
 
         PROTOCOL GetProtocol();
 
-        int FromStream(string buffer) override;
+        [[nodiscard]] int FromStream(const string& buffer) override;
 
     private:
 
         PROTOCOL mTnsdProtocol;
 
-        string switchProtocolName(PROTOCOL protocol) const;
+        [[nodiscard]] static string switchProtocolName(PROTOCOL protocol) ;
 
-        PROTOCOL switchProtocolEnum(string protocol) const;
+        [[nodiscard]] static PROTOCOL switchProtocolEnum(const string& protocol) ;
 
     };
 

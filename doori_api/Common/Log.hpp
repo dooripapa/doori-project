@@ -5,8 +5,6 @@
 // Created by doori on 19. 7. 25.
 //
 
-#include "Log.h"
-
 namespace doori::api::Common{
 
 

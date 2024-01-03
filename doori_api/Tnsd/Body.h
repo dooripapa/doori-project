@@ -79,7 +79,7 @@ namespace doori::api::Tnsd {
          */
         void Report(T json);
 
-        int FromStream(string buffer) override;
+        int FromStream(const string& buffer) override;
 
         [[nodiscard]] const T& GetBody() const;
 

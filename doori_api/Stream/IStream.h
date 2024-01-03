@@ -12,9 +12,9 @@ using namespace std;
 namespace doori::api::Stream{
     class IStream{
     public:
-        virtual long GetLength() const = 0;
-        virtual vector<char> ToStream() = 0;
-        virtual int FromStream(string buffer) = 0;
+        [[nodiscard]] virtual long GetLength() const = 0;
+        [[nodiscard]] virtual vector<char> ToStream() = 0;
+        [[nodiscard]] virtual int FromStream(const string& buffer) = 0;
     };
 
 }
