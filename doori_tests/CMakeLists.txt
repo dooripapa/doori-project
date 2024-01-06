@@ -48,7 +48,8 @@ set(TEST_FILES
         test_TCPBuilder.cpp
         test_TcpApi.cpp
 		test_EpollApi.cpp
-        test_StreamTemplate.cpp test_Bigdecimal.cpp test_Branch.cpp test_Tree.cpp test_Fid.cpp test_Log.cpp)
+        test_StreamTemplate.cpp test_Bigdecimal.cpp test_Branch.cpp test_Tree.cpp test_Fid.cpp test_Log.cpp
+		test_TCPState.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 
