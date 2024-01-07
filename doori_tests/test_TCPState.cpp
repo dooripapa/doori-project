@@ -7,7 +7,8 @@
 #include <functional>
 #include "Common/Log.h"
 #include "Communication/IIPCTopologyNode.h"
-#include "Communication/TCP/TCPtopologyNode.h"
+#include "Communication/TCP/TCPTopologyNode.h"
+#include "Communication/TCP/TCPConnection.h"
 
 using namespace doori::api::Communication::TCP;
 using namespace doori::api::Communication;
@@ -15,14 +16,17 @@ using namespace doori::api::Communication;
 
 TEST(TCPState, Client)
 {
-    TCPtopologyNode tcp;
+    TCPTopologyNode tcp;
 
     tcp.setState(new TCPinit("127.0.0.1", "8888"));
 }
 
 TEST(TCPState, Remote)
 {
-    IIPCTopologyNode tcp;
+    auto node = std::make_unique<TCPTopologyNode>();
+    node.bind("127.0.0.1", "9999");
+
+    TCPConnection conn{node};
 
     std::function<int(IIPCTopologyNode const &node)> processing;
 

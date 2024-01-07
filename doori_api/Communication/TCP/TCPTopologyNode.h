@@ -8,7 +8,7 @@
 namespace doori::api::Communication;
 
 namespace doori::api::Communication::TCP {
-    class TCPtopologyNode : public IIPCTopologyNode {
+    class TCPTopologyNode : public IIPCTopologyNode {
 
     public:
         long Send(const string &data) const override;
