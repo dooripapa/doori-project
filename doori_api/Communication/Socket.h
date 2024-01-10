@@ -7,7 +7,7 @@
 
 #include "Common/Log.h"
 #include "Common/Error.h"
-#include "IIPCTopologyNode.h"
+#include "ITopologyNode.h"
 #include <sys/socket.h>
 #include <bits/socket.h>
 #include <netinet/in.h>
@@ -48,7 +48,7 @@ namespace doori::api::Communication {
         ,OFF_NAGLE      = 1 << 7      // Nagle 알고리즘을 비활성화하여 지연을 최소화합니다.
     };
 
-    class Socket : public IIPCTopologyNode {
+    class Socket : public ITopologyNode {
     public:
         Socket();
         Socket(int fd, SOCK_STATUS status);

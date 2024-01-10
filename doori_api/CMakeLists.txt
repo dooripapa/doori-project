@@ -41,7 +41,7 @@ set(HEADER_FILES
 		Communication/TCP.h
 		Communication/IIPCBuilder.h
 		Communication/TCPBuilder.h
-        Communication/IIPCTopologyNode.h
+        Communication/ITopologyNode.h
 		Communication/TCP/TCPTopologyNode.cpp
 		Communication/TCP/TCPTopologyNode.h
 )
@@ -94,7 +94,11 @@ set(SRC_FILES
 		Communication/TCP/TCPWait.cpp
 		Communication/TCP/TCPWait.h
 		Communication/TCP/TCPConnection.cpp
-		Communication/TCP/TCPConnection.h)
+		Communication/TCP/TCPConnection.h
+		Communication/Handler.cpp
+		Communication/Handler.h
+		Communication/Handler.h
+		Communication/INode.h)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

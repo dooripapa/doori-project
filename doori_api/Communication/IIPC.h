@@ -8,7 +8,7 @@
 #include "string"
 #include "Communication/IIPC.h"
 #include "Communication/IIPCBuilder.h"
-#include "Communication/IIPCTopologyNode.h"
+#include "Communication/ITopologyNode.h"
 #include "Common/Error.h"
 
 using namespace std;

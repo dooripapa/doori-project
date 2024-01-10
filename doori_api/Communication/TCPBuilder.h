@@ -26,7 +26,7 @@ namespace doori::api::Communication{
 
         virtual ~TCPBuilder();
 
-        unique_ptr<IIPCTopologyNode> GetTopology() override;
+        unique_ptr<ITopologyNode> GetTopology() override;
 
         [[maybe_unused]] void From(string ip, string port);
 

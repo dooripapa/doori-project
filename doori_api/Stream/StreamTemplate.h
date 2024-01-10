@@ -12,7 +12,7 @@
 #include <string>
 #include "Common/Error.h"
 #include "Common/Util.h"
-#include "Communication/IIPCTopologyNode.h"
+#include "Communication/ITopologyNode.h"
 #include <iostream>
 
 using namespace std;

@@ -6,7 +6,7 @@
 #include <thread>
 #include <functional>
 #include "Common/Log.h"
-#include "Communication/IIPCTopologyNode.h"
+#include "Communication/INode.h"
 #include "Communication/TCP/TCPTopologyNode.h"
 #include "Communication/TCP/TCPConnection.h"
 
@@ -23,14 +23,14 @@ TEST(TCPState, Client)
 
 TEST(TCPState, Remote)
 {
-    auto node = std::make_unique<TCPTopologyNode>();
-    node.bind("127.0.0.1", "9999");
+    auto node = std::make_unique<INode>();
 
-    TCPConnection conn{node};
+    node.from("127.0.0.1", "9999");
+    node.to("127.0.0.1", "8888");
+    node.setHandler();
 
-    std::function<int(IIPCTopologyNode const &node)> processing;
-
-    processing = [](IIPCTopologyNode const &node) {
+    std::function<int(ITopologyNode const &node)> processing;
+    processing = [](ITopologyNode const &node) {
 
         std::string buffer;
         std::int32_t bufferSize = 200;
@@ -42,6 +42,7 @@ TEST(TCPState, Remote)
         return 0;
     };
 
-    tcp.setState(new TCPwait("127.0.0.1", "8888", processing));
+    TCPConnection conn{node};
 
+    conn.setState(new TCPwait(processing));
 }

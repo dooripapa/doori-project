@@ -5,10 +5,12 @@
 #ifndef DOORI_PROJECT_TCPTOPOLOGYNODE_H
 #define DOORI_PROJECT_TCPTOPOLOGYNODE_H
 
-namespace doori::api::Communication;
+#include "../INode.h"
+
+using namespace doori::api::Communication;
 
 namespace doori::api::Communication::TCP {
-    class TCPTopologyNode : public IIPCTopologyNode {
+    class TCPTopologyNode : public INode {
 
     public:
         long Send(const string &data) const override;

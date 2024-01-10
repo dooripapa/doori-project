@@ -9,7 +9,7 @@
 #include <string>
 #include <memory>
 #include "Communication/IIPC.h"
-#include "Communication/IIPCTopologyNode.h"
+#include "Communication/ITopologyNode.h"
 
 using namespace std;
 
