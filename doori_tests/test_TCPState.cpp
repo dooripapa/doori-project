@@ -6,43 +6,55 @@
 #include <thread>
 #include <functional>
 #include "Common/Log.h"
-#include "Communication/INode.h"
-#include "Communication/TCP/TCPTopologyNode.h"
-#include "Communication/TCP/TCPConnection.h"
+#include "Communication/NodeModel.h"
+#include "Communication/TCP/TCPNode.h"
+#include "Communication/FromStrategies.h"
+#include "Communication/ToStrategies.h"
+#include "Communication/TCP/TCPEstablish.h"
 
 using namespace doori::api::Communication::TCP;
 using namespace doori::api::Communication;
 
+int receiver(const string &buffer) {
 
-TEST(TCPState, Client)
-{
-    TCPTopologyNode tcp;
+    PLOG(DEBUG, "recv Data[%t]", buffer);
 
-    tcp.setState(new TCPinit("127.0.0.1", "8888"));
+    return 0;
 }
 
-TEST(TCPState, Remote)
-{
-    auto node = std::make_unique<INode>();
+int sender(const string &buffer, int bufferSize) {
 
-    node.from("127.0.0.1", "9999");
-    node.to("127.0.0.1", "8888");
-    node.setHandler();
+    PLOG(DEBUG, "send Data[%t], size[%t]", buffer, bufferSize);
 
-    std::function<int(ITopologyNode const &node)> processing;
-    processing = [](ITopologyNode const &node) {
+    return 0;
+}
 
-        std::string buffer;
-        std::int32_t bufferSize = 200;
 
-        node.Recv(buffer, bufferSize);
+TEST(TCPState, Client) {
+}
 
-        PLOG(DEBUG, "Recv Data[%t]", buffer);
+TEST(TCPState, Wait) {
+    TCPNode tcpNode;
 
-        return 0;
-    };
+    tcpNode.tieSource("127.0.0.1", "8888", receiver); //source binding IP Port
 
-    TCPConnection conn{node};
+    NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
 
-    conn.setState(new TCPwait(processing));
+    nodeModel.From();
+
+    nodeModel.setState(new TCPwait());
+}
+
+TEST(TCPState, Connect) {
+    TCPNode tcpNode;
+
+    tcpNode.tieSource("127.0.0.1", "8888", receiver); //source binding IP Port
+    tcpNode.tieRemote("127.0.0.1", "9999", sender); //destination IP Port
+
+    NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
+
+    nodeModel.From();
+    nodeModel.To();
+
+    nodeModel.setState(new TCPEstablish());
 }

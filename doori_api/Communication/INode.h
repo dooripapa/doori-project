@@ -1,34 +1,26 @@
 //
-// Created by KOSCOM on 2024-01-10.
+// Created by jaeseong on 24. 1. 10.
 //
 
 #ifndef DOORI_PROJECT_INODE_H
 #define DOORI_PROJECT_INODE_H
 
-namespace doori::api::Communication{
-    template <typename T, typename TStrategy>
-    class INode
-    {
-        using FromStrategy = std::function<int(T)>;
-        using ToStrategy = std::function<int(T)>;
-        using HandleStrategy = std::function<int(T)>;
+namespace doori::api::Communication {
+    /**
+     * @brief From() 함수는 source 지역에서 해야 할 일을 정의함.
+     * To() 함수는 destination 연결하기 위한 지원하는 함수
+     */
+    class INode {
+
     public:
-        int From(){
+        virtual ~INode() = default;
 
-        };
-        int To(){
+        virtual int From() = 0;
 
-        };
-        int H(){
-
-        };
-
-
-    private:
-
-
+        virtual int To() = 0;
 
     };
 }//doori
+
 
 #endif //DOORI_PROJECT_INODE_H

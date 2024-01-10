@@ -5,7 +5,7 @@
 #ifndef DOORI_PROJECT_HANDLER_H
 #define DOORI_PROJECT_HANDLER_H
 
-#include "TCP/TCPTopologyNode.h"
+#include "TCP/TCPNode.h"
 
 using namespace doori::api::Communication::TCP;
 

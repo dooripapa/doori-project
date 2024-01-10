@@ -5,12 +5,15 @@
 #ifndef DOORI_PROJECT_ITCPSTATE_H
 #define DOORI_PROJECT_ITCPSTATE_H
 
-class ITCPState {
-public:
-    virtual void open();
-    virtual void establish();
-    virtual void close();
-    virtual void wait();
-};doori::api::Communication::TCP
+namespace doori::api::Communication::TCP {
+    class ITCPState {
+    public:
+        virtual void open();
+        virtual void establish();
+        virtual void close();
+        virtual void wait();
+    };
+}
+
 
 #endif //DOORI_PROJECT_ITCPSTATE_H

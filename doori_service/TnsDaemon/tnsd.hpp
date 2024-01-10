@@ -71,7 +71,7 @@ namespace doori::service::TnsDaemon{
     }
 
     ///@brief 비정상처리시, 수신된 메시지를 그대로 송신에 보낸다.
-    ///@note 이 함수에서, processing 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\
+    ///@note 이 함수에서, receiver 에러일 경우, 에러메시지는 각각내부 함수에서 메시지를 만들고\
     ///에러코드는 리턴값에 따라 처리하도록 한다.
     template<typename T_IPCTopologyNode>
     auto Tnsd<T_IPCTopologyNode>::processMessage(Communication::Socket socket) -> int

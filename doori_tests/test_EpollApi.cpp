@@ -96,7 +96,7 @@ TEST(Epoll, Usage) {
 
     epollApi.RunningBackground(10, 10);
 
-    LOG(INFO,"Background processing...");
+    LOG(INFO,"Background receiver...");
 
     epollApi.JoinBackground();
 }
