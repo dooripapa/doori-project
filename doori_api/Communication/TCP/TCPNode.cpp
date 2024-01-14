@@ -7,15 +7,32 @@
 #include "TCPNode.h"
 
 namespace doori::api::Communication::TCP {
-    void TCPNode::tieSource(const string &ip, const string &port,
-                            std::function<int(const string &)> dispatcherReceiver) noexcept {
-        _sourceIp = ip;
-        _sourcePort = port;
-}
 
-    void TCPNode::tieRemote(const string &ip, const string &port,
-                            function<int(const string &buffer, int bufferSize)> dispatcherSender) noexcept {
-        _remoteIp = ip;
-        _remotePort = port;
+    void TCPNode::tieSource(const string &ip, const string &port, TCPNode::dispatcherReceiver) noexcept {
+
+        _source.ip = ip;
+        _source.port = port;
+
     }
+
+    void TCPNode::tieRemote(const string &ip, const string &port) noexcept {
+
+        _remote.ip = ip;
+        _remote.port = port;
+
+    }
+
+    int TCPNode::setState(std::unique_ptr <ITCPState> state) noexcept {
+        _state = std::move(state);
+        return 0;
+    }
+
+    Address TCPNode::getSource() {
+        return _source;
+    }
+
+    Address TCPNode::getRemote() {
+        return _remote;
+    }
+
 } // doori

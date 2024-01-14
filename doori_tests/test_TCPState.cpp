@@ -49,7 +49,7 @@ TEST(TCPState, Connect) {
     TCPNode tcpNode;
 
     tcpNode.tieSource("127.0.0.1", "8888", receiver); //source binding IP Port
-    tcpNode.tieRemote("127.0.0.1", "9999", sender); //destination IP Port
+    tcpNode.tieRemote("127.0.0.1", "9999"); //destination IP Port
 
     NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
 

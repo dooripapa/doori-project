@@ -5,10 +5,19 @@
 #ifndef DOORI_PROJECT_TCPNODE_H
 #define DOORI_PROJECT_TCPNODE_H
 
+#include <memory>
+#include "ITCPState.h"
+
 using namespace doori::api::Communication;
 using namespace std;
 
 namespace doori::api::Communication::TCP {
+
+    struct Address {
+        string ip;
+        string port;
+    };
+
     class TCPNode {
 
         using dispatcherReceiver = function<int(int fd, const string &buffer)>;
@@ -18,16 +27,21 @@ namespace doori::api::Communication::TCP {
 
         void tieSource(const string &ip, const string &port, dispatcherReceiver) noexcept;
 
-        void tieRemote(const string &ip, const string &port, dispatcherSender) noexcept;
+        void tieRemote(const string &ip, const string &port) noexcept;
+
+        int setState(unique_ptr<ITCPState> state) noexcept;
+
+        Address getSource();
+        Address getRemote();
 
     private:
 
+        std::unique_ptr<ITCPState> _state = nullptr;
+
         int _sock;
 
-        string _sourceIp;
-        string _sourcePort;
-        string _remoteIp;
-        string _remotePort;
+        Address _source;
+        Address _remote;
     };
 } // doori
 
