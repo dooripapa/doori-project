@@ -7,6 +7,10 @@
 
 #include <memory>
 #include "ITCPState.h"
+#include "TCPClose.h"
+#include "TCPEstablish.h"
+#include "TCPOpen.h"
+#include "../../Common/Error.h"
 
 using namespace doori::api::Communication;
 using namespace std;
@@ -18,27 +22,30 @@ namespace doori::api::Communication::TCP {
         string port;
     };
 
-    class TCPNode {
+    class TCPNode : public Common::Error {
 
-        using dispatcherReceiver = function<int(int fd, const string &buffer)>;
-        using dispatcherSender = function<int(const string &buffer, int bufferSize)>;
 
     public:
 
-        void tieSource(const string &ip, const string &port, dispatcherReceiver) noexcept;
+        void tieSource(const string &ip, const string &port) noexcept;
 
         void tieRemote(const string &ip, const string &port) noexcept;
-
-        int setState(unique_ptr<ITCPState> state) noexcept;
 
         Address getSource();
         Address getRemote();
 
+        [[nodiscard]] int getSock() const noexcept;
+
+        void setSock(int fd) noexcept;
+
     private:
 
-        std::unique_ptr<ITCPState> _state = nullptr;
+        friend class ITCPState;
+        void changeState(ITCPState* state);
 
-        int _sock;
+        ITCPState *_state;
+
+        int _sock = -1;
 
         Address _source;
         Address _remote;

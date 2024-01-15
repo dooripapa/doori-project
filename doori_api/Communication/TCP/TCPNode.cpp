@@ -4,27 +4,19 @@
 
 #include <string>
 #include <functional>
+#include <variant>
 #include "TCPNode.h"
 
 namespace doori::api::Communication::TCP {
 
-    void TCPNode::tieSource(const string &ip, const string &port, TCPNode::dispatcherReceiver) noexcept {
-
+    void TCPNode::tieSource(const string &ip, const string &port) noexcept {
         _source.ip = ip;
         _source.port = port;
-
     }
 
     void TCPNode::tieRemote(const string &ip, const string &port) noexcept {
-
         _remote.ip = ip;
         _remote.port = port;
-
-    }
-
-    int TCPNode::setState(std::unique_ptr <ITCPState> state) noexcept {
-        _state = std::move(state);
-        return 0;
     }
 
     Address TCPNode::getSource() {
@@ -33,6 +25,18 @@ namespace doori::api::Communication::TCP {
 
     Address TCPNode::getRemote() {
         return _remote;
+    }
+
+    int TCPNode::getSock() const noexcept {
+        return _sock;
+    }
+
+    void TCPNode::changeState(ITCPState *state) {
+        _state = state;
+    }
+
+    void TCPNode::setSock(int fd) noexcept {
+        _sock = fd;
     }
 
 } // doori

@@ -91,8 +91,6 @@ set(SRC_FILES
 		Communication/TCP/TCPEstablish.h
 		Communication/TCP/TCPClose.cpp
 		Communication/TCP/TCPClose.h
-		Communication/TCP/TCPWait.cpp
-		Communication/TCP/TCPWait.h
 		Communication/Handler.cpp
 		Communication/Handler.h
 		Communication/Handler.h

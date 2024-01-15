@@ -11,6 +11,7 @@
 #include "Communication/FromStrategies.h"
 #include "Communication/ToStrategies.h"
 #include "Communication/TCP/TCPEstablish.h"
+#include "Communication/TCP/TCPOpen.h"
 
 using namespace doori::api::Communication::TCP;
 using namespace doori::api::Communication;
@@ -36,19 +37,19 @@ TEST(TCPState, Client) {
 TEST(TCPState, Wait) {
     TCPNode tcpNode;
 
-    tcpNode.tieSource("127.0.0.1", "8888", receiver); //source binding IP Port
+    tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
 
     NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
 
-    nodeModel.From();
+    auto sock = nodeModel.From();
 
-    nodeModel.setState(new TCPwait());
+    tcpNode.setState(std::make_unique<ITCPState>(new TCPOpen()));
 }
 
 TEST(TCPState, Connect) {
     TCPNode tcpNode;
 
-    tcpNode.tieSource("127.0.0.1", "8888", receiver); //source binding IP Port
+    tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
     tcpNode.tieRemote("127.0.0.1", "9999"); //destination IP Port
 
     NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});

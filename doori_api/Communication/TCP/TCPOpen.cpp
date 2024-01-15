@@ -8,6 +8,10 @@ namespace doori {
     namespace api {
         namespace Communication {
             namespace TCP {
+                void TCPOpen::close() {
+
+
+                }
             } // TCP
         } // Communication
     } // api

@@ -11,14 +11,10 @@ namespace doori {
     namespace api {
         namespace Communication {
             namespace TCP {
-
                 class TCPOpen : public ITCPState{
 
                 public:
-                    void close() override;
-                    void establish() override;
-                    void open() override;
-                    void wait() override;
+
                 };
 
             } // TCP

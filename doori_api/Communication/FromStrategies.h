@@ -20,6 +20,10 @@ namespace doori::api::Communication{
         int operator()(SHM::ShmNode &node);
         int operator()(UDP::UDPNode &node);
 */
+
+    private:
+        static bool IsValidIP(const string &ip);
+        static bool IsValidPort(const string &port);
     };
 
 }

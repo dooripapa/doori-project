@@ -6,6 +6,7 @@
 #define DOORI_PROJECT_NODEMODEL_H
 
 #include "INode.h"
+#include "TCP/ITCPState.h"
 
 namespace doori::api::Communication {
     /**
