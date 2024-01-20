@@ -6,7 +6,7 @@
 #include <thread>
 #include <functional>
 #include "Common/Log.h"
-#include "Communication/NodeModel.h"
+#include "Communication/NodeBindStrategy.h"
 #include "Communication/TCP/TCPNode.h"
 #include "Communication/FromStrategies.h"
 #include "Communication/ToStrategies.h"
@@ -39,9 +39,9 @@ TEST(TCPState, Wait) {
 
     tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
 
-    NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
+    NodeBindStrategy<TCPNode, FromStrategies, ToStrategies> node(tcpNode, FromStrategies{}, ToStrategies{});
 
-    auto sock = nodeModel.From();
+    auto sock = node.From();
 
     tcpNode.setState(std::make_unique<ITCPState>(new TCPOpen()));
 }
@@ -52,7 +52,7 @@ TEST(TCPState, Connect) {
     tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
     tcpNode.tieRemote("127.0.0.1", "9999"); //destination IP Port
 
-    NodeModel<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
+    NodeBindStrategy<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
 
     nodeModel.From();
     nodeModel.To();

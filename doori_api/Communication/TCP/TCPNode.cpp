@@ -39,4 +39,21 @@ namespace doori::api::Communication::TCP {
         _sock = fd;
     }
 
+    void TCPNode::open() {
+        _state->open();
+    }
+
+    void TCPNode::wait() {
+        _state->wait();
+    }
+
+    void TCPNode::establish() {
+        _state->establish();
+    }
+
+    void TCPNode::close() {
+        _state->close();
+    }
+
+
 } // doori

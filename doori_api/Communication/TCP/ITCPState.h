@@ -5,15 +5,16 @@
 #ifndef DOORI_PROJECT_ITCPSTATE_H
 #define DOORI_PROJECT_ITCPSTATE_H
 
-#include "TCPNode.h"
-
 namespace doori::api::Communication::TCP {
     class ITCPState {
     public:
-        virtual void open(TCPNode *node) = 0;
-        virtual void establish(TCPNode *node)= 0;
-        virtual void close(TCPNode *node)= 0;
-        virtual void wait(TCPNode *node)= 0;
+        virtual void open() = 0;
+
+        virtual void establish() = 0;
+
+        virtual void close() = 0;
+
+        virtual void wait() = 0;
     };
 }
 

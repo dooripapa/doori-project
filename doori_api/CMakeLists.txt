@@ -94,7 +94,7 @@ set(SRC_FILES
 		Communication/Handler.cpp
 		Communication/Handler.h
 		Communication/Handler.h
-		Communication/NodeModel.h
+        Communication/NodeBindStrategy.h
 		Communication/INode.h
 		Communication/FromStrategies.cpp
 		Communication/FromStrategies.h

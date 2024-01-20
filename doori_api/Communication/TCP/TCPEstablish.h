@@ -6,6 +6,7 @@
 #define DOORI_PROJECT_TCPESTABLISH_H
 
 #include "ITCPState.h"
+#include "Log.h"
 
 namespace doori {
     namespace api {

@@ -6,6 +6,7 @@
 #define DOORI_PROJECT_TCPCLOSE_H
 
 #include "ITCPState.h"
+#include "../../Common/Log.h"
 
 namespace doori {
     namespace api {

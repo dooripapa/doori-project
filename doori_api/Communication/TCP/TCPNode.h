@@ -38,12 +38,17 @@ namespace doori::api::Communication::TCP {
 
         void setSock(int fd) noexcept;
 
+        void open();
+
+        void establish();
+
+        void close();
+
+        void wait();
+
     private:
 
-        friend class ITCPState;
-        void changeState(ITCPState* state);
-
-        ITCPState *_state;
+        ITCPState *_state = new TCPClose();
 
         int _sock = -1;
 

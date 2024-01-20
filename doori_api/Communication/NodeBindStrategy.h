@@ -2,8 +2,8 @@
 // Created by KOSCOM on 2024-01-10.
 //
 
-#ifndef DOORI_PROJECT_NODEMODEL_H
-#define DOORI_PROJECT_NODEMODEL_H
+#ifndef DOORI_PROJECT_NODEBINDSTRATEGY_H
+#define DOORI_PROJECT_NODEBINDSTRATEGY_H
 
 #include "INode.h"
 #include "TCP/ITCPState.h"
@@ -17,11 +17,11 @@ namespace doori::api::Communication {
      * @tparam TToStragegy : remote에서 연결을 위한 기본적인 로직 정의
      */
     template<typename T, typename TFromStrategy, typename TToStragegy>
-    class NodeModel : public INode {
+    class NodeBindStrategy : public INode {
         using FromStrategy = std::function<int(T &t)>;
         using ToStrategy = std::function<int(T &t)>;
     public:
-        NodeModel(T &t, const TFromStrategy &from, const TToStragegy &to) : _t(t), _from(from), _to(to) {}
+        NodeBindStrategy(T &t, const TFromStrategy &from, const TToStragegy &to) : _t(t), _from(from), _to(to) {}
 
         int From() override {
             return _from(_t);
@@ -39,4 +39,4 @@ namespace doori::api::Communication {
     };
 }//doori
 
-#endif //DOORI_PROJECT_NODEMODEL_H
+#endif //DOORI_PROJECT_NODEBINDSTRATEGY_H

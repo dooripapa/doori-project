@@ -8,6 +8,21 @@ namespace doori {
     namespace api {
         namespace Communication {
             namespace TCP {
+                void TCPClose::close() {
+                    LOG(INFO, "TCP close");
+                }
+
+                void TCPClose::establish() {
+                    LOG(INFO, "TCP close(establish)");
+                }
+
+                void TCPClose::open() {
+                    LOG(INFO, "TCP close(open)");
+                }
+
+                void TCPClose::wait() {
+                    LOG(INFO, "TCP close(wait)");
+                }
             } // TCP
         } // Communication
     } // api
