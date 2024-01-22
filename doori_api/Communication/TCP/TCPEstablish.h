@@ -7,6 +7,7 @@
 
 #include "ITCPState.h"
 #include "Log.h"
+#include "TCPNode.h"
 
 namespace doori {
     namespace api {
@@ -17,7 +18,7 @@ namespace doori {
 
                 public:
                     void wait() override;
-                    void open() override;
+                    void open(TCPNode node) override;
                     void establish() override;
                     void close() override;
                 };

@@ -16,7 +16,7 @@ namespace doori {
                     LOG(INFO, "TCP close(establish)");
                 }
 
-                void TCPClose::open() {
+                void TCPClose::open(TCPNode node) {
                     LOG(INFO, "TCP close(open)");
                 }
 

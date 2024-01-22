@@ -16,12 +16,17 @@ namespace doori::api::Communication {
      * @tparam TFromStrategy : source 영역에서 remote영역에 접속하기 위한 기본적이 로직 정의.
      * @tparam TToStragegy : remote에서 연결을 위한 기본적인 로직 정의
      */
-    template<typename T, typename TFromStrategy, typename TToStragegy>
+    template<typename T, typename TFromStrategy, typename TToStragegy = std::function<int(void)> >
     class NodeBindStrategy : public INode {
         using FromStrategy = std::function<int(T &t)>;
         using ToStrategy = std::function<int(T &t)>;
     public:
         NodeBindStrategy(T &t, const TFromStrategy &from, const TToStragegy &to) : _t(t), _from(from), _to(to) {}
+        NodeBindStrategy(T &t, const TFromStrategy &from) : _t(t), _from(from){
+            _to = [] {
+                return 0;
+            };
+        }
 
         int From() override {
             return _from(_t);

@@ -11,7 +11,7 @@
 #include "Communication/FromStrategies.h"
 #include "Communication/ToStrategies.h"
 #include "Communication/TCP/TCPEstablish.h"
-#include "Communication/TCP/TCPOpen.h"
+#include "Communication/TCP/TCPWait.h"
 
 using namespace doori::api::Communication::TCP;
 using namespace doori::api::Communication;
@@ -39,11 +39,9 @@ TEST(TCPState, Wait) {
 
     tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
 
-    NodeBindStrategy<TCPNode, FromStrategies, ToStrategies> node(tcpNode, FromStrategies{}, ToStrategies{});
+    NodeBindStrategy<TCPNode, FromStrategies> waitNode(tcpNode, FromStrategies{});
 
-    auto sock = node.From();
-
-    tcpNode.setState(std::make_unique<ITCPState>(new TCPOpen()));
+    tcpNode.setState( std::make_unique<ITCPState>(new TCPWait()) );
 }
 
 TEST(TCPState, Connect) {
@@ -52,10 +50,7 @@ TEST(TCPState, Connect) {
     tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
     tcpNode.tieRemote("127.0.0.1", "9999"); //destination IP Port
 
-    NodeBindStrategy<TCPNode, FromStrategies, ToStrategies> nodeModel(tcpNode, FromStrategies{}, ToStrategies{});
+    NodeBindStrategy<TCPNode, FromStrategies, ToStrategies> requestNode(tcpNode, FromStrategies{}, ToStrategies{});
 
-    nodeModel.From();
-    nodeModel.To();
-
-    nodeModel.setState(new TCPEstablish());
+    requestNode.setState(new TCPEstablish());
 }

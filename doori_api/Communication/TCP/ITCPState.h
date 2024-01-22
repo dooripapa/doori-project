@@ -6,15 +6,18 @@
 #define DOORI_PROJECT_ITCPSTATE_H
 
 namespace doori::api::Communication::TCP {
+
+    class TCPNode;
+
     class ITCPState {
     public:
-        virtual void open() = 0;
+        virtual void open(TCPNode &node) = 0;
 
-        virtual void establish() = 0;
+        virtual void establish(TCPNode &node) = 0;
 
-        virtual void close() = 0;
+        virtual void close(TCPNode &node) = 0;
 
-        virtual void wait() = 0;
+        virtual void wait(TCPNode &node) = 0;
     };
 }
 
