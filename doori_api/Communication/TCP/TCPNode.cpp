@@ -2,10 +2,12 @@
 // Created by jslee on 24. 1. 6.
 //
 
-#include <string>
-#include <functional>
-#include <variant>
+#include <cassert>
+#include <cstring>
 #include "TCPNode.h"
+#include "TCPState.h"
+#include "Common/Log.h"
+#include "TCPClose.h"
 
 namespace doori::api::Communication::TCP {
 
@@ -36,15 +38,15 @@ namespace doori::api::Communication::TCP {
     }
 
     void TCPNode::wait() {
-        _state->wait(*this);
+        _state->wait(this);
     }
 
     void TCPNode::establish() {
-        _state->establish(*this);
+        _state->establish(this);
     }
 
     void TCPNode::close() {
-        _state->close(*this);
+        _state->close(this);
     }
 
     long TCPNode::cSend(const char *data, uint16_t dataSize) const {
@@ -101,10 +103,12 @@ namespace doori::api::Communication::TCP {
         return ret;
     }
 
-    void TCPNode::setState(std::unique_ptr<ITCPState> state) {
+    void TCPNode::changeState(TCPState *state) {
+        _state = state;
+    }
 
-        _state = std::move(state);
-
+    TCPNode::TCPNode() {
+        _state = TCPClose::Instance();
     }
 
 } // doori

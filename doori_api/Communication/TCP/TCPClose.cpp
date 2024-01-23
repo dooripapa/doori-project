@@ -3,25 +3,30 @@
 //
 
 #include "TCPClose.h"
+#include "TCPNode.h"
 
 namespace doori {
     namespace api {
         namespace Communication {
             namespace TCP {
-                void TCPClose::close() {
+
+                //명시적으로 사전 초기화.
+                TCPClose TCPClose::myInstance;
+
+                void TCPClose::close(TCPNode *node) {
                     LOG(INFO, "TCP close");
                 }
 
-                void TCPClose::establish() {
+                void TCPClose::establish(TCPNode *node) {
                     LOG(INFO, "TCP close(establish)");
                 }
 
-                void TCPClose::open(TCPNode node) {
-                    LOG(INFO, "TCP close(open)");
+                void TCPClose::wait(TCPNode *node) {
+                    LOG(INFO, "TCP close(wait)");
                 }
 
-                void TCPClose::wait() {
-                    LOG(INFO, "TCP close(wait)");
+                TCPState *TCPClose::Instance() {
+                    return &myInstance;
                 }
             } // TCP
         } // Communication

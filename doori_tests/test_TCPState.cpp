@@ -41,7 +41,7 @@ TEST(TCPState, Wait) {
 
     NodeBindStrategy<TCPNode, FromStrategies> waitNode(tcpNode, FromStrategies{});
 
-    tcpNode.setState( std::make_unique<ITCPState>(new TCPWait()) );
+    tcpNode.setState( std::make_unique<TCPState>(new TCPWait()) );
 }
 
 TEST(TCPState, Connect) {

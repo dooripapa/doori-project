@@ -6,26 +6,15 @@
 #define DOORI_PROJECT_TCPNODE_H
 
 #include <memory>
-#include "TCPClose.h"
-#include "TCPEstablish.h"
-#include "TCPWait.h"
-#include "../../Common/Log.h"
-#include "../../Common/Error.h"
-#include <sys/socket.h>
 #include <bits/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/epoll.h>
-#include <fcntl.h>
-#include <cassert>
+#include <sys/socket.h>
 
-
-using namespace doori::api::Communication;
+using namespace doori::api::Common;
 using namespace std;
 
 namespace doori::api::Communication::TCP {
 
-    class ITCPState;
+    class TCPState;
 
     struct Address {
         string ip;
@@ -36,34 +25,29 @@ namespace doori::api::Communication::TCP {
 
     public:
 
+        explicit TCPNode();
+
         void tieSource(const string &ip, const string &port) noexcept;
 
         void tieRemote(const string &ip, const string &port) noexcept;
 
         Address getSource();
-        Address getRemote();
 
-        void setState(std::unique_ptr<ITCPState> state);
+        Address getRemote();
 
         [[nodiscard]] int getSock() const noexcept;
 
         void setSock(int fd) noexcept;
 
-        void establish();
+        long transmit(const string &data) const;
 
-        void close();
-
-        void wait();
-
-        long transmit(const string& data) const ;
-
-        long transmit(const char* data, uint16_t dataSize) const;
+        long transmit(const char *data, uint16_t dataSize) const;
 
         template<int N>
         long transmit(char const(&data)[N]) const {
-            auto ret = send(_sock, data, N-1, 0);
-            if(ret == -1) {
-                LOG(ERROR, "send error" );
+            auto ret = send(_sock, data, N - 1, 0);
+            if (ret == -1) {
+                LOG(ERROR, "send error");
                 return -1;
             }
             return ret;
@@ -71,16 +55,26 @@ namespace doori::api::Communication::TCP {
 
         long receive(string &container, uint32_t tilDataSize) const;
 
+        /**
+         * 상태패턴 관계함수.
+         */
+        void establish();
+
+        void close();
+
+        void wait();
+
     private:
 
         long cSend(const char *data, uint16_t dataSize) const;
 
-        friend class ITCPState;
-        void changeState(ITCPState *state);
+        friend class TCPState;
+
+        void changeState(TCPState *state);
 
     private:
 
-        unique_ptr<ITCPState> _state = make_unique<ITCPState>(new TCPClose());
+        TCPState *_state;
 
         int _sock = -1;
 

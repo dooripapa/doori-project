@@ -6,7 +6,7 @@
 #define DOORI_PROJECT_NODEBINDSTRATEGY_H
 
 #include "INode.h"
-#include "TCP/ITCPState.h"
+#include "TCP/TCPState.h"
 
 namespace doori::api::Communication {
     /**

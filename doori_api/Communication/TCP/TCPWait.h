@@ -5,13 +5,13 @@
 #ifndef DOORI_PROJECT_TCPWAIT_H
 #define DOORI_PROJECT_TCPWAIT_H
 
-#include "ITCPState.h"
+#include "TCPState.h"
 
 namespace doori::api::Communication::TCP {
 
     class TCPNode;
 
-    class TCPWait : public ITCPState {
+    class TCPWait : public TCPState {
     public:
         void open(TCPNode &node) override;
 

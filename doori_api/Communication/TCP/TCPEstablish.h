@@ -5,7 +5,7 @@
 #ifndef DOORI_PROJECT_TCPESTABLISH_H
 #define DOORI_PROJECT_TCPESTABLISH_H
 
-#include "ITCPState.h"
+#include "TCPState.h"
 #include "Log.h"
 #include "TCPNode.h"
 
@@ -14,7 +14,7 @@ namespace doori {
         namespace Communication {
             namespace TCP {
 
-                class TCPEstablish : public ITCPState{
+                class TCPEstablish : public TCPState{
 
                 public:
                     void wait() override;

@@ -9,7 +9,6 @@ namespace doori::api::Communication::TCP {
 
     void TCPWait::open(TCPNode &node) {
 
-        node.set
 
     }
 

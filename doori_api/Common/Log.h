@@ -4,8 +4,6 @@
 //
 // Created by doori on 19. 7. 25.
 //
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "NotImplementedFunctions"
 #pragma once
 #include <unistd.h>
 #include <cstdio>
@@ -90,5 +88,3 @@ namespace doori::api::Common{
 #define LOG_CREATE(PATH, LEVEL) doori::api::Common::Log::logging().setLogEnv(PATH, LEVEL);
 #define LOG(LEVEL, ...) doori::api::Common::Log::logging().writeLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #define PLOG(LEVEL, format, ...) doori::api::Common::Log::logging().printLog(LEVEL, __FILE__, __FUNCTION__, __LINE__, format, __VA_ARGS__)
-
-#pragma clang diagnostic pop

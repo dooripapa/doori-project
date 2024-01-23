@@ -5,21 +5,28 @@
 #ifndef DOORI_PROJECT_TCPCLOSE_H
 #define DOORI_PROJECT_TCPCLOSE_H
 
-#include "ITCPState.h"
-#include "../../Common/Log.h"
-#include "TCPNode.h"
+#include "TCPState.h"
+#include "Common/Log.h"
 
 namespace doori {
     namespace api {
         namespace Communication {
             namespace TCP {
 
-                class TCPClose : public ITCPState{
+                class TCPNode;
+
+                class TCPClose : public TCPState {
                 public:
-                    void close() override;
-                    void establish() override;
-                    void open(doori::api::Communication::TCP::TCPNode node) override;
-                    void wait() override;
+                    void close(TCPNode *node) override;
+
+                    void establish(TCPNode *node) override;
+
+                    void wait(TCPNode *node) override;
+
+                    static TCPState *Instance();
+
+                private:
+                    static TCPClose myInstance;
                 };
 
             } // TCP

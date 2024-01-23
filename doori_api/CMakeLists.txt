@@ -82,7 +82,7 @@ set(SRC_FILES
 		Tnsd/Header.cpp
 		Tnsd/Header.h
         Data/Yaml.cpp Data/Yaml.h
-		Communication/TCP/ITCPState.h
+        Communication/TCP/TCPState.h
         Communication/TCP/TCPNode.cpp
         Communication/TCP/TCPNode.h
         Communication/TCP/TCPWait.cpp
@@ -99,7 +99,8 @@ set(SRC_FILES
 		Communication/FromStrategies.cpp
 		Communication/FromStrategies.h
 		Communication/ToStrategies.cpp
-		Communication/ToStrategies.h)
+		Communication/ToStrategies.h
+		Communication/TCP/TCPState.cpp)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library
