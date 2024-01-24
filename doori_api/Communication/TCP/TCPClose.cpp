@@ -4,6 +4,7 @@
 
 #include "TCPClose.h"
 #include "TCPNode.h"
+#include "Communication/TcpApi.h"
 
 namespace doori {
     namespace api {
@@ -14,10 +15,17 @@ namespace doori {
                 TCPClose TCPClose::myInstance;
 
                 void TCPClose::close(TCPNode *node) {
-                    LOG(INFO, "TCP close");
+                    LOG(INFO, "Socket is already closed");
                 }
 
                 void TCPClose::establish(TCPNode *node) {
+
+                    auto sock = node->getSock();
+                    ::close(sock);
+
+                    auto source = node->getSource();
+                    auto dest = node->getRemote();
+
                     LOG(INFO, "TCP close(establish)");
                 }
 
