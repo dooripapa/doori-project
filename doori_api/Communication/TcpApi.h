@@ -108,13 +108,83 @@ namespace doori::api::Communication{
         void Connect(const string& ip, const string& port, std::uint8_t timeout);
 
         /**
+         * 주어진 source ip/port, 목적지 ip, port를 입력 받으면 연결이 완료되면 소켓fd를 리턴한다.
+         * @param sourceIp
+         * @param sourcePort
+         * @param destinationIp
+         * @param destinationPort
+         * @return -1 fail, > 0 소켓 fd
+         */
+        static int connect(const string &sourceIp, const string &sourcePort, const string &destinationIp,
+                           const string &destinationPort);
+
+        /**
          * TcpApi클래스의 api 의해 재설정된 Socket wrapper 객체를 리턴합니다.
          * @return Socker wrapper class
          */
         Socket & GetSocket() ;
-    private:
+
+        /**
+         * ::socket(AF_INET, SOCK_STREAM, 0) 실행된 함수 리턴값
+         * @return socket fd
+         */
+        static int socket();
+        /**
+         * 입력 받은 port로 바인딩 합니다.
+         * @param sock ::socket(AF_INET, SOCK_STREAM, 0) 함수로 리턴된 값.
+         * @param ip 공백 문자열이 들어오면 INADDR_ANY로 바인딩.
+         * @param port 양의 정수 문자열
+         * @return -1이면 error, > 0, 바인딩 fd값.
+         */
+        static int binding(int sock, const string& ip, const string& port);
+
+        /**
+         * binding된 소켓을 listen상태로 변경.
+         * @param sock binding된 ::socket(AF_INET, SOCK_STREAM, 0) 함수
+         * @param backlogNum 접속가능한 listen 대기큐 수
+         * @return -1이면 error, > 0, 바인딩 fd값.
+         */
+        static int listen(int sock, int backlogNum);
+
+        /**
+         * 입력 받은 ip 유효성 검증.
+         * @param ip
+         * @return 실패 false, 성공 true
+         */
         static bool IsValidIP(const string& ip);
+
+        /**
+         * 입력 받은 port 유효성 검증.
+         * @param port
+         * @return 실패 false, 성공 true
+         */
         static bool IsValidPort(const string& port);
+
+        /**
+         * 소켓 재사용 설정함.
+         * @param sock ::socket(AF_INET, SOCK_STREAM, 0) 리턴 된 fd값.
+         * @param ip 재사용 될 ip 주소값.
+         * @param port 재사용 될 port 주소값.
+         * @return true, false
+         */
+        static bool reuseSockOpt(int sock, const string &ip, const string &port);
+
+        /**
+         * ip, port 체크함.
+         * @param ip
+         * @param port
+         * @return 체크 이상 없으면 port를 int형으로 리턴함. 실패하면 -1
+         */
+        static int checkAddress(const string &ip, const string &port);
+
+        /**
+         * Timeout Non-blocking으로 설정함.
+         * @param sock ::socket(AF_INET, SOCK_STREAM, 0) 리턴 된 fd값.
+         * @param timeout
+         * @return 실패시 false 성공시 true
+         */
+        static bool setNonblockingOpt(int sock, std::uint8_t timeout);
+    private:
         Socket& mSocket;
     };
 

@@ -5,30 +5,30 @@
 #include <regex>
 #include "TcpApi.h"
 
-namespace doori::api::Communication{
+namespace doori::api::Communication {
 
     TcpApi::TcpApi(Socket &socket) : Common::Error(), mSocket(socket) {
 
     }
 
-    void TcpApi::SetReuseOpt(const std::string& ip, const std::string& port) {
+    void TcpApi::SetReuseOpt(const std::string &ip, const std::string &port) {
 
-        if(!IsValidIP(ip)) {
+        if (!IsValidIP(ip)) {
             LoggingByClientError("ip is invalid:");
             return;
         }
 
-        if(!IsValidPort(port)) {
+        if (!IsValidPort(port)) {
             LoggingByClientError("port invalid");
             return;
         }
 
         int cPort;
         std::size_t pos{};
-        try{
+        try {
             cPort = std::stoi(port, &pos);
-        } catch (const std::exception &ex ){
-            LOG(ERROR,"stoi exception:", ex.what());
+        } catch (const std::exception &ex) {
+            LOG(ERROR, "stoi exception:", ex.what());
             LoggingByClientError("stoi exception");
             return;
         }
@@ -38,7 +38,8 @@ namespace doori::api::Communication{
         sockaddrIn.sin_port = htons(cPort);
         sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
 
-        if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
+        if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn,
+                       sizeof(::sockaddr_in)) < 0) {
             LoggingBySystemcallError("setsockopt");
             return;
         }
@@ -49,17 +50,17 @@ namespace doori::api::Communication{
 
     void TcpApi::SetReuseOpt(const string &port) {
 
-        if(!IsValidPort(port)) {
+        if (!IsValidPort(port)) {
             LoggingByClientError("port invalid");
             return;
         }
 
         int cPort;
         std::size_t pos{};
-        try{
+        try {
             cPort = std::stoi(port, &pos);
-        } catch (const std::exception &ex ){
-            LOG(ERROR,"stoi exception:", ex.what());
+        } catch (const std::exception &ex) {
+            LOG(ERROR, "stoi exception:", ex.what());
             LoggingByClientError("stoi exception");
             return;
         }
@@ -69,7 +70,8 @@ namespace doori::api::Communication{
         sockaddrIn.sin_port = htons(cPort);
         sockaddrIn.sin_addr.s_addr = INADDR_ANY;
 
-        if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
+        if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn,
+                       sizeof(::sockaddr_in)) < 0) {
             LoggingBySystemcallError("setsockopt");
             return;
         }
@@ -79,24 +81,24 @@ namespace doori::api::Communication{
 
     }
 
-    void TcpApi::Bind(const std::string& ip, const std::string& port) {
+    void TcpApi::Bind(const std::string &ip, const std::string &port) {
 
-        if(!IsValidIP(ip)) {
+        if (!IsValidIP(ip)) {
             LoggingByClientError("ip is invalid:");
             return;
         }
 
-        if(!IsValidPort(port)) {
+        if (!IsValidPort(port)) {
             LoggingByClientError("port invalid");
             return;
         }
 
         int cPort;
         std::size_t pos{};
-        try{
+        try {
             cPort = std::stoi(port, &pos);
-        } catch (const std::exception &ex ){
-            LOG(ERROR,"stoi exception:", ex.what());
+        } catch (const std::exception &ex) {
+            LOG(ERROR, "stoi exception:", ex.what());
             LoggingByClientError("stoi exception");
             return;
         }
@@ -117,17 +119,17 @@ namespace doori::api::Communication{
 
     void TcpApi::Bind(const string &port) {
 
-        if(!IsValidPort(port)) {
+        if (!IsValidPort(port)) {
             LoggingByClientError("port invalid");
             return;
         }
 
         int cPort;
         std::size_t pos{};
-        try{
+        try {
             cPort = std::stoi(port, &pos);
-        } catch (const std::exception &ex ){
-            LOG(ERROR,"stoi exception:", ex.what());
+        } catch (const std::exception &ex) {
+            LOG(ERROR, "stoi exception:", ex.what());
             LoggingByClientError("stoi exception");
             return;
         }
@@ -148,14 +150,14 @@ namespace doori::api::Communication{
 
     void TcpApi::Listen(int backlogNum) {
 
-        if( !mSocket.IsBitwise(SOCK_STATUS::BINDING) ) {
+        if (!mSocket.IsBitwise(SOCK_STATUS::BINDING)) {
             InjectedByClientError("Socket is not Binding");
             return;
         }
 
         if (listen(mSocket.GetFd(), backlogNum) != 0) {
             InjectedBySystemcallError();
-            LOG(ERROR, "listen error:", Cause() );
+            LOG(ERROR, "listen error:", Cause());
         }
 
         mSocket.SetBitwise(SOCK_STATUS::LISTEN);
@@ -164,12 +166,12 @@ namespace doori::api::Communication{
 
     int TcpApi::Accept() {
 
-        if( !mSocket.IsBitwise(SOCK_STATUS::BINDING) ) {
+        if (!mSocket.IsBitwise(SOCK_STATUS::BINDING)) {
             InjectedByClientError("Socket is not Binding");
             return -1;
         }
 
-        if( !mSocket.IsBitwise(SOCK_STATUS::LISTEN) ) {
+        if (!mSocket.IsBitwise(SOCK_STATUS::LISTEN)) {
             InjectedByClientError("Socket is not Listen");
             return -1;
         }
@@ -180,24 +182,23 @@ namespace doori::api::Communication{
 
         socklen_t len = sizeof(struct sockaddr_in);
 
-        if(mSocket.IsOptBitwise(SOCK_OPT::RCVTIMEO)) {
+        if (mSocket.IsOptBitwise(SOCK_OPT::RCVTIMEO)) {
 
             struct timeval tv{};
-            auto socklen =sizeof(struct timeval);
+            auto socklen = sizeof(struct timeval);
             if (getsockopt(mSocket.GetFd(), SOL_SOCKET, SO_RCVTIMEO, (void *) &tv,
                            reinterpret_cast<socklen_t *>(&socklen)) < 0) {
                 LoggingBySystemcallError("getsockopt error");
                 return -1;
             }
 
-            while(true)
-            {
+            while (true) {
                 acptFd = accept(mSocket.GetFd(), nullptr, nullptr);
-                if ( acptFd == -1) {
+                if (acptFd == -1) {
                     if (errno == EWOULDBLOCK || errno == EAGAIN) {
                         // No incoming connections at the moment
                         // Handle other tasks or sleep/wait
-                        LOG(INFO, "Non-blocking Mode, timeout --> sleep(", tv.tv_sec,")");
+                        LOG(INFO, "Non-blocking Mode, timeout --> sleep(", tv.tv_sec, ")");
                         sleep(tv.tv_sec);
                         continue;
                     } else {
@@ -205,13 +206,12 @@ namespace doori::api::Communication{
                         return -1;
                     }
                 } else {
-                    LOG(INFO, "Accept Socket[", acptFd, "]" );
+                    LOG(INFO, "Accept Socket[", acptFd, "]");
                     break;
                 }
             }
 
-        }
-        else {
+        } else {
             /**
              * sockaddrIn 변수는 접속한 클라이언트 주소 저장용도로 사용가능하다.
              * 현재는 의미 없음
@@ -231,21 +231,20 @@ namespace doori::api::Communication{
         std::size_t pos{};
 
         int cPort;
-        try{
+        try {
             cPort = std::stoi(port, &pos);
-        } catch (const std::exception &ex ){
-            LOG(ERROR,"stoi exception:", ex.what());
+        } catch (const std::exception &ex) {
+            LOG(ERROR, "stoi exception:", ex.what());
             LoggingByClientError("stoi exception");
             return;
         }
 
-        if( 65535 < cPort ) {
+        if (65535 < cPort) {
             LoggingByClientError("port range over > 65535");
             return;
         }
 
-        if(!mSocket.IsBitwise(SOCK_STATUS::INIT))
-        {
+        if (!mSocket.IsBitwise(SOCK_STATUS::INIT)) {
             LoggingByClientError("socket not init.");
             return;
         }
@@ -262,30 +261,29 @@ namespace doori::api::Communication{
         sockaddrIn.sin_port = htons(cPort);
         sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
 
-        auto ret = connect(mSocket.GetFd(), (struct sockaddr *)&sockaddrIn, sizeof(struct sockaddr_in));
+        auto ret = ::connect(mSocket.GetFd(), (struct sockaddr *) &sockaddrIn, sizeof(struct sockaddr_in));
         if (ret < 0) {
 
             int errorValue = 0;
             socklen_t len = sizeof(errorValue);
-            if( getsockopt(mSocket.GetFd(), SOL_SOCKET, SO_ERROR, &errorValue, &len ) < 0 ) {
+            if (getsockopt(mSocket.GetFd(), SOL_SOCKET, SO_ERROR, &errorValue, &len) < 0) {
                 LoggingBySystemcallError("connect() error");
                 return;
             }
 
             if (errorValue != 0) {
-                LOG(ERROR,"Error Value:", errorValue);
+                LOG(ERROR, "Error Value:", errorValue);
                 LoggingByClientError("connect() error");
                 return;
             }
         }
 
-        LOG(INFO, "connected Socket[", mSocket.GetFd(), "]" );
+        LOG(INFO, "connected Socket[", mSocket.GetFd(), "]");
     }
 
     void TcpApi::SetTimeoutOpt(std::uint8_t timeout) {
 
-        if(!mSocket.IsBitwise(SOCK_STATUS::INIT))
-        {
+        if (!mSocket.IsBitwise(SOCK_STATUS::INIT)) {
             InjectedByClientError("socket not init.");
             return;
         }
@@ -295,19 +293,19 @@ namespace doori::api::Communication{
           그래야, recv()함수에서 Timeout를 설정할 수 있음
         */
         int flags = fcntl(mSocket.GetFd(), F_GETFL, 0);  // 소켓의 플래그 값을 가져옴
-        if( flags == -1 ) {
+        if (flags == -1) {
             LoggingBySystemcallError("fcntl error");
             return;
         }
 
         auto iRet = fcntl(mSocket.GetFd(), F_SETFL, flags | O_NONBLOCK);  // 소켓의 플래그 값을 변경하여 넌블로킹 모드로 설정
-        if( iRet == -1 ) {
+        if (iRet == -1) {
             LoggingBySystemcallError("fcntl error");
             return;
         }
 
         struct timeval tv{};
-        tv.tv_sec  = timeout;
+        tv.tv_sec = timeout;
         tv.tv_usec = 0;
 
         if (setsockopt(mSocket.GetFd(), SOL_SOCKET, SO_RCVTIMEO, (void *) &tv, sizeof(struct timeval)) < 0) {
@@ -318,14 +316,14 @@ namespace doori::api::Communication{
         mSocket.SetOptBitwise(SOCK_OPT::RCVTIMEO);
     }
 
-    void TcpApi::Connect(const string& ip, const string& port, std::uint8_t timeout) {
+    void TcpApi::Connect(const string &ip, const string &port, std::uint8_t timeout) {
 
         Connect(ip, port);
     }
 
     void TcpApi::InitEndpoint() {
 
-        if(!mSocket.Init()) {
+        if (!mSocket.Init()) {
             LoggingByClientError("InitEndpoint error");
             mSocket = Socket{-1, SOCK_STATUS::CLOSED};
             return;
@@ -335,7 +333,7 @@ namespace doori::api::Communication{
 
     }
 
-    Socket & TcpApi::GetSocket() {
+    Socket &TcpApi::GetSocket() {
         return mSocket;
     }
 
@@ -344,7 +342,7 @@ namespace doori::api::Communication{
      * @return
      */
     bool TcpApi::IsValidIP(const string &ip) {
-        constexpr auto checkIpRegex ="^((\\d{1,3})\\.){3}(\\d{1,3})$";
+        constexpr auto checkIpRegex = "^((\\d{1,3})\\.){3}(\\d{1,3})$";
         std::regex regex(checkIpRegex);
         return std::regex_match(ip, regex);
     }
@@ -355,10 +353,178 @@ namespace doori::api::Communication{
      * @return
      */
     bool TcpApi::IsValidPort(const string &port) {
-        constexpr auto checkPortRegex ="^([1-9][0-9]{3,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
+        constexpr auto checkPortRegex = "^([1-9][0-9]{3,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
         std::regex regex(checkPortRegex);
         return std::regex_match(port, regex);
     }
 
+    int TcpApi::binding(int sock, const string &ip, const string &port) {
+
+        auto cPort = checkAddress(ip, port);
+        if (cPort == -1)
+            return cPort;
+
+        struct sockaddr_in sockaddrIn{};
+        sockaddrIn.sin_family = AF_INET;
+        sockaddrIn.sin_port = ::htons(cPort);
+        sockaddrIn.sin_addr.s_addr = ip.empty() ? INADDR_ANY : ::inet_addr(ip.c_str());;
+
+        if (bind(sock, (struct sockaddr *) &sockaddrIn, sizeof(::sockaddr_in)) < 0) {
+            return -1;
+        }
+
+        return sock;
+    }
+
+    bool TcpApi::IsValidIP(const string &ip) {
+        constexpr auto checkIpRegex = "^((\\d{1,3})\\.){3}(\\d{1,3})$";
+        std::regex regex(checkIpRegex);
+        return std::regex_match(ip, regex);
+    }
+
+    bool TcpApi::IsValidPort(const string &port) {
+        constexpr auto checkPortRegex = "^([1-9][0-9]{3,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
+        std::regex regex(checkPortRegex);
+        return std::regex_match(port, regex);
+    }
+
+    int TcpApi::listen(int sock, int backlogNum) {
+        if (::listen(sock, backlogNum) != 0) {
+            LOG(ERROR, "listen error");
+            return -1;
+        }
+        return sock;
+    }
+
+    bool TcpApi::reuseSockOpt(int sock, const string &ip, const string &port) {
+
+        auto cPort = checkAddress(ip, port);
+        if (cPort == -1)
+            return cPort;
+
+        struct sockaddr_in sockaddrIn{};
+        sockaddrIn.sin_family = AF_INET;
+        sockaddrIn.sin_port = htons(cPort);
+        sockaddrIn.sin_addr.s_addr = inet_addr(ip.c_str());
+
+        if (::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, (void *) &sockaddrIn, sizeof(::sockaddr_in)) <
+            0) {
+            LOG(ERROR, "error setsockopt()");
+            return -1;
+        }
+        return sock;
+    }
+
+    int TcpApi::checkAddress(const string &ip, const string &port) {
+
+        if (!IsValidIP(ip)) {
+            LOG(ERROR, "ip is invalid:");
+            return -1;
+        }
+
+        if (!IsValidPort(port)) {
+            LOG(ERROR, "port is invalid:");
+            return -1;
+        }
+
+        int cPort;
+        std::size_t pos{};
+        try {
+            cPort = std::stoi(port, &pos);
+        } catch (const std::exception &ex) {
+            LOG(ERROR, "stoi exception:", ex.what());
+            return -1;
+        }
+        return cPort;
+    }
+
+    bool TcpApi::setNonblockingOpt(int sock, std::uint8_t timeout) {
+
+        /*
+          소켓 설정을 논블로킹으로 셋팅함
+          그래야, recv()함수에서 Timeout를 설정할 수 있음
+        */
+        int flags = ::fcntl(sock, F_GETFL, 0);  // 소켓의 플래그 값을 가져옴
+        if (flags == -1) {
+            LOG(ERROR, "fcntl(F_GETFL) error");
+            return false;
+        }
+
+        auto iRet = ::fcntl(sock, F_SETFL, flags | O_NONBLOCK);  // 소켓의 플래그 값을 변경하여 넌블로킹 모드로 설정
+        if (iRet == -1) {
+            LOG(ERROR, "fcntl(F_SETFL, flags | O_NONBLOCK) error");
+            return false;
+        }
+
+        struct timeval tv{};
+        tv.tv_sec = timeout;
+        tv.tv_usec = 0;
+
+        if (::setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (void *) &tv, sizeof(struct timeval)) < 0) {
+            LOG(ERROR, "setsockopt error");
+            return false;
+        }
+        return true;
+    }
+
+    int TcpApi::socket() {
+        auto fd = ::socket(AF_INET, SOCK_STREAM, 0);
+        if (fd < 0) {
+            LOG(ERROR, "socket error");
+            return -1;
+        }
+        return fd;
+    }
+
+    int TcpApi::connect(const string &sourceIp, const string &sourcePort, const string &destinationIp,
+                        const string &destinationPort) {
+        int sock = 0;
+        sock = TcpApi::socket();
+        if (sock == -1) {
+            LOG(ERROR, "TcpApi::socket error");
+            return sock;
+        }
+
+        if (!TcpApi::reuseSockOpt(sock, sourceIp, sourcePort)) {
+            LOG(ERROR, "TcpApi::reuseSockOpt error");
+            return -1;
+        }
+
+        int ret = 0;
+        ret = TcpApi::binding(sock, sourceIp, sourcePort);
+        if (ret == -1) {
+            LOG(ERROR, "TcpApi::socket error");
+            return -1;
+        }
+
+        auto cPort = TcpApi::checkAddress(destinationIp, destinationPort);
+        if (cPort == -1) {
+            LOG(ERROR, "TcpApi::checkAddress error");
+            return -1;
+        }
+
+        struct sockaddr_in sockaddrIn{};
+        sockaddrIn.sin_family = AF_INET;
+        sockaddrIn.sin_port = htons(cPort);
+        sockaddrIn.sin_addr.s_addr = inet_addr(destinationIp.c_str());
+
+        ret = ::connect(sock, (struct sockaddr *) &sockaddrIn, sizeof(struct sockaddr_in));
+        if (ret < 0) {
+
+            int errorValue = 0;
+            socklen_t len = sizeof(errorValue);
+            if (::getsockopt(sock, SOL_SOCKET, SO_ERROR, &errorValue, &len) < 0) {
+                LOG(ERROR, "getsockopt() error");
+                return -1;
+            }
+
+            if (errorValue != 0) {
+                LOG(ERROR, "connect() Error Value:", errorValue);
+                return -1;
+            }
+        }
+
+        return 0;
+    }
 
 } // Communication

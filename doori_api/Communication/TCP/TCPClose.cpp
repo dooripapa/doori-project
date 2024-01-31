@@ -20,13 +20,21 @@ namespace doori {
 
                 void TCPClose::establish(TCPNode *node) {
 
+                    int ret = 0;
                     auto sock = node->getSock();
                     ::close(sock);
 
                     auto source = node->getSource();
                     auto dest = node->getRemote();
 
-                    LOG(INFO, "TCP close(establish)");
+                    sock = TcpApi::connect(source.ip, source.port, dest.ip, dest.port);
+
+                    if (sock==-1) {
+                        LOG(ERROR, "TcpApi::connect source[%t:%t] destination[%t:%t]", source.ip, source.port, dest.ip,
+                            dest.port);
+                        return;
+                    }
+                    return;
                 }
 
                 void TCPClose::wait(TCPNode *node) {
