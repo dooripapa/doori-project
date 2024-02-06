@@ -50,6 +50,4 @@ TEST(TCPState, Connect) {
     tcpNode.tieRemote("127.0.0.1", "9999"); //destination IP Port
 
     NodeBindStrategy<TCPNode, FromStrategies, ToStrategies> requestNode(tcpNode, FromStrategies{}, ToStrategies{});
-
-    requestNode.setState(new TCPEstablish());
 }
