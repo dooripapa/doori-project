@@ -39,9 +39,8 @@ TEST(TCPState, Wait) {
 
     tcpNode.tieSource("127.0.0.1", "8888"); //source binding IP Port
 
-    NodeBindStrategy<TCPNode, FromStrategies> waitNode(tcpNode, FromStrategies{});
+    NodeBindStrategy<TCPNode, FromStrategies> node(tcpNode, FromStrategies{});
 
-    tcpNode.setState( std::make_unique<TCPState>(new TCPWait()) );
 }
 
 TEST(TCPState, Connect) {

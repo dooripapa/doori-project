@@ -376,18 +376,6 @@ namespace doori::api::Communication {
         return sock;
     }
 
-    bool TcpApi::IsValidIP(const string &ip) {
-        constexpr auto checkIpRegex = "^((\\d{1,3})\\.){3}(\\d{1,3})$";
-        std::regex regex(checkIpRegex);
-        return std::regex_match(ip, regex);
-    }
-
-    bool TcpApi::IsValidPort(const string &port) {
-        constexpr auto checkPortRegex = "^([1-9][0-9]{3,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
-        std::regex regex(checkPortRegex);
-        return std::regex_match(port, regex);
-    }
-
     int TcpApi::listen(int sock, int backlogNum) {
         if (::listen(sock, backlogNum) != 0) {
             LOG(ERROR, "listen error");

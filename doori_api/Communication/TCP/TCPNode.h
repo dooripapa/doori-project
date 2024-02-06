@@ -6,10 +6,9 @@
 #define DOORI_PROJECT_TCPNODE_H
 
 #include <memory>
-#include <bits/socket.h>
 #include <sys/socket.h>
+#include "Common/Error.h"
 
-using namespace doori::api::Common;
 using namespace std;
 
 namespace doori::api::Communication::TCP {
@@ -21,14 +20,13 @@ namespace doori::api::Communication::TCP {
         string port;
     };
 
-    class TCPNode {
+    class TCPNode : public doori::api::Common::Error{
 
     public:
 
         explicit TCPNode();
 
         void tieSource(const string &ip, const string &port) noexcept;
-
         void tieRemote(const string &ip, const string &port) noexcept;
 
         Address getSource();
@@ -57,6 +55,7 @@ namespace doori::api::Communication::TCP {
 
         /**
          * 상태패턴 관계함수.
+         * 노드가 소켓 상태를 가짐.
          */
         void establish();
 

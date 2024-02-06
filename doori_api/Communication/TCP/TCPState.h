@@ -12,7 +12,7 @@ namespace doori::api::Communication::TCP {
 
     class TCPNode;
 
-    class TCPState : public Error{
+    class TCPState : public doori::api::Common::Error{
     public:
         virtual void establish(TCPNode *node);
 

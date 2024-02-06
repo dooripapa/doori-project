@@ -6,7 +6,6 @@
 #define DOORI_PROJECT_TCPESTABLISH_H
 
 #include "TCPState.h"
-#include "Log.h"
 #include "TCPNode.h"
 
 namespace doori {
@@ -17,10 +16,9 @@ namespace doori {
                 class TCPEstablish : public TCPState{
 
                 public:
-                    void wait() override;
-                    void open(TCPNode node) override;
-                    void establish() override;
-                    void close() override;
+                    void wait(TCPNode *node) override;
+                    void establish(TCPNode *node) override;
+                    void close(TCPNode *node) override;
                 };
 
             } // TCP

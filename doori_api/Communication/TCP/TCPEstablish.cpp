@@ -8,9 +8,17 @@ namespace doori {
     namespace api {
         namespace Communication {
             namespace TCP {
-                void TCPEstablish::wait() {
 
+                void TCPEstablish::wait(TCPNode *node) {
+                    TCPState::wait(node);
+                }
 
+                void TCPEstablish::establish(TCPNode *node) {
+                    TCPState::establish(node);
+                }
+
+                void TCPEstablish::close(TCPNode *node) {
+                    TCPState::close(node);
                 }
             } // TCP
         } // Communication
