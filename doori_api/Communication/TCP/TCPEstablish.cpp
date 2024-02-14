@@ -3,24 +3,22 @@
 //
 
 #include "TCPEstablish.h"
+namespace doori::api::Communication::TCP {
 
-namespace doori {
-    namespace api {
-        namespace Communication {
-            namespace TCP {
 
-                void TCPEstablish::wait(TCPNode *node) {
-                    TCPState::wait(node);
-                }
+    void TCPEstablish::establish(TCPNode *node) {
+        LOG(INFO, "Already status Established ");
+    }
 
-                void TCPEstablish::establish(TCPNode *node) {
-                    TCPState::establish(node);
-                }
+    void TCPEstablish::close(TCPNode *node) {
+        node->close();
+        LOG(INFO, "Node is closed");
+    }
 
-                void TCPEstablish::close(TCPNode *node) {
-                    TCPState::close(node);
-                }
-            } // TCP
-        } // Communication
-    } // api
+    void TCPEstablish::listen(TCPNode *node) {
+        node->close();
+        PLOG(INFO, "Socket FD[%t]", node->getSock() );
+
+        node->listen()
+    }
 } // doori

@@ -6,7 +6,6 @@
 #define DOORI_PROJECT_TCPWAIT_H
 
 #include "TCPState.h"
-#include "TCPNode.h"
 
 namespace doori::api::Communication::TCP {
 
@@ -14,12 +13,14 @@ namespace doori::api::Communication::TCP {
 
     class TCPWait : public TCPState {
     public:
-        void establish(TCPNode *node) override;
+        void open(TCPNode &node) override;
 
-        void close(TCPNode *node) override;
+        void establish(TCPNode &node) override;
 
-        void wait(TCPNode *node) override;
+        void close(TCPNode &node) override;
 
-    }; // doori
-}
+        void wait(TCPNode &node) override;
+
+    } // doori
+
 #endif //DOORI_PROJECT_TCPWAIT_H

@@ -197,7 +197,7 @@ namespace doori::api::Communication {
                 if (acptFd == -1) {
                     if (errno == EWOULDBLOCK || errno == EAGAIN) {
                         // No incoming connections at the moment
-                        // Handle other tasks or sleep/wait
+                        // Handle other tasks or sleep/listen
                         LOG(INFO, "Non-blocking Mode, timeout --> sleep(", tv.tv_sec, ")");
                         sleep(tv.tv_sec);
                         continue;

@@ -37,8 +37,8 @@ namespace doori::api::Communication::TCP {
         _sock = fd;
     }
 
-    void TCPNode::wait() {
-        _state->wait(this);
+    void TCPNode::listen() {
+        _state->listen(this);
     }
 
     void TCPNode::establish() {

@@ -21,7 +21,7 @@ namespace doori {
 
                     void establish(TCPNode *node) override;
 
-                    void wait(TCPNode *node) override;
+                    void listen(TCPNode *node) override;
 
                     static TCPState *Instance();
 

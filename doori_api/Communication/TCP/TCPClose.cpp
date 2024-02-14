@@ -37,8 +37,8 @@ namespace doori {
                     return;
                 }
 
-                void TCPClose::wait(TCPNode *node) {
-                    LOG(INFO, "TCP close(wait)");
+                void TCPClose::listen(TCPNode *node) {
+                    LOG(INFO, "TCP close(listen)");
                 }
 
                 TCPState *TCPClose::Instance() {

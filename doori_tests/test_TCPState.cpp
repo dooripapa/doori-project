@@ -11,7 +11,7 @@
 #include "Communication/FromStrategies.h"
 #include "Communication/ToStrategies.h"
 #include "Communication/TCP/TCPEstablish.h"
-#include "Communication/TCP/TCPWait.h"
+#include "Communication/TCP/TCPListen.h"
 
 using namespace doori::api::Communication::TCP;
 using namespace doori::api::Communication;
@@ -41,6 +41,7 @@ TEST(TCPState, Wait) {
 
     NodeBindStrategy<TCPNode, FromStrategies> node(tcpNode, FromStrategies{});
 
+    tcpNode.setState( std::make_unique<TCPState>(new TCPListen()) );
 }
 
 TEST(TCPState, Connect) {

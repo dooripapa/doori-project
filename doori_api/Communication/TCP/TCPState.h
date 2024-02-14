@@ -18,7 +18,7 @@ namespace doori::api::Communication::TCP {
 
         virtual void close(TCPNode *node);
 
-        virtual void wait(TCPNode *node);
+        virtual void listen(TCPNode *node);
     protected:
         static void changeState(TCPNode *node, TCPState *state);
 

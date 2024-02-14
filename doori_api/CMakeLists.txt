@@ -85,8 +85,8 @@ set(SRC_FILES
         Communication/TCP/TCPState.h
         Communication/TCP/TCPNode.cpp
         Communication/TCP/TCPNode.h
-        Communication/TCP/TCPWait.cpp
-        Communication/TCP/TCPWait.h
+        Communication/TCP/TCPListen.cpp
+        Communication/TCP/TCPListen.h
 		Communication/TCP/TCPEstablish.cpp
 		Communication/TCP/TCPEstablish.h
 		Communication/TCP/TCPClose.cpp

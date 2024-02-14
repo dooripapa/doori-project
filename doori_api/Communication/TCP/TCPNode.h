@@ -61,10 +61,16 @@ namespace doori::api::Communication::TCP {
 
         void close();
 
-        void wait();
+        void listen();
 
     private:
 
+        /**
+         * c 기반 const char* 형식의 데이터 송신함수
+         * @param data
+         * @param dataSize
+         * @return
+         */
         long cSend(const char *data, uint16_t dataSize) const;
 
         friend class TCPState;

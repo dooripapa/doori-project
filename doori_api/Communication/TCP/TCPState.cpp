@@ -13,7 +13,7 @@ namespace doori::api::Communication::TCP {
 
     }
 
-    void TCPState::wait(TCPNode *node) {
+    void TCPState::listen(TCPNode *node) {
 
     }
 
