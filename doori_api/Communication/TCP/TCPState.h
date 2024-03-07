@@ -12,8 +12,10 @@ namespace doori::api::Communication::TCP {
 
     class TCPNode;
 
-    class TCPState : public doori::api::Common::Error{
+    class TCPState {
     public:
+        virtual ~TCPState()  = default;
+
         virtual void establish(TCPNode *node);
 
         virtual void close(TCPNode *node);

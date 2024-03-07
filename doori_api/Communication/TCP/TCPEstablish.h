@@ -7,11 +7,12 @@
 
 #include "TCPState.h"
 #include "Common/Log.h"
+#include "Common/Error.h"
 #include "TCPNode.h"
 
 namespace doori::api::Communication::TCP {
 
-    class TCPEstablish : public TCPState {
+    class TCPEstablish : public TCPState, public Common::Error{
 
     public:
         void establish(TCPNode *node) override;

@@ -7,31 +7,26 @@
 
 #include "TCPState.h"
 #include "Common/Log.h"
+#include "Common/Error.h"
 
-namespace doori {
-    namespace api {
-        namespace Communication {
-            namespace TCP {
+namespace doori::api::Communication::TCP {
 
-                class TCPNode;
+    class TCPNode;
 
-                class TCPClose : public TCPState {
-                public:
-                    void close(TCPNode *node) override;
+    class TCPClose : public TCPState, public Common::Error {
+    public:
+        void close(TCPNode *node) override;
 
-                    void establish(TCPNode *node) override;
+        void establish(TCPNode *node) override;
 
-                    void listen(TCPNode *node) override;
+        void listen(TCPNode *node) override;
 
-                    static TCPState *Instance();
+        static TCPState *Instance();
 
-                private:
-                    static TCPClose myInstance;
-                };
+    private:
+        static TCPClose myInstance;
+    };
 
-            } // TCP
-        } // Communication
-    } // api
 } // doori
 
 #endif //DOORI_PROJECT_TCPCLOSE_H
