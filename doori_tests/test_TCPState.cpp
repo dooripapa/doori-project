@@ -30,10 +30,6 @@ int sender(const string &buffer, int bufferSize) {
     return 0;
 }
 
-
-TEST(TCPState, Client) {
-}
-
 TEST(TCPState, Wait) {
     TCPNode tcpNode;
 

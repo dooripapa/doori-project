@@ -42,65 +42,54 @@ set(HEADER_FILES
 		Communication/IIPCBuilder.h
 		Communication/TCPBuilder.h
         Communication/ITopologyNode.h
-        Communication/TCP/TCPNode.cpp
-        Communication/TCP/TCPNode.h
 )
 
 set(SRC_FILES
-		Process/Application.cpp
-#		Communication/Connection.cpp
-		Data/Fid.cpp
-		Data/FidSegment.cpp
-		Data/Dictionary.cpp
-		Common/Error.cpp
-		Common/Util.h
-		Common/Log.cpp
-		Process/Getopt.cpp
-		Process/Runner.cpp
-        Tnsd/Topic.cpp
-		Data/Json.cpp
-		Etc/Regex.cpp
-		Etc/Bigdecimal.cpp
-		Communication/TCPBuilder.cpp
-		Communication/TCP.cpp
-		Communication/TcpApi.cpp
-		Communication/TcpApi.h
-		Communication/Socket.cpp
-		Communication/Socket.h
-		Communication/EpollApi.cpp
-		Communication/EpollApi.h
-		Stream/StreamTemplate.h
-		Stream/IHeader.h
-		Stream/IBody.h
-		Stream/IStream.h
-		Tnsd/Body.hpp
-		Tnsd/Body.h
-		Tnsd/Header.cpp
-		Tnsd/Header.h
-		Tnsd/NodeInfo.hpp
-		Tnsd/NodeInfo.h
-		Tnsd/Header.cpp
-		Tnsd/Header.h
-        Data/Yaml.cpp Data/Yaml.h
-        Communication/TCP/TCPState.h
-        Communication/TCP/TCPNode.cpp
-        Communication/TCP/TCPNode.h
-        Communication/TCP/TCPListen.cpp
-        Communication/TCP/TCPListen.h
-		Communication/TCP/TCPEstablish.cpp
-		Communication/TCP/TCPEstablish.h
-		Communication/TCP/TCPClose.cpp
-		Communication/TCP/TCPClose.h
-		Communication/Handler.cpp
-		Communication/Handler.h
-		Communication/Handler.h
-        Communication/NodeBindStrategy.h
-		Communication/INode.h
-		Communication/FromStrategies.cpp
-		Communication/FromStrategies.h
-		Communication/ToStrategies.cpp
-		Communication/ToStrategies.h
-		Communication/TCP/TCPState.cpp)
+Process/Application.cpp
+#Communication/Connection.cpp
+Data/Fid.cpp
+Data/FidSegment.cpp
+Data/Dictionary.cpp
+Common/Error.cpp
+Common/Util.h
+Common/Log.cpp
+Process/Getopt.cpp
+Process/Runner.cpp
+Tnsd/Topic.cpp
+Data/Json.cpp
+Etc/Regex.cpp
+Etc/Bigdecimal.cpp
+Communication/TCPBuilder.cpp
+Communication/TCP.cpp
+Communication/TcpApi.cpp
+Communication/TcpApi.h
+Communication/Socket.cpp
+Communication/Socket.h
+Communication/EpollApi.cpp
+Communication/EpollApi.h
+Stream/StreamTemplate.h
+Stream/IHeader.h
+Stream/IBody.h
+Stream/IStream.h
+Tnsd/Body.hpp
+Tnsd/Body.h
+Tnsd/Header.cpp
+Tnsd/Header.h
+Tnsd/NodeInfo.hpp
+Tnsd/NodeInfo.h
+Tnsd/Header.cpp
+Tnsd/Header.h
+Data/Yaml.cpp Data/Yaml.h
+Communication/Handler.cpp
+Communication/Handler.h
+Communication/Handler.h
+Communication/NodeBindStrategy.h
+Communication/INode.h
+Communication/FromStrategies.cpp
+Communication/FromStrategies.h
+Communication/ToStrategies.cpp
+Communication/ToStrategies.h
+)
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
 add_library(${DOORI_API_LIBRARY_NAME} STATIC ${HEADER_FILES} ${SRC_FILES}) # static library

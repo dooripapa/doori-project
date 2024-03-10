@@ -65,7 +65,7 @@ namespace doori::api::Common {
         [[nodiscard]] auto Errno() const noexcept -> int;
 
         /**
-         * Error의 description
+         * Error의 description 리턴함.
          * @return const std::string& : 에러 설명 문자열
          */
         [[nodiscard]] auto Cause() const noexcept -> const std::string&;
@@ -74,7 +74,7 @@ namespace doori::api::Common {
 
         /**
          * 시스템 콜 함수 호출 후 에러가 발생된 경우,
-         * Error 객체를 상태를 셋팅한다.
+         * errno, err string을 주입한다.
          */
         void InjectedBySystemcallError() noexcept;
 

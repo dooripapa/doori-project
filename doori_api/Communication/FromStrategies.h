@@ -5,7 +5,6 @@
 #ifndef DOORI_PROJECT_FROMSTRATEGIES_H
 #define DOORI_PROJECT_FROMSTRATEGIES_H
 
-#include "TCP/TCPNode.h"
 #include "TcpApi.h"
 
 namespace doori::api::Communication{
