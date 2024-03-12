@@ -18,9 +18,13 @@ struct AHeader : public Stream::IHeader {
     std::array<char, 20> address{};
 
 public:
+    AHeader() = default;
     AHeader(string name, string address) {
-        memcpy(this->name.data(), name.data(), this->name.size());
-        memcpy(this->address.data(), address.data(), this->address.size());
+        this->name.fill(' ');
+        this->address.fill(' ');
+
+        memcpy(this->name.data(), name.data(), name.size());
+        memcpy(this->address.data(), address.data(), address.size());
     };
 
     /*
@@ -58,8 +62,17 @@ public:
 };
 
 struct ABody : public Stream::IBody {
-    std::array<char, 4> age;
-    std::array<char, 10> keyvalue;
+    std::array<char, 4> age{};
+    std::array<char, 10> keyvalue{};
+
+    ABody()=default;
+    ABody(string age, string keyvalue) {
+        this->age.fill(' ');
+        this->keyvalue.fill(' ');
+
+        memcpy(this->age.data(), age.data(), age.size());
+        memcpy(this->keyvalue.data(), keyvalue.data(), keyvalue.size());
+    };
 
     /*
      * IBody 상속 받으면 구현해야할 필수 함수.
@@ -97,8 +110,8 @@ struct ABody : public Stream::IBody {
 
 TEST(StreamTemplate, Usage_Sending) {
 
-    AHeader header{};
-    ABody body{};
+    AHeader header{"jaeseong","066854"};
+    ABody body{"20","haass"};
 
     /**
      * 참조로 Tnsd Header, Tnsd Body을 StreamTemplate 구성함.
@@ -122,21 +135,23 @@ TEST(StreamTemplate, Usage_Sending) {
     cout<< "] end 2" << endl;
 
 }
-/*
+
 TEST(StreamTemplate, Usage_Receiving) {
-    auto outStream = R"(ASCII   LITTLE  JSON    ALIVE           {"key":"881d6b416a5b83d7"})";
+    //                            | StreamTemplate         |  AHeader                   |   ABody     |
+    auto outStream = R"(ASCII   LITTLE  JSON    jaeseong  066854              20  haass     )";
 
-    Tnsd::Header header{};
-    Tnsd::Body<Data::Json> body{};
+    AHeader header{};
+    ABody body{};
 
-    Stream::StreamTemplate< Tnsd::Header, Tnsd::Body<Data::Json> > stream{ header, body};
+    Stream::StreamTemplate< AHeader, ABody > stream{ header, body};
 
     stream.FromStream({outStream});
-    EXPECT_EQ(Tnsd::PROTOCOL::ALIVE, header.GetProtocol());
 
+    auto headerStream = header.ToStream();
     auto bodyStream = body.ToStream();
 
-    string compareString{begin(bodyStream), end(bodyStream)};
-    EXPECT_EQ(R"({"key":"881d6b416a5b83d7"})", compareString );
+    string compareHeader{begin(headerStream), end(headerStream)};
+    string compareBody{begin(bodyStream), end(bodyStream)};
+    EXPECT_EQ(R"(jaeseong  066854              )", compareHeader );
+    EXPECT_EQ(R"(20  haass     )", compareBody );
 }
-*/
