@@ -52,8 +52,7 @@ test_Branch.cpp
 test_Tree.cpp
 test_Fid.cpp
 test_Log.cpp
-test_TCPState.cpp
-test_Util.cpp)
+        test_Util.cpp)
 
 add_executable(unittest test_main.cpp ${TEST_FILES} )
 

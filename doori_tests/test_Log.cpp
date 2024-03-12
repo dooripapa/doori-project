@@ -37,6 +37,7 @@ TEST(Log, OutputTest) {
     PLOG(DEBUG, "doori-project %t %t %t", s, 100, "doori-project");
 
     PLOG(DEBUG, "doori-project {%t} [%t] (%t)", s, 100, a);
+
 }
 
 TEST(Log, ExceptionCheck) {
