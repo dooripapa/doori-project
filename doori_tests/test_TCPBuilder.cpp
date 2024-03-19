@@ -76,3 +76,74 @@ TEST(CommunicationMember, Usage) {
     /* 클라이언트 종료대기 */
     t.join();
 }
+
+TEST(CommunicationMember, new_tcp_receiver){
+
+    IPC ipc = TCP();
+//    IPC ipc = SharedMemory();
+//    IPC ipc = UDP();
+//    IPC ipc = PIPE();
+//    IPC ipc = MessageQueue();
+
+    // 그 원복 객체 리턴 하는 패턴.
+    auto node = ipc.getTopologyNode();
+
+    node.Ip("192.168.1.1");
+    node.Port("9999");
+
+    node.setsockopt();
+    node.setsockopt();
+    node.setsockopt();
+    node.setsockopt();
+
+    auto fd = FromStrategy(node);
+    auto accptFd = fd.waitFor();
+
+    string container{};
+    auto ret = 0;
+    auto timeout = 10;
+    while( ret = RecvStategy(accptFd, container, timeout) )
+    {
+        if(ret>0)
+        {
+            //received
+        }
+        else if (ret = 0)
+        {
+            //socket is closed
+        }
+        else{
+            //timeout
+        }
+    }
+
+    to.Ip("192.168.1.1");
+    to.Port("9999");
+    auto connFd = ToStrategy(to);
+}
+
+TEST(CommunicationMember, new_tcp_sender){
+
+    IPC ipc = TCP();
+
+    // 그 원복 객체 리턴 하는 패턴.
+    auto fromNode = ipc.getTopologyNode();
+    auto toNode = ipc.getTopologyNode();
+
+    fromNode.Ip("192.168.1.1");
+    fromNode.Port("9999");
+
+    fromNode.setsockopt();
+
+    auto fd = FromStrategy(fromNode);
+
+    toNode.Ip("192.168.1.1");
+    toNode.Port("9999");
+    auto connFd = ToStrategy(toNode);
+
+    auto ret = 0;
+    string container{};
+    container="leejaeseong";
+    ret = SendStrategy(connFd, container );
+
+}
