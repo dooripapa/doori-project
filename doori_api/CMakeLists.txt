@@ -89,6 +89,8 @@ Communication/FromStrategies.cpp
 Communication/FromStrategies.h
 Communication/ToStrategies.cpp
 Communication/ToStrategies.h
+		Communication/IIPCFrom.h
+		Communication/IIPCTo.h
 )
 
 #add_library(${DOORI_API_LIBRARY_NAME} SHARED ${HEADER_FILES} ${SRC_FILES}) # shared library
